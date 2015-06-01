@@ -1,0 +1,27 @@
+{
+  "name": "liow2",
+  "version": "1.0.0",
+  "description": "The Love is our Weapon Campaign website",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bkbooth/liow2"
+  },
+  "keywords": [
+    "Love",
+    "Weapon",
+    "Campaign",
+    "website",
+    "node",
+    "express"
+  ],
+  "author": "Ben Booth <bkbooth@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bkbooth/liow2/issues"
+  },
+  "homepage": "https://github.com/bkbooth/liow2"
+}
