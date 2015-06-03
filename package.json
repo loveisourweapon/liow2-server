@@ -4,6 +4,7 @@
   "description": "The Love is our Weapon Campaign website",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha"
   },
   "repository": {
@@ -23,5 +24,9 @@
   "bugs": {
     "url": "https://github.com/bkbooth/liow2/issues"
   },
-  "homepage": "https://github.com/bkbooth/liow2"
+  "homepage": "https://github.com/bkbooth/liow2",
+  "dependencies": {
+    "express": "^4.12.4",
+    "mongoose": "^4.0.4"
+  }
 }
