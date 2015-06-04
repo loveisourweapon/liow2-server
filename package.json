@@ -2,7 +2,7 @@
   "name": "liow2",
   "version": "1.0.0",
   "description": "The Love is our Weapon Campaign website",
-  "main": "index.js",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "test": "mocha"
