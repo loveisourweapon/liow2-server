@@ -5,16 +5,16 @@
 #  ports:
 #    - "80:80"
 #  volumes:
-#    - client:/usr/src/myapp
+#    - client:/usr/src/app
 
 server:
-  build: .
+  build: server/
   links:
     - mongo
   ports:
     - "80:3000"
   volumes:
-    - .:/usr/src/app
+    - server:/usr/src/app
 
 mongo:
   image: mongo
