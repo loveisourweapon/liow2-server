@@ -1,4 +1,5 @@
-var express = require('express'),
+var config = require('./config/config'),
+    express = require('express'),
     path = require('path'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
@@ -10,13 +11,12 @@ var routes = require('./routes/index');
 
 var app = express();
 
-var dbstring = 'mongodb://mongo/liow2',
-    db = mongoose.connection;
-mongoose.connect(dbstring);
+var db = mongoose.connection;
+mongoose.connect(config.db);
 
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', function() {
-  console.log('Connected to ' + dbstring);
+  console.log('Connected to ' + config.db);
 });
 
 app.use(logger('dev'));
