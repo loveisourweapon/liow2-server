@@ -5,3 +5,5 @@ services:
   - mongodb
 env:
   - NODE_ENV=travis
+notifications:
+  slack: liow:jVQvwa2ZfoZvUP2tStjtbYOi
