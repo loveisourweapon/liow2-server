@@ -6,6 +6,18 @@ server:
     - "3000:3000"
   volumes:
     - .:/usr/src/app
+  environment:
+    - NODE_ENV=development
+
+test:
+  build: .
+  command: nodemon --exec "npm test"
+  links:
+    - mongo
+  volumes:
+    - .:/usr/src/app
+  environment:
+    - NODE_ENV=testing
 
 mongo:
   image: mongo

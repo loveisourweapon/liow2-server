@@ -24,6 +24,8 @@ describe('Dummy model', function() {
   });
 
   afterEach(function (done) {
+    mongoose.models = {};
+    mongoose.modelSchemas = {};
     mongoose.disconnect(function() {
       return done();
     });

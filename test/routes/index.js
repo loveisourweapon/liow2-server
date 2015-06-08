@@ -35,6 +35,8 @@ describe('Dummy routes', function() {
   });
 
   afterEach(function (done) {
+    mongoose.models = {};
+    mongoose.modelSchemas = {};
     mongoose.disconnect(function() {
       return done();
     });
