@@ -1,3 +1,6 @@
+// Development environment config
 module.exports = {
-  db: 'mongodb://mongo/liow2'
+  db: {
+    url: 'mongodb://mongo/liow2'
+  }
 };

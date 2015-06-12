@@ -11,12 +11,13 @@ var routes = require('./routes/index');
 
 var app = express();
 
+// Connect to database
 var db = mongoose.connection;
-mongoose.connect(config.db);
+mongoose.connect(config.db.url);
 
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', function() {
-  console.log('Connected to ' + config.db);
+  console.log('Connected to ' + config.db.url);
 });
 
 app.use(logger('dev'));

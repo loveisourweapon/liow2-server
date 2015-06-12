@@ -14,7 +14,7 @@ describe('Dummy routes', function() {
     }
 
     function reconnect() {
-      mongoose.connect(config.db, function (err) {
+      mongoose.connect(config.db.url, function (err) {
         if (err) throw err;
         return clearDB();
       });

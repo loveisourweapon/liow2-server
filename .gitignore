@@ -41,3 +41,6 @@ node_modules
 
 # Debug log from npm
 npm-debug.log
+
+# Local config overrides
+config.local.js

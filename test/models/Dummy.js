@@ -12,7 +12,7 @@ describe('Dummy model', function() {
     }
 
     if (mongoose.connection.readyState === 0) {
-      mongoose.connect(config.db, function (err) {
+      mongoose.connect(config.db.url, function (err) {
         if (err) throw err;
         clearDB();
         return done();

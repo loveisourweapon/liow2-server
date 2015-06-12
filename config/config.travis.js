@@ -1,3 +1,6 @@
+// Travis CI environment config
 module.exports = {
-  db: 'mongodb://localhost/liow2'
+  db: {
+    url: 'mongodb://localhost/liow2'
+  }
 };

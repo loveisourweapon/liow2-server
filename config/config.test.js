@@ -1,3 +1,6 @@
+// Testing environment config
 module.exports = {
-  db: 'mongodb://mongo/liow2-test'
+  db: {
+    url: 'mongodb://mongo/liow2-test'
+  }
 };
