@@ -1,15 +1,16 @@
 var config = require('./config/config'),
     express = require('express'),
+    app = express(),
     path = require('path'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    passport = require('passport');
 
-var routes = require('./routes/index');
-// var users = require('./routes/users');
-
-var app = express();
+// Configure routes
+var auth = require('./routes/auth')(config, passport),
+    routes = require('./routes/index');
 
 // Connect to database
 var db = mongoose.connection;
@@ -20,13 +21,15 @@ db.once('open', function() {
   console.log('Connected to ' + config.db.url);
 });
 
+app.use(express.static('public'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(passport.initialize());
 
+app.use('/auth', auth);
 app.use('/', routes);
-// app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
