@@ -18,4 +18,4 @@ RUN npm install -g nodemon && \
     npm cache clear
 
 # Run with nodemon
-CMD ["nodemon"]
+CMD nodemon --exec "npm start"

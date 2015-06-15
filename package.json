@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "The Love is our Weapon Campaign website API server",
   "private": true,
-  "main": "./bin/www",
+  "main": "app.js",
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "./bin/www",
     "test": "mocha"
   },
   "repository": {
@@ -22,6 +22,7 @@
     "express"
   ],
   "author": "Ben Booth <bkbooth@gmail.com>",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^0.8.3",
     "body-parser": "~1.12.4",
