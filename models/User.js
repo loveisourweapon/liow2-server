@@ -6,7 +6,8 @@ var SALT_ROUNDS = 10;
 var UserSchema = new mongoose.Schema({
   email: { type: String, required: true, index: { unique: true } },
   password: { type: String, required: true },
-  name: String
+  name: String,
+  accessToken: String
 });
 
 UserSchema.pre('save', function(next) {

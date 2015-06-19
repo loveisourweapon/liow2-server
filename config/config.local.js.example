@@ -1,6 +1,7 @@
 // Local config overrides, put keys and secrets in here
 // Copy to 'config.local.js'
 module.exports = {
+  secret: 'notsosecret' // change this to something secret
   auth: {
     facebook: {
       clientID: 'YOUR_FACEBOOK_CLIENT_ID',

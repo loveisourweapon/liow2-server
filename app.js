@@ -21,6 +21,7 @@ db.once('open', function() {
   console.log('Connected to ' + config.db.url);
 });
 
+// Add express middleware
 app.use(express.static('public'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -28,22 +29,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(passport.initialize());
 
+// Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
+app.use(passport.authenticate('bearer', { session: false }));
+
+// Add remaining routes
 app.use('/', routes);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
+// Catch 404 and forward to error handler
+app.use(function __catch404(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handlers
-
-// development error handler
-// will print stacktrace
+// Error handlers
+// Development error handler, will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function __erroHandlerDev(err, req, res, next) {
     res.status(err.status || 500).json({
       message: err.message,
       error: err
@@ -51,9 +54,8 @@ if (app.get('env') === 'development') {
   });
 }
 
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+// Production error handler, no stacktraces leaked to user
+app.use(function __errorHandlerProd(err, req, res, next) {
   res.status(err.status || 500).json({
     message: err.message,
     error: {}
