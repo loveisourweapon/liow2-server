@@ -4,6 +4,7 @@ var config = require('../config/config'),
     router = express.Router();
 
 var LocalStrategy = require('passport-local').Strategy,
+    FacebookStrategy = require('passport-facebook').Strategy,
     BearerStrategy = require('passport-http-bearer').Strategy;
 
 var User = require('../models/User');
@@ -26,6 +27,29 @@ module.exports = function(config, passport) {
 
           return done(null, user);
         });
+      });
+    }
+  ));
+
+  // Configure passport FacebookStrategy
+  passport.use(new FacebookStrategy({
+      clientID: config.auth.facebook.clientID,
+      clientSecret: config.auth.facebook.clientSecret,
+      callbackURL: config.auth.facebook.callbackURL,
+      enableProof: false // TODO: Investigate this
+    }, function __verifyFacebook(accessToken, refreshToken, profile, done) {
+      User.findOrCreate({
+        email: profile.emails[0].value,
+        name: profile.displayName,
+        facebook: {
+          id: profile.id,
+          accessToken: accessToken,
+          refreshToken: refreshToken
+        }
+      }, function(err, user) {
+        if (err) throw err;
+
+        done(null, user);
       });
     }
   ));
@@ -60,6 +84,34 @@ module.exports = function(config, passport) {
       });
     })(req, res, next);
   });
+
+  // Redirect the user to Facebook for authentication. When complete,
+  // Facebook will redirect the user back to the application at
+  //   /auth/facebook/callback
+  router.get('/facebook',
+    passport.authenticate('facebook', { scope: ['email'] })
+  );
+
+  // Facebook will redirect the user to this URL after approval. Finish the
+  // authentication process by attempting to obtain an access token. If
+  // access was granted, the user will be logged in. Otherwise,
+  // authentication has failed.
+  router.get('/facebook/callback',
+    passport.authenticate('facebook', {
+      failureRedirect: config.loginPage,
+      session: false
+    }),
+    function(req, res, next) {
+      // TODO: set token expiry?
+      var token = jwt.sign(req.user.email, config.secret);
+      req.user.accessToken = token;
+      req.user.save(function __save(err, user) {
+        if (err) return next(err);
+
+        res.redirect(config.loginPage + '?access_token=' + user.accessToken);
+      });
+    }
+  );
 
   return router;
 };

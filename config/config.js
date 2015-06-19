@@ -1,7 +1,9 @@
 var _ = require('lodash');
 
 // Default config
-var config = {};
+var config = {
+  loginPage: '/login.html'
+};
 
 // Override with environment config
 if (process.env.NODE_ENV === 'development') {
