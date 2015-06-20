@@ -4,31 +4,40 @@ var config = require('../../config/config'),
     Dummy = require('../../models/Dummy');
 
 describe('Dummy model', function() {
-  beforeEach(function (done) {
-    function clearDB() {
-      for (var i in mongoose.connection.collections) {
-        mongoose.connection.collections[i].remove();
-      }
-    }
-
+  before(function(done) {
     if (mongoose.connection.readyState === 0) {
-      mongoose.connect(config.db.url, function (err) {
+      mongoose.connect(config.db.url, function(err) {
         if (err) throw err;
-        clearDB();
+
         return done();
       });
     } else {
-      clearDB();
       return done();
     }
   });
 
-  afterEach(function (done) {
-    mongoose.models = {};
-    mongoose.modelSchemas = {};
-    mongoose.disconnect(function() {
+  after(function(done) {
+    mongoose.connection.close(function(err) {
+      if (err) throw err;
+
       return done();
-    });
+    })
+  });
+
+  beforeEach(function(done) {
+    Dummy.remove({}, function(err) {
+      if (err) throw err;
+
+      return done();
+    })
+  });
+
+  afterEach(function(done) {
+    Dummy.remove({}, function(err) {
+      if (err) throw err;
+
+      return done();
+    })
   });
 
   it('should create a new Dummy', function () {

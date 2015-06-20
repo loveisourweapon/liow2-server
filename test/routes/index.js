@@ -4,54 +4,89 @@ var config = require('../../config/config'),
     mongoose = require('mongoose'),
     app = require('../../app');
 
-describe('Dummy routes', function() {
-  beforeEach(function (done) {
-    function clearDB() {
-      for (var i in mongoose.connection.collections) {
-        mongoose.connection.collections[i].remove();
-      }
-      return done();
-    }
+var User = require('../../models/User'),
+    credentials = {
+      email: 'test@example.com',
+      password: 'testing123'
+    },
+    accessToken;
 
-    function reconnect() {
-      mongoose.connect(config.db.url, function (err) {
+function createTestUser(done) {
+  User.findOrCreate({
+    email: credentials.email,
+    password: credentials.password
+  }, function(err, user) {
+    if (err) return done(err);
+
+    return done(null, user);
+  })
+}
+
+function getAccessToken(done) {
+  createTestUser(function(err, user) {
+    if (err) return done(err);
+
+    request.agent(app)
+      .post('/auth/login')
+      .send('email=' + credentials.email)
+      .send('password=' + credentials.password)
+      .end(function (err, res) {
+        if (err) return done(err);
+
+        if (!res.body.accessToken) return done(new Error('Failed getting accessing token.'));
+
+        accessToken = res.body.accessToken;
+        return done(null, accessToken);
+      });
+  });
+}
+
+describe('Dummy routes', function() {
+  before(function(done) {
+    if (mongoose.connection.readyState === 0) {
+      mongoose.connect(config.db.url, function(err) {
         if (err) throw err;
-        return clearDB();
+
+        getAccessToken(function(err) {
+          if (err) throw err;
+
+          return done();
+        });
+      });
+    } else {
+      getAccessToken(function(err) {
+        if (err) throw err;
+
+        return done();
       });
     }
-
-    (function checkState() {
-      switch (mongoose.connection.readyState) {
-        case 0:
-          reconnect();
-          break;
-        case 1:
-          clearDB();
-          break;
-        default:
-          process.nextTick(checkState);
-      }
-    })();
   });
 
-  afterEach(function (done) {
-    mongoose.models = {};
-    mongoose.modelSchemas = {};
-    mongoose.disconnect(function() {
-      return done();
+  after(function(done) {
+    User.remove({}, function(err) {
+      if (err) throw err;
+
+      mongoose.connection.close(function(err) {
+        if (err) throw err;
+
+        return done();
+      });
     });
   });
 
   describe('GET index', function() {
-    it('should return status 200 and an empty array', function(done) {
+    it('should return status 200 and an array', function(done) {
       request(app)
         .get('/')
+        .set('Authorization', 'Bearer ' + accessToken)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
           if (err) throw err;
-          expect(res.body).to.be.empty;
-          done();
+
+          expect(res.body).to.be.an('array');
+
+          return done();
         });
     });
   });
@@ -60,12 +95,15 @@ describe('Dummy routes', function() {
     it('should return status 201', function(done) {
       request(app)
         .post('/')
+        .set('Authorization', 'Bearer ' + accessToken)
         .expect('Content-Type', /json/)
         .expect(201)
         .end(function (err, res) {
           if (err) throw err;
+
           expect(res.body).to.be.empty;
-          done();
+
+          return done();
         });
     });
   });
