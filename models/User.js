@@ -31,7 +31,7 @@ UserSchema.pre('save', function(next) {
 
 UserSchema.methods.validatePassword = function __validatePassword(password, done) {
   // Return false if no password set
-  if (!this.password) return done(false);
+  if (!this.password) return done(null, false);
 
   // Compare the input password with the hashed password
   bcrypt.compare(password, this.password, function(err, res) {
