@@ -19,7 +19,7 @@ function createTestUser(done) {
     if (err) return done(err);
 
     return done(null, user);
-  })
+  });
 }
 
 function getAccessToken(done) {
@@ -101,7 +101,7 @@ describe('Dummy routes', function() {
         .end(function (err, res) {
           if (err) throw err;
 
-          expect(res.body).to.be.empty;
+          expect(res.body).to.be.empty.and.an('object');
 
           return done();
         });

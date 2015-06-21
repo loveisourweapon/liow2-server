@@ -21,7 +21,7 @@ describe('Dummy model', function() {
       if (err) throw err;
 
       return done();
-    })
+    });
   });
 
   beforeEach(function(done) {
@@ -29,7 +29,7 @@ describe('Dummy model', function() {
       if (err) throw err;
 
       return done();
-    })
+    });
   });
 
   afterEach(function(done) {
@@ -37,7 +37,7 @@ describe('Dummy model', function() {
       if (err) throw err;
 
       return done();
-    })
+    });
   });
 
   it('should create a new Dummy', function () {
