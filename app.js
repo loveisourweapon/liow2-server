@@ -5,6 +5,7 @@ var config = require('./config/config'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
+    cors = require('cors'),
     mongoose = require('mongoose'),
     passport = require('passport');
 
@@ -28,6 +29,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(passport.initialize());
+
+// Add CORS (Cross-origin Resource Sharing) support
+app.use(cors());
+app.options('*', cors()); // CORS OPTIONS pre-flight request
 
 // Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
