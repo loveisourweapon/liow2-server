@@ -13,21 +13,28 @@ var auth = require('./routes/auth')(config, passport),
     routes = require('./routes/index');
 
 // Connect to database
-var db = mongoose.connection;
+var db = mongoose.connection,
+    debug = require('debug')('liow2:mongo');
 mongoose.connect(config.db.url);
 
-db.on('error', console.error.bind(console, 'Connection error:'));
+db.on('error', function(err) {
+  debug('Connection error: ' + err.message);
+});
 db.once('open', function() {
-  console.log('Connected to ' + config.db.url);
+  debug('Connected to ' + config.db.url);
 });
 
 // Add express middleware
 app.use(express.static('public'));
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(passport.initialize());
+
+// Ignore logging for testing and Travis CI environments
+if (app.get('env') !== 'testing' && app.get('env') !== 'travis') {
+  app.use(logger('dev'));
+}
 
 // Add CORS (Cross-origin Resource Sharing) support
 app.use(cors());

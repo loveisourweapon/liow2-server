@@ -8,6 +8,7 @@ server:
     - .:/usr/src/app
   environment:
     - NODE_ENV=development
+    - DEBUG=liow2:*
 
 test:
   build: .
