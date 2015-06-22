@@ -4,21 +4,21 @@ var express = require('express'),
 var Dummy = require('../models/Dummy');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  Dummy.find(function (err, dummies) {
-    if (err) return console.error(err);
+router.get('/', function __getHome(req, res) {
+  Dummy.find(function __dummyFind(err, dummies) {
+    if (err) { return console.error(err); }
     res.status(200).json(dummies);
   });
 });
 
 /* POST to home page. */
-router.post('/', function (req, res, next) {
-  Dummy.find(function (err, dummies) {
-    if (err) return console.error(err);
+router.post('/', function __postHome(req, res) {
+  Dummy.find(function __dummyFind(err, dummies) {
+    if (err) { return console.error(err); }
     var dummy = new Dummy({ name: 'dummy' + (dummies.length + 1) });
 
-    dummy.save(function (err, dummy) {
-      if (err) return console.error(err);
+    dummy.save(function __dummySave(err) {
+      if (err) { return console.error(err); }
       res.status(201).json({});
     });
   });

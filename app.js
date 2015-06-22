@@ -1,7 +1,6 @@
 var config = require('./config/config'),
     express = require('express'),
     app = express(),
-    path = require('path'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
@@ -51,7 +50,7 @@ app.use(function __catch404(req, res, next) {
 // Error handlers
 // Development error handler, will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function __erroHandlerDev(err, req, res, next) {
+  app.use(function __errorHandlerDev(err, req, res) {
     res.status(err.status || 500).json({
       message: err.message,
       error: err
@@ -60,7 +59,7 @@ if (app.get('env') === 'development') {
 }
 
 // Production error handler, no stacktraces leaked to user
-app.use(function __errorHandlerProd(err, req, res, next) {
+app.use(function __errorHandlerProd(err, req, res) {
   res.status(err.status || 500).json({
     message: err.message,
     error: {}

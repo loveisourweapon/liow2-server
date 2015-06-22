@@ -15,13 +15,13 @@ var UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function __preSave(next) {
   // Only hash the password if it has been modified (or is new)
-  if (!this.password || !this.isModified('password')) return next();
+  if (!this.password || !this.isModified('password')) { return next(); }
 
   // Hash the password with automatic salt
-  bcrypt.hash(this.password, SALT_ROUNDS, function(err, hash) {
-      if (err) return next(err);
+  bcrypt.hash(this.password, SALT_ROUNDS, function __bcryptHash(err, hash) {
+      if (err) { return next(err); }
 
       // Override the cleartext password with the hashed one
       this.password = hash;
@@ -31,25 +31,25 @@ UserSchema.pre('save', function(next) {
 
 UserSchema.methods.validatePassword = function __validatePassword(password, done) {
   // Return false if no password set
-  if (!this.password) return done(null, false);
+  if (!this.password) { return done(null, false); }
 
   // Compare the input password with the hashed password
-  bcrypt.compare(password, this.password, function(err, res) {
-      if (err) return done(err);
+  bcrypt.compare(password, this.password, function __bcryptCompare(err, res) {
+      if (err) { return done(err); }
 
       done(null, res);
   });
 };
 
 UserSchema.statics.findOrCreate = function __findOrCreate(newUser, done) {
-  this.findOne({ email: newUser.email }, function(err, user) {
-    if (err) return done(err);
+  this.findOne({ email: newUser.email }, function __userFindOne(err, user) {
+    if (err) { return done(err); }
 
     if (!user) {
       // Provide defaults with _.extend?
       user = new this(newUser);
-      user.save(function(err, user) {
-        if (err) return done(err);
+      user.save(function __userSave(err, user) {
+        if (err) { return done(err); }
 
         done(null, user);
       });

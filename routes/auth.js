@@ -1,5 +1,4 @@
-var config = require('../config/config'),
-    jwt = require('jsonwebtoken'),
+var jwt = require('jsonwebtoken'),
     express = require('express'),
     router = express.Router();
 
@@ -9,21 +8,25 @@ var LocalStrategy = require('passport-local').Strategy,
 
 var User = require('../models/User');
 
-module.exports = function(config, passport) {
+module.exports = function __setupAuthRouter(config, passport) {
   // Configure passport LocalStrategy
   passport.use(new LocalStrategy({
       usernameField: 'email',
       passReqToCallback: false // TODO: Investigate this
     }, function __verifyLocal(email, password, done) {
-      User.findOne({ email: email }, function(err, user) {
-        if (err) return done(err);
+      User.findOne({ email: email }, function __userFindOne(err, user) {
+        if (err) { return done(err); }
 
-        if (!user) return done(null, false, { message: 'Incorrect email.' });
+        if (!user) {
+          return done(null, false, { message: 'Incorrect email.' });
+        }
 
-        user.validatePassword(password, function(err, isMatch) {
-          if (err) return done(err);
+        user.validatePassword(password, function __userValidatePassword(err, isMatch) {
+          if (err) { return done(err); }
 
-          if (!isMatch) return done(null, false, { message: 'Incorrect password.' });
+          if (!isMatch) {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
 
           return done(null, user);
         });
@@ -47,7 +50,7 @@ module.exports = function(config, passport) {
           refreshToken: refreshToken
         }
       }, function(err, user) {
-        if (err) throw err;
+        if (err) { throw err; }
 
         done(null, user);
       });
@@ -57,10 +60,12 @@ module.exports = function(config, passport) {
   // Configure passport BearerStrategy
   passport.use(new BearerStrategy(
     function __verifyBearer(token, done) {
-      User.findOne({ accessToken: token }, function (err, user) {
-        if (err) return done(err);
+      User.findOne({ accessToken: token }, function __userFindOne(err, user) {
+        if (err) { return done(err); }
 
-        if (!user) return done(null, false, { message: 'Invalid token.' });
+        if (!user) {
+          return done(null, false, { message: 'Invalid token.' });
+        }
 
         return done(null, user, { scope: 'all' });
       });
@@ -68,17 +73,19 @@ module.exports = function(config, passport) {
   ));
 
   // Receive normal form login requests at /auth/login
-  router.post('/login', function(req, res, next) {
-    passport.authenticate('local', { session: false }, function(err, user, info) {
-      if (err) return next(err);
+  router.post('/login', function __postLogin(req, res, next) {
+    passport.authenticate('local', { session: false }, function __localAuthanticate(err, user) {
+      if (err) { return next(err); }
 
-      if (!user) return res.status(401).json({ message: 'Not logged in' });
+      if (!user) {
+        return res.status(401).json({ message: 'Not logged in' });
+      }
 
       // TODO: set token expiry?
       var token = jwt.sign(user.email, config.secret);
       user.accessToken = token;
-      user.save(function __save(err, user) {
-        if (err) return next(err);
+      user.save(function __userSave(err, user) {
+        if (err) { return next(err); }
 
         res.status(200).json({ message: 'Logged in', accessToken: user.accessToken });
       });
@@ -101,12 +108,12 @@ module.exports = function(config, passport) {
       failureRedirect: config.loginPage,
       session: false
     }),
-    function(req, res, next) {
+    function __getFacebookCallback(req, res, next) {
       // TODO: set token expiry?
       var token = jwt.sign(req.user.email, config.secret);
       req.user.accessToken = token;
-      req.user.save(function __save(err, user) {
-        if (err) return next(err);
+      req.user.save(function __userSave(err, user) {
+        if (err) { return next(err); }
 
         res.redirect(config.loginPage + '?access_token=' + user.accessToken);
       });
