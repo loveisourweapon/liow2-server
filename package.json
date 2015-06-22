@@ -6,7 +6,8 @@
   "main": "app.js",
   "scripts": {
     "start": "./bin/www",
-    "test": "mocha"
+    "test": "mocha",
+    "test-cov": "mocha --require blanket --reporter mocha-lcov-reporter"
   },
   "repository": {
     "type": "git",
@@ -40,8 +41,23 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "blanket": "^1.1.7",
     "chai": "^3.0.0",
     "mocha": "^2.2.5",
+    "mocha-lcov-reporter": "0.0.2",
     "supertest": "^1.0.1"
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        ""
+      ],
+      "data-cover-never": [
+        "bin",
+        "config",
+        "node_modules",
+        "test"
+      ]
+    }
   }
 }
