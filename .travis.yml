@@ -3,6 +3,9 @@ node_js:
   - "0.12"
 services:
   - mongodb
+after_script:
+  - "npm install -g coveralls && npm run -s test-cov | coveralls"
+  - "npm install -g codeclimate-test-reporter && npm run -s test-cov | codeclimate"
 env:
   - NODE_ENV=travis
 notifications:
