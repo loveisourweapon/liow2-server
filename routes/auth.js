@@ -18,14 +18,14 @@ module.exports = function __setupAuthRouter(config, passport) {
         if (err) { return done(err); }
 
         if (!user) {
-          return done(null, false, { message: 'Incorrect email.' });
+          return done(null, false, { message: 'Incorrect email' });
         }
 
         user.validatePassword(password, function __userValidatePassword(err, isMatch) {
           if (err) { return done(err); }
 
           if (!isMatch) {
-            return done(null, false, { message: 'Incorrect password.' });
+            return done(null, false, { message: 'Incorrect password' });
           }
 
           return done(null, user);
@@ -64,7 +64,7 @@ module.exports = function __setupAuthRouter(config, passport) {
         if (err) { return done(err); }
 
         if (!user) {
-          return done(null, false, { message: 'Invalid token.' });
+          return done(null, false, { message: 'Invalid token' });
         }
 
         return done(null, user, { scope: 'all' });
@@ -74,11 +74,11 @@ module.exports = function __setupAuthRouter(config, passport) {
 
   // Receive normal form login requests at /auth/login
   router.post('/login', function __postLogin(req, res, next) {
-    passport.authenticate('local', { session: false }, function __localAuthanticate(err, user) {
+    passport.authenticate('local', { session: false }, function __localAuthanticate(err, user, response) {
       if (err) { return next(err); }
 
       if (!user) {
-        return res.status(401).json({ message: 'Not logged in' });
+        return res.status(401).json({ message: response.message || 'Not logged in' });
       }
 
       // TODO: set token expiry?
