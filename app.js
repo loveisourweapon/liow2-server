@@ -51,22 +51,24 @@ app.use('/', routes);
 app.use(function __catch404(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
-  next(err);
+  return next(err);
 });
 
 // Error handlers
 // Development error handler, will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function __errorHandlerDev(err, req, res) {
-    res.status(err.status || 500).json({
-      message: err.message,
-      error: err
-    });
+app.use(function __errorHandlerDev(err, req, res, next) { // jshint ignore:line
+  if (app.get('env') !== 'development') {
+    return next(err);
+  }
+
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: err
   });
-}
+});
 
 // Production error handler, no stacktraces leaked to user
-app.use(function __errorHandlerProd(err, req, res) {
+app.use(function __errorHandlerProd(err, req, res, next) { // jshint ignore:line
   res.status(err.status || 500).json({
     message: err.message,
     error: {}
