@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var debug = require('debug')('liow2:config'),
+    _ = require('lodash');
 
 // Default config
 var config = {
@@ -21,7 +22,7 @@ try {
   var local = require('./config.local');
   _.merge(config, local);
 } catch(error) {
-  console.log('Error: ' + error.message);
+  debug('Error: ' + error.message);
 }
 
 module.exports = config;
