@@ -41,7 +41,7 @@ describe('UserSchema', function __describe() {
 
         return done();
       });
-    }); // it
+    }); // it()
   }); // describe()
 
   describe('#validatePassword()', function __describe() {
