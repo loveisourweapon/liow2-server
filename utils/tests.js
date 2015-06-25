@@ -23,14 +23,14 @@ function dbConnect(done) {
   }
 } // dbConnect()
 
-// Close database connection
-function dbClose(done) {
-  mongoose.connection.close(function __mongooseConnectionClose(err) {
+// Disconnect database connection
+function dbDisconnect(done) {
+  mongoose.disconnect(function __mongooseDisconnect(err) {
     if (err) { return done(err); }
 
     return done();
   });
-} // dbClose()
+} // dbDisconnect()
 
 // Save a User to the database
 function saveUser(credentials, done) {
@@ -81,7 +81,7 @@ function getAccessToken(done) {
 module.exports = {
   credentials: credentials,
   dbConnect: dbConnect,
-  dbClose: dbClose,
+  dbDisconnect: dbDisconnect,
   saveUser: saveUser,
   removeUsers: removeUsers,
   getAccessToken: getAccessToken

@@ -10,7 +10,7 @@ describe('route /auth', function __describe() {
   }); // before()
 
   after(function __after(done) {
-    utils.dbClose(done);
+    utils.dbDisconnect(done);
   }); // after()
 
   describe('/login POST', function __describe() {

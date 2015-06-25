@@ -18,7 +18,7 @@ describe('Error handler', function __describe() {
     utils.removeUsers(function __removeUsers(err) {
       if (err) { return done(err); }
 
-      utils.dbClose(done);
+      utils.dbDisconnect(done);
     });
   }); // after()
 

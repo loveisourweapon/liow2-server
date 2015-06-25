@@ -8,7 +8,7 @@ describe('Dummy model', function __describe() {
   }); // before()
 
   after(function __after(done) {
-    utils.dbClose(done);
+    utils.dbDisconnect(done);
   }); // after()
 
   afterEach(function __afterEach(done) {
