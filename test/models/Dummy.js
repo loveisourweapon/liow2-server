@@ -3,13 +3,8 @@ var utils = require('../../utils/tests'),
     Dummy = require('../../models/Dummy');
 
 describe('Dummy model', function __describe() {
-  before(function __before(done) {
-    utils.dbConnect(done);
-  }); // before()
-
-  after(function __after(done) {
-    utils.dbDisconnect(done);
-  }); // after()
+  before(utils.dbConnect);
+  after(utils.dbDisconnect);
 
   afterEach(function __afterEach(done) {
     Dummy.remove({}, function __dummyRemove(err) {

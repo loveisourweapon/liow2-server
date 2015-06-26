@@ -4,19 +4,23 @@ var utils = require('../../utils/tests'),
     User = require('../../models/User');
 
 describe('UserSchema', function __describe() {
-  before(function __before(done) {
-    utils.dbConnect(done);
-  }); // before()
-
-  after(function __after(done) {
-    utils.dbDisconnect(done);
-  }); // after()
-
-  afterEach(function __afterEach(done) {
-    utils.removeUsers(done);
-  }); // afterEach()
+  before(utils.dbConnect);
+  after(utils.dbDisconnect);
 
   describe('#save()', function __describe() {
+    afterEach(utils.removeUsers);
+
+    it('should require an email address', function __it(done) {
+      var user = new User();
+
+      user.save(function __userSave(err, user) {
+        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+        expect(user).to.not.exist;
+
+        return done();
+      });
+    }); // it()
+
     it('should hash password on save', function __it(done) {
       var user = new User(credentials);
 
@@ -29,7 +33,7 @@ describe('UserSchema', function __describe() {
       });
     }); // it()
 
-    it('should do nothing if no password is set', function __it(done) {
+    it('should not hash if no password is set', function __it(done) {
       var user = new User({
         email: credentials.email
       });
@@ -45,6 +49,8 @@ describe('UserSchema', function __describe() {
   }); // describe()
 
   describe('#validatePassword()', function __describe() {
+    afterEach(utils.removeUsers);
+
     beforeEach(function __beforeEach(done) {
       utils.saveUser(credentials, done);
     }); // beforeEach()
@@ -98,6 +104,8 @@ describe('UserSchema', function __describe() {
   }); // describe()
 
   describe('#findOrCreate()', function __describe() {
+    afterEach(utils.removeUsers);
+
     it('should return an existing user', function __it(done) {
       var user = new User(credentials);
 

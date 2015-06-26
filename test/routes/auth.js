@@ -5,22 +5,15 @@ var utils = require('../../utils/tests'),
     app = require('../../app');
 
 describe('route /auth', function __describe() {
-  before(function __before(done) {
-    utils.dbConnect(done);
-  }); // before()
-
-  after(function __after(done) {
-    utils.dbDisconnect(done);
-  }); // after()
+  before(utils.dbConnect);
+  after(utils.dbDisconnect);
 
   describe('/login POST', function __describe() {
+    after(utils.removeUsers);
+
     before(function __before(done) {
       utils.saveUser(credentials, done);
     }); // before()
-
-    after(function __after(done) {
-      utils.removeUsers(done);
-    }); // after()
 
     it('should return status 200 with accessToken when sending valid credentials', function __it(done) {
       request(app)
