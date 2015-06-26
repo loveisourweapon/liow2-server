@@ -41,12 +41,12 @@ describe('Error handler', function __describe() {
     before(function __before(done) {
       app.set('env', 'development');
       return done();
-    }); // before
+    }); // before()
 
     after(function __after(done) {
       app.set('env', process.env.NODE_ENV);
       return done();
-    }); // after
+    }); // after()
 
     it('should return a non-empty error object', function __it(done) {
       request(app)

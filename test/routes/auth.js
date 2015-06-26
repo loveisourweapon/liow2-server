@@ -63,4 +63,15 @@ describe('route /auth', function __describe() {
         });
     }); // it()
   }); // describe()
+
+  describe('/facebook GET', function __describe() {
+    it('should redirect to Facebook for login', function __it(done) {
+      request(app)
+        .get('/auth/facebook')
+        .redirects(0)
+        .expect(302)
+        .expect('Location', /facebook\.com/i)
+        .end(done);
+    }); // it()
+  }); // describe()
 }); // describe()
