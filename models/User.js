@@ -1,18 +1,27 @@
 var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId,
     bcrypt = require('bcrypt');
 
 var SALT_ROUNDS = 10;
 
 var UserSchema = new mongoose.Schema({
   email: { type: String, required: true, index: { unique: true } },
-  password: String,
+  username: { type: String, index: { unique: true } },
+  password: String, // validate password or facebook.id set
   name: String,
-  accessToken: String,
+  picture: String,
+  cover_image: String,
   facebook: {
-    id: Number,
+    id: Number, // validate password or facebook.id set
     accessToken: String,
     refreshToken: String
-  }
+  },
+  country: { type: ObjectId, ref: 'Country' },
+  groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one ministry?
+  admin: { type: Boolean, required: true, default: false },
+  accessToken: String,
+  created: { type: Date, default: Date.now, required: true },
+  modified: Date
 });
 
 UserSchema.pre('save', function __preSave(next) {
