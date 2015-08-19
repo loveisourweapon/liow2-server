@@ -11,4 +11,8 @@ var LikeSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true }
 });
 
+LikeSchema.statics.getFilter = function __getFilter() {
+  return ['user'];
+};
+
 module.exports = mongoose.model('Like', LikeSchema);

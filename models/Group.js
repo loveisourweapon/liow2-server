@@ -1,4 +1,5 @@
-var mongoose = require('mongoose'),
+var _ = require('lodash'),
+    mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
 var GroupSchema = new mongoose.Schema({
@@ -13,5 +14,14 @@ var GroupSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
+
+GroupSchema.pre('validate', function __preSave(next) {
+  this.url_name = _.kebabCase(this.name);
+  next();
+});
+
+GroupSchema.statics.getFilter = function __getFilter() {
+  return ['name', 'owner', 'country', 'logo', 'cover_image', 'welcome_message'];
+};
 
 module.exports = mongoose.model('Group', GroupSchema);

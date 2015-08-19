@@ -1,6 +1,6 @@
-var mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
-    bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt'),
+    mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId;
 
 var SALT_ROUNDS = 10;
 
@@ -17,7 +17,7 @@ var UserSchema = new mongoose.Schema({
     refreshToken: String
   },
   country: { type: ObjectId, ref: 'Country' },
-  groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one ministry?
+  groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one group?
   admin: { type: Boolean, required: true, default: false },
   accessToken: String,
   created: { type: Date, default: Date.now, required: true },
@@ -66,6 +66,10 @@ UserSchema.statics.findOrCreate = function __findOrCreate(newUser, done) {
       done(null, user);
     }
   }.bind(this));
+};
+
+UserSchema.statics.getFilter = function __getFilter() {
+  return ['email', 'username', 'password', 'name', 'picture', 'cover_image', 'country', 'groups'];
 };
 
 module.exports = mongoose.model('User', UserSchema);

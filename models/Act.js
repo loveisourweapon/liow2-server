@@ -8,4 +8,8 @@ var ActSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true }
 });
 
+ActSchema.statics.getFilter = function __getFilter() {
+  return ['user'];
+};
+
 module.exports = mongoose.model('Act', ActSchema);

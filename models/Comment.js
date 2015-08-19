@@ -16,4 +16,8 @@ var CommentSchema = new mongoose.Schema({
   modified: Date
 });
 
+CommentSchema.statics.getFilter = function __getFilter() {
+  return ['user', 'image', 'content'];
+};
+
 module.exports = mongoose.model('Comment', CommentSchema);
