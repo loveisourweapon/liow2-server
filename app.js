@@ -10,6 +10,9 @@ var config = require('./config/config'),
 
 // Configure routes
 var auth = require('./routes/auth')(config, passport),
+    deeds = require('./routes/deeds'),
+    news = require('./routes/news'),
+    countries = require('./routes/countries'),
     routes = require('./routes/index');
 
 // Connect to database
@@ -39,6 +42,11 @@ if (app.get('env') !== 'testing' && app.get('env') !== 'travis') {
 // Add CORS (Cross-origin Resource Sharing) support
 app.use(cors());
 app.options('*', cors()); // CORS OPTIONS pre-flight request
+
+// Add non-authenticated routes
+app.use('/deeds', deeds);
+app.use('/news', news);
+app.use('/countries', countries);
 
 // Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
