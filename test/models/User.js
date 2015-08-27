@@ -3,21 +3,23 @@ var utils = require('../../utils/tests'),
     expect = require('chai').expect,
     User = require('../../models/User');
 
-describe('UserSchema', function __describe() {
+describe('User', function __describe() {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
   describe('#save()', function __describe() {
     afterEach(utils.removeUsers);
 
-    it('should require an email address', function __it(done) {
+    it('should require an email address and a username', function __it(done) {
       var user = new User();
 
       user.save(function __userSave(err, user) {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+        expect(err).to.have.deep.property('errors.email');
+        expect(err).to.have.deep.property('errors.username');
         expect(user).to.not.exist;
 
-        return done();
+        done();
       });
     }); // it()
 
@@ -29,13 +31,14 @@ describe('UserSchema', function __describe() {
 
         expect(user.password).to.exist.and.not.to.equal(credentials.password);
 
-        return done();
+        done();
       });
     }); // it()
 
     it('should not hash if no password is set', function __it(done) {
       var user = new User({
-        email: credentials.email
+        email: credentials.email,
+        username: credentials.username
       });
 
       user.save(function __userSave(err, user) {
@@ -43,7 +46,7 @@ describe('UserSchema', function __describe() {
 
         expect(user.password).to.not.exist;
 
-        return done();
+        done();
       });
     }); // it()
   }); // describe()
@@ -64,7 +67,7 @@ describe('UserSchema', function __describe() {
 
           expect(res).to.be.true;
 
-          return done();
+          done();
         });
       });
     }); // it()
@@ -78,7 +81,7 @@ describe('UserSchema', function __describe() {
 
           expect(res).to.be.false;
 
-          return done();
+          done();
         });
       });
     }); // it()
@@ -96,7 +99,7 @@ describe('UserSchema', function __describe() {
 
             expect(res).to.be.false;
 
-            return done();
+            done();
           });
         });
       });
@@ -119,7 +122,7 @@ describe('UserSchema', function __describe() {
           expect(foundUser.id).to.equal(user.id);
           expect(foundUser.email).to.equal(credentials.email);
 
-          return done();
+          done();
         });
       });
     }); // it()
@@ -136,7 +139,7 @@ describe('UserSchema', function __describe() {
           expect(user).to.exist.and.to.be.an.instanceof(User);
           expect(user.email).to.equal(credentials.email);
 
-          return done();
+          done();
         });
       });
     }); // it()

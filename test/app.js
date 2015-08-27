@@ -10,7 +10,7 @@ describe('Error handler', function __describe() {
       if (err) { return done(err); }
 
       accessToken = token;
-      return done();
+      done();
     });
   }); // before()
 
@@ -33,19 +33,19 @@ describe('Error handler', function __describe() {
 
         expect(res.body.message).to.exist.and.to.equal('Not Found');
 
-        return done();
+        done();
       });
   }); // it()
 
   describe('development', function __describe() {
     before(function __before(done) {
       app.set('env', 'development');
-      return done();
+      done();
     }); // before()
 
     after(function __after(done) {
       app.set('env', process.env.NODE_ENV);
-      return done();
+      done();
     }); // after()
 
     it('should return a non-empty error object', function __it(done) {
@@ -58,7 +58,7 @@ describe('Error handler', function __describe() {
 
           expect(res.body.error).to.exist.and.to.not.be.empty;
 
-          return done();
+          done();
         });
     }); // it()
   }); // describe()
@@ -66,12 +66,12 @@ describe('Error handler', function __describe() {
   describe('production', function __describe() {
     before(function __before(done) {
       app.set('env', 'production');
-      return done();
+      done();
     }); // before()
 
     after(function __after(done) {
       app.set('env', process.env.NODE_ENV);
-      return done();
+      done();
     }); // after()
 
     it('should return an empty error object', function __it(done) {
@@ -84,7 +84,7 @@ describe('Error handler', function __describe() {
 
           expect(res.body.error).to.exist.and.to.be.empty;
 
-          return done();
+          done();
         });
     }); // it()
   }); // describe()

@@ -28,7 +28,7 @@ module.exports = function __setupAuthRouter(config, passport) {
             return done(null, false, { message: 'Incorrect password' });
           }
 
-          return done(null, user);
+          done(null, user);
         });
       });
     }
@@ -50,7 +50,7 @@ module.exports = function __setupAuthRouter(config, passport) {
           refreshToken: refreshToken
         }
       }, function(err, user) {
-        if (err) { throw err; }
+        if (err) { return done(err); }
 
         done(null, user);
       });
@@ -67,7 +67,7 @@ module.exports = function __setupAuthRouter(config, passport) {
           return done(null, false, { message: 'Invalid token' });
         }
 
-        return done(null, user, { scope: 'all' });
+        done(null, user, { scope: 'all' });
       });
     }
   ));

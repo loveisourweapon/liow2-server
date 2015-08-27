@@ -17,7 +17,7 @@ describe('utils/tests', function __describe() {
 
         expect(mongoose.connection.readyState).to.equal(1); // connected
 
-        return done();
+        done();
       });
 
       expect(mongoose.connection.readyState).to.equal(2); // connecting
@@ -35,7 +35,7 @@ describe('utils/tests', function __describe() {
 
         expect(mongoose.connection.readyState).to.equal(0); // disconnected
 
-        return done();
+        done();
       });
     }); // it()
   }); // describe()
@@ -52,7 +52,7 @@ describe('utils/tests', function __describe() {
         expect(user).to.exist.and.to.have.property('email', credentials.email);
         expect(user.password).to.exist.and.not.be.empty;
 
-        return done();
+        done();
       });
     }); // it()
   }); // describe()
@@ -74,7 +74,7 @@ describe('utils/tests', function __describe() {
 
           expect(users).to.exist.and.to.be.empty;
 
-          return done();
+          done();
         });
       });
     }); // it()
@@ -95,7 +95,7 @@ describe('utils/tests', function __describe() {
 
           expect(user).to.exist.and.to.be.an.instanceof(User);
 
-          return done();
+          done();
         });
       });
     }); // it()

@@ -7,6 +7,7 @@ var config = require('../config/config'),
 // Default login credentials
 var credentials = {
   email: 'test@example.com',
+  username: 'username',
   password: 'password'
 };
 
@@ -16,10 +17,10 @@ function dbConnect(done) {
     mongoose.connect(config.db.url, function __mongooseConnect(err) {
       if (err) { return done(err); }
 
-      return done();
+      done();
     });
   } else {
-    return done();
+    done();
   }
 } // dbConnect()
 
@@ -28,7 +29,7 @@ function dbDisconnect(done) {
   mongoose.disconnect(function __mongooseDisconnect(err) {
     if (err) { return done(err); }
 
-    return done();
+    done();
   });
 } // dbDisconnect()
 
@@ -39,7 +40,7 @@ function saveUser(credentials, done) {
   user.save(function __userSave(err, user) {
     if (err) { return done(err); }
 
-    return done(null, user);
+    done(null, user);
   });
 } // saveUser()
 
@@ -48,7 +49,7 @@ function removeUsers(done) {
   User.remove({}, function __userRemove(err) {
     if (err) { return done(err); }
 
-    return done();
+    done();
   });
 } // removeUsers()
 
@@ -72,7 +73,7 @@ function getAccessToken(done) {
             return done(new Error('Failed getting accessing token'));
           }
 
-          return done(null, res.body.accessToken);
+          done(null, res.body.accessToken);
         });
     });
   });

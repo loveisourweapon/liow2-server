@@ -27,7 +27,7 @@ describe('route /auth', function __describe() {
 
           expect(res.body.accessToken).to.exist.and.to.be.a('string');
 
-          return done();
+          done();
         });
     }); // it()
 
@@ -43,7 +43,7 @@ describe('route /auth', function __describe() {
 
           expect(res.body.message).to.exist.and.to.equal('Incorrect email');
 
-          return done();
+          done();
         });
     }); // it()
 
@@ -59,7 +59,7 @@ describe('route /auth', function __describe() {
 
           expect(res.body.message).to.exist.and.to.equal('Incorrect password');
 
-          return done();
+          done();
         });
     }); // it()
   }); // describe()

@@ -5,8 +5,8 @@ var bcrypt = require('bcrypt'),
 var SALT_ROUNDS = 10;
 
 var UserSchema = new mongoose.Schema({
-  email: { type: String, required: true, index: { unique: true } },
-  username: { type: String, index: { unique: true } },
+  email: { type: String, index: { unique: true }, required: true },
+  username: { type: String, index: { unique: true }, required: true },
   password: String, // validate password or facebook.id set
   name: String,
   picture: String,
@@ -18,7 +18,7 @@ var UserSchema = new mongoose.Schema({
   },
   country: { type: ObjectId, ref: 'Country' },
   groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one group?
-  admin: { type: Boolean, required: true, default: false },
+  admin: { type: Boolean, default: false, required: true },
   accessToken: String,
   created: { type: Date, default: Date.now, required: true },
   modified: Date

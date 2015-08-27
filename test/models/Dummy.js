@@ -10,7 +10,7 @@ describe('Dummy model', function __describe() {
     Dummy.remove({}, function __dummyRemove(err) {
       if (err) { return done(err); }
 
-      return done();
+      done();
     });
   }); // afterEach()
 
@@ -20,6 +20,6 @@ describe('Dummy model', function __describe() {
     expect(dummy).to.be.an('object').and.an.instanceof(Dummy);
     expect(dummy.name).to.equal('test');
 
-    return done();
+    done();
   }); // it()
 }); // describe()

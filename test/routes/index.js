@@ -10,7 +10,7 @@ describe('route /', function __describe() {
       if (err) { return done(err); }
 
       accessToken = token;
-      return done();
+      done();
     });
   }); // before()
 
@@ -34,7 +34,7 @@ describe('route /', function __describe() {
 
           expect(res.body).to.be.an('array');
 
-          return done();
+          done();
         });
     }); // it()
   }); // describe()
@@ -51,7 +51,7 @@ describe('route /', function __describe() {
 
           expect(res.body).to.be.empty.and.an('object');
 
-          return done();
+          done();
         });
     }); // it()
   }); // describe()

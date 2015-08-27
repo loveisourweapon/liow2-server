@@ -54,7 +54,7 @@ app.use('/countries', countries);
 app.use('/auth', auth);
 app.use(passport.authenticate('bearer', { session: false }));
 
-// Add remaining routes
+// Add authenticated routes
 app.use('/', routes);
 
 // Catch 404 and forward to error handler
