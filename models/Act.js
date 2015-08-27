@@ -9,7 +9,7 @@ var ActSchema = new mongoose.Schema({
 });
 
 ActSchema.statics.getFilter = function __getFilter() {
-  return ['user'];
+  return ['user', 'group', 'deed'];
 };
 
 module.exports = mongoose.model('Act', ActSchema);

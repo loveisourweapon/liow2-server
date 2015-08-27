@@ -12,6 +12,7 @@ var config = require('./config/config'),
 var auth = require('./routes/auth')(config, passport),
     deeds = require('./routes/deeds'),
     news = require('./routes/news'),
+    acts = require('./routes/acts'),
     countries = require('./routes/countries'),
     routes = require('./routes/index');
 
@@ -46,6 +47,7 @@ app.options('*', cors()); // CORS OPTIONS pre-flight request
 // Add non-authenticated routes
 app.use('/deeds', deeds);
 app.use('/news', news);
+app.use('/acts', acts);
 app.use('/countries', countries);
 
 // Add auth routes then use bearer auth for remaining routes
