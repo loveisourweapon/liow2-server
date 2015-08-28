@@ -5,54 +5,13 @@ var utils = require('../../utils/tests'),
     accessToken = null;
 
 describe('route /', function __describe() {
-  before(function __before(done) {
-    utils.getAccessToken(function __getAccessToken(err, token) {
-      if (err) { return done(err); }
-
-      accessToken = token;
-      done();
-    });
-  }); // before()
-
-  after(function __after(done) {
-    utils.removeUsers(function __removeUsers(err) {
-      if (err) { return done(err); }
-
-      utils.dbDisconnect(done);
-    });
-  }); // after()
-
   describe('GET', function __describe() {
-    it('should return status 200 and an array', function __it(done) {
+    it('should return status 200 and HTML', function __it(done) {
       request(app)
         .get('/')
-        .set('Authorization', 'Bearer ' + accessToken)
-        .expect('Content-Type', /json/)
+        .expect('Content-Type', /text\/html/)
         .expect(200)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
-          expect(res.body).to.be.an('array');
-
-          done();
-        });
-    }); // it()
-  }); // describe()
-
-  describe('POST', function __describe() {
-    it('should return status 201', function __it(done) {
-      request(app)
-        .post('/')
-        .set('Authorization', 'Bearer ' + accessToken)
-        .expect('Content-Type', /json/)
-        .expect(201)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
-          expect(res.body).to.be.empty.and.an('object');
-
-          done();
-        });
+        .end(done);
     }); // it()
   }); // describe()
 }); // describe()

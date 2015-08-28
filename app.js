@@ -13,8 +13,7 @@ var auth = require('./routes/auth')(config, passport),
     deeds = require('./routes/deeds'),
     news = require('./routes/news'),
     acts = require('./routes/acts'),
-    countries = require('./routes/countries'),
-    routes = require('./routes/index');
+    countries = require('./routes/countries');
 
 // Connect to database
 var db = mongoose.connection,
@@ -55,7 +54,7 @@ app.use('/auth', auth);
 app.use(passport.authenticate('bearer', { session: false }));
 
 // Add authenticated routes
-app.use('/', routes);
+// TODO: add authentication to individual routes instead of whole routers?
 
 // Catch 404 and forward to error handler
 app.use(function __catch404(req, res, next) {
