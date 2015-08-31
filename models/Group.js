@@ -15,7 +15,7 @@ var GroupSchema = new mongoose.Schema({
   modified: Date
 });
 
-GroupSchema.pre('validate', function __preSave(next) {
+GroupSchema.pre('validate', function __preValidate(next) {
   this.url_name = _.kebabCase(this.name);
   next();
 });

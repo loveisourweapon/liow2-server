@@ -11,7 +11,7 @@ var DeedSchema = new mongoose.Schema({
   modified: Date
 });
 
-DeedSchema.pre('validate', function __preSave(next) {
+DeedSchema.pre('validate', function __preValidate(next) {
   this.url_title = _.kebabCase(this.title);
   next();
 });

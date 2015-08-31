@@ -2,8 +2,7 @@ var _ = require('lodash'),
     express = require('express'),
     router = express.Router();
 
-var mongoose = require('mongoose'),
-    ObjectId = mongoose.Types.ObjectId,
+var ObjectId = require('mongoose').Types.ObjectId,
     Act = require('../models/Act'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment');

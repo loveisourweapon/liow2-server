@@ -1,8 +1,7 @@
 var express = require('express'),
     router = express.Router();
 
-var mongoose = require('mongoose'),
-    ObjectId = mongoose.Types.ObjectId,
+var ObjectId = require('mongoose').Types.ObjectId,
     Country = require('../models/Country'),
     Group = require('../models/Group');
 

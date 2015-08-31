@@ -15,8 +15,8 @@ describe('User', function __describe() {
 
       user.save(function __userSave(err, user) {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.email');
-        expect(err).to.have.deep.property('errors.username');
+        expect(err).to.have.deep.property('errors.email.kind', 'required');
+        expect(err).to.have.deep.property('errors.username.kind', 'required');
         expect(user).to.not.exist;
 
         done();
@@ -142,6 +142,16 @@ describe('User', function __describe() {
           done();
         });
       });
+    }); // it()
+  }); // describe()
+
+  describe('#getFilter()', function __describe() {
+    it('should return an array of strings', function __it(done) {
+      var filter = User.getFilter();
+
+      expect(filter).to.be.an('array').and.have.length.above(0);
+
+      done();
     }); // it()
   }); // describe()
 }); // describe()

@@ -13,7 +13,7 @@ var NewsSchema = new mongoose.Schema({
   modified: Date
 });
 
-NewsSchema.pre('validate', function __preSave(next) {
+NewsSchema.pre('validate', function __preValidate(next) {
   this.url_title = _.kebabCase(this.title);
   next();
 });
