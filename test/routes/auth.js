@@ -4,7 +4,7 @@ var utils = require('../../utils/tests'),
     expect = require('chai').expect,
     app = require('../../app');
 
-describe('route /auth', function __describe() {
+describe('/auth', function __describe() {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 

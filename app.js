@@ -70,7 +70,7 @@ app.use(function __errorHandlerDev(err, req, res, next) { // jshint ignore:line
     return next(err);
   }
 
-  res.status(err.status || 500).json({
+  res.status(err.status || 400).json({
     message: err.message,
     error: err
   });
@@ -78,7 +78,7 @@ app.use(function __errorHandlerDev(err, req, res, next) { // jshint ignore:line
 
 // Production error handler, no stacktraces leaked to user
 app.use(function __errorHandlerProd(err, req, res, next) { // jshint ignore:line
-  res.status(err.status || 500).json({
+  res.status(err.status || 400).json({
     message: err.message,
     error: {}
   });
