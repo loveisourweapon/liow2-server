@@ -17,9 +17,7 @@ describe('/countries', function __describe() {
   after(utils.dbDisconnect);
 
   beforeEach(function __beforeEach(done) {
-    var country = new Country(validCountry);
-
-    country.save(function __countrySave(err, country) {
+    new Country(validCountry).save(function __countrySave(err, country) {
       if (err) { return done(err); }
 
       countryId = country._id;
@@ -36,65 +34,53 @@ describe('/countries', function __describe() {
     });
   }); // afterEach()
 
-  describe('/ GET', function __describe() {
-    it('should return status 200 and an array', function __it(done) {
+  describe('/', function __describe() {
+    it('GET should return status 200 and an array', function __it(done) {
       request(app)
         .get('/countries')
-        .expect('Content-Type', /json/)
         .expect(200)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
           expect(res.body).to.be.an('array');
-
-          done();
-        });
+        })
+        .end(done);
     }); // it()
   }); // describe()
 
-  describe('/:country_id GET', function __describe() {
-    it('should return status 400 and an error message', function __it(done) {
+  describe('/:country_id', function __describe() {
+    it('GET non-existent ID should return status 400 and an error message', function __it(done) {
       request(app)
         .get('/countries/' + ObjectId())
-        .expect('Content-Type', /json/)
         .expect(400)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
           expect(res.body).to.have.property('message');
-
-          done();
-        });
+        })
+        .end(done);
     }); // it()
 
-    it('should return status 200 and an object', function __it(done) {
+    it('GET valid ID should return status 200 and a Country', function __it(done) {
       request(app)
         .get('/countries/' + countryId)
-        .expect('Content-Type', /json/)
         .expect(200)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
-          expect(res.body).to.be.an('object');
-
-          done();
-        });
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
+          expect(res.body).to.be.an('object').and.to.have.property('_id');
+        })
+        .end(done);
     }); // it()
   }); // describe()
 
   describe('/:country_id/groups', function __describe() {
-    it('should return status 200 and an array', function __it(done) {
+    it('GET should return status 200 and an array', function __it(done) {
       request(app)
         .get('/countries/' + countryId + '/groups')
-        .expect('Content-Type', /json/)
         .expect(200)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
           expect(res.body).to.be.an('array');
-
-          done();
-        });
+        })
+        .end(done);
     }); // it()
   }); // describe()
 }); // describe()

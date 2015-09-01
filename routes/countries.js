@@ -33,7 +33,7 @@ router.get('/:country_id', function __getCountry(req, res) {
 
 /* GET /countries/:country_id/groups */
 router.get('/:country_id/groups', function __getCountryGroups(req, res, next) {
-  Group.find({ country: req.country }, function __groupFindByCountry(err, groups) {
+  Group.find({ country: req.country._id }, function __groupFindByCountry(err, groups) {
     if (err) { return next(err); }
 
     res.status(200).json(groups);

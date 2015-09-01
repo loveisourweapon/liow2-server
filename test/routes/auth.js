@@ -8,64 +8,55 @@ describe('/auth', function __describe() {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('/login POST', function __describe() {
+  describe('/login', function __describe() {
     after(utils.removeUsers);
 
     before(function __before(done) {
       utils.saveUser(credentials, done);
     }); // before()
 
-    it('should return status 200 with accessToken when sending valid credentials', function __it(done) {
+    it('POST valid credentials should return status 200 with accessToken', function __it(done) {
       request(app)
         .post('/auth/login')
         .send('email=' + credentials.email)
         .send('password=' + credentials.password)
-        .expect('Content-Type', /json/)
         .expect(200)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
           expect(res.body.accessToken).to.exist.and.to.be.a('string');
-
-          done();
-        });
+        })
+        .end(done);
     }); // it()
 
-    it('should return status 401 when sending an unknown email address', function __it(done) {
+    it('POST unknown email address should return status 401 and an error message', function __it(done) {
       request(app)
         .post('/auth/login')
         .send('email=wrong@example.com')
         .send('password=' + credentials.password)
-        .expect('Content-Type', /json/)
         .expect(401)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
-          expect(res.body.message).to.exist.and.to.equal('Incorrect email');
-
-          done();
-        });
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
+          expect(res.body).to.have.property('message', 'Incorrect email');
+        })
+        .end(done);
     }); // it()
 
-    it('should return status 401 when sending an incorrect password', function __it(done) {
+    it('POST incorrect password should return status 401 and an error message', function __it(done) {
       request(app)
         .post('/auth/login')
         .send('email=' + credentials.email)
         .send('password=wrongpassword')
-        .expect('Content-Type', /json/)
         .expect(401)
-        .end(function __requestEnd(err, res) {
-          if (err) { return done(err); }
-
-          expect(res.body.message).to.exist.and.to.equal('Incorrect password');
-
-          done();
-        });
+        .expect('Content-Type', /json/)
+        .expect(function __expect(res) {
+          expect(res.body).to.have.property('message', 'Incorrect password');
+        })
+        .end(done);
     }); // it()
   }); // describe()
 
-  describe('/facebook GET', function __describe() {
-    it('should redirect to Facebook for login', function __it(done) {
+  describe('/facebook', function __describe() {
+    it('GET should redirect to Facebook for login', function __it(done) {
       request(app)
         .get('/auth/facebook')
         .redirects(0)

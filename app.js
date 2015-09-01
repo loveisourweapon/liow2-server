@@ -51,7 +51,7 @@ app.use('/countries', countries);
 
 // Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
-app.use(passport.authenticate('bearer', { session: false }));
+//app.use(passport.authenticate('bearer', { session: false }));
 
 // Add authenticated routes
 // TODO: add authentication to individual routes instead of whole routers?
