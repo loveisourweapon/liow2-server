@@ -1,8 +1,19 @@
 var utils = require('../../utils/tests'),
-    expect = require('chai').expect;
+    expect = require('chai').expect,
+    _ = require('lodash');
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Comment = require('../../models/Comment');
+
+var validComment = {
+  user: ObjectId(),
+  target: {
+    deed: ObjectId()
+  },
+  content: {
+    text: 'Comment text'
+  }
+};
 
 describe('Comment', function __describe() {
   before(utils.dbConnect);
@@ -17,13 +28,12 @@ describe('Comment', function __describe() {
       });
     }); // afterEach()
 
-    it('should require user and target', function __it(done) {
-      var comment = new Comment();
-
-      comment.save(function __commentSave(err, comment) {
+    it('should require user, target and content', function __it(done) {
+      new Comment().save(function __commentSave(err, comment) {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.user.kind', 'required');
         expect(err).to.have.deep.property('errors.target.kind', 'required');
+        expect(err).to.have.deep.property('errors.content.kind', 'required');
         expect(comment).to.not.exist;
 
         done();
@@ -31,24 +41,18 @@ describe('Comment', function __describe() {
     }); // it()
 
     it('should require a single target', function __it(done) {
-      var comment = new Comment({
-        user: ObjectId(),
-        target: {}
-      });
-
-      comment.save(function __commentSave(err, comment) {
+      new Comment(_.defaults({ target: {} }, validComment)).save(function __commentSave(err, comment) {
         expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
         expect(comment).to.not.exist;
 
-        comment = new Comment({
-          user: ObjectId(),
-          target: {
-            user: ObjectId(),
-            deed: ObjectId()
-          }
-        });
-
-        comment.save(function __commentSave(err, comment) {
+        new Comment(
+          _.defaults({
+            target: {
+              user: ObjectId(),
+              deed: ObjectId()
+            }
+          }, validComment)
+        ).save(function __commentSave(err, comment) {
           expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
           expect(comment).to.not.exist;
 
@@ -57,13 +61,18 @@ describe('Comment', function __describe() {
       });
     }); // it()
 
-    it('should save a valid Comment', function __it(done) {
-      var comment = new Comment({
-        user: ObjectId(),
-        target: { deed: ObjectId() }
+    it('should require content text or image', function __it(done) {
+      new Comment(_.defaults({ content: {} }, validComment)).save(function __commentSave(err, comment) {
+        expect(err).to.have.deep.property('errors.content.kind', 'hascontent');
+        expect(comment).to.not.exist;
+
+        done();
       });
 
-      comment.save(function __commentSave(err, comment) {
+    }); // it()
+
+    it('should save a valid Comment', function __it(done) {
+      new Comment(validComment).save(function __commentSave(err, comment) {
         expect(err).to.not.exist;
         expect(comment).to.be.an('object').and.an.instanceof(Comment);
 

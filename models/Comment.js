@@ -13,6 +13,14 @@ function validateOneTarget(target) {
   );
 }
 
+function validateHasContent(content) {
+  // Ensure text or image field is included
+  return (
+    ( _.has(content, 'text') && _.isString(content.text) ) ||
+    ( _.has(content, 'image') && _.isString(content.image) )
+  );
+}
+
 var CommentSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
   target: {
@@ -26,14 +34,20 @@ var CommentSchema = new mongoose.Schema({
     required: true,
     validate: [validateOneTarget, 'One target should be set', 'onetarget']
   },
-  image: String, // validate image or content is set
-  content: String, // validate image or content is set
+  content: {
+    type: {
+      text: String,
+      image: String,
+    },
+    required: true,
+    validate: [validateHasContent, 'Text or image should be included', 'hascontent']
+  },
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
 
 CommentSchema.statics.getFilter = function __getFilter() {
-  return ['user', 'image', 'content'];
+  return ['user', 'content'];
 };
 
 module.exports = mongoose.model('Comment', CommentSchema);
