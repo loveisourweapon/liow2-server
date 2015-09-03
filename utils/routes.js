@@ -1,7 +1,13 @@
-var ObjectId = require('mongoose').Types.ObjectId;
+var _ = require('lodash'),
+    ObjectId = require('mongoose').Types.ObjectId;
 
 function paramHandler(req, res, next, id, name) {
-  if (!ObjectId.isValid(id)) { return next(new Error('Invalid ' + name)); }
+  if (_.isUndefined(this.findById) || _.isUndefined(this.modelName)) {
+    return next(new Error('Must be called bound to a mongoose model'));
+  }
+  if (!ObjectId.isValid(id)) {
+    return next(new Error('Invalid ' + name));
+  }
 
   this.findById(id, function __findById(err, document) {
     if (err) { return next(err); }
