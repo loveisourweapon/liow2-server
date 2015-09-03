@@ -1,21 +1,11 @@
-var express = require('express'),
+var utils = require('../utils/routes'),
+    express = require('express'),
     router = express.Router();
 
-var ObjectId = require('mongoose').Types.ObjectId,
-    Country = require('../models/Country'),
+var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country_id', function __paramCountryId(req, res, next, id) {
-  if (!ObjectId.isValid(id)) { return next(new Error('Invalid country_id')); }
-
-  Country.findById(id, function __countryFindById(err, country) {
-    if (err) { return next(err); }
-    if (!country) { return next(new Error('Country ' + id + ' not found')); }
-
-    req.country = country;
-    next();
-  });
-});
+router.param('country', utils.paramHandler.bind(Country));
 
 /* GET /countries */
 router.get('/', function __getCountries(req, res, next) {
@@ -26,13 +16,13 @@ router.get('/', function __getCountries(req, res, next) {
   });
 });
 
-/* GET /countries/:country_id */
-router.get('/:country_id', function __getCountry(req, res) {
+/* GET /countries/:country */
+router.get('/:country', function __getCountry(req, res) {
   res.status(200).json(req.country);
 });
 
-/* GET /countries/:country_id/groups */
-router.get('/:country_id/groups', function __getCountryGroups(req, res, next) {
+/* GET /countries/:country/groups */
+router.get('/:country/groups', function __getCountryGroups(req, res, next) {
   Group.find({ country: req.country._id }, function __groupFindByCountry(err, groups) {
     if (err) { return next(err); }
 

@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var utils = require('../utils/routes'),
+    _ = require('lodash'),
     express = require('express'),
     router = express.Router();
 
@@ -7,41 +8,9 @@ var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('act_id', function __paramActId(req, res, next, id) {
-  if (!ObjectId.isValid(id)) { return next(new Error('Invalid act_id')); }
-
-  Act.findById(id, function __actFindById(err, act) {
-    if (err) { return next(err); }
-    if (!act) { return next(new Error('Act ' + id + ' not found')); }
-
-    req.act = act;
-    next();
-  });
-});
-
-router.param('like_id', function __paramLikeId(req, res, next, id) {
-  if (!ObjectId.isValid(id)) { return next(new Error('Invalid like_id')); }
-
-  Like.findById(id, function __likeFindById(err, like) {
-    if (err) { return next(err); }
-    if (!like) { return next(new Error('Like ' + id + ' not found')); }
-
-    req.like = like;
-    next();
-  });
-});
-
-router.param('comment_id', function __paramCommentId(req, res, next, id) {
-  if (!ObjectId.isValid(id)) { return next(new Error('Invalid comment_id')); }
-
-  Comment.findById(id, function __commentFindById(err, comment) {
-    if (err) { return next(err); }
-    if (!comment) { return next(new Error('Comment ' + id + ' not found')); }
-
-    req.comment = comment;
-    next();
-  });
-});
+router.param('act', utils.paramHandler.bind(Act));
+router.param('like', utils.paramHandler.bind(Like));
+router.param('comment', utils.paramHandler.bind(Comment));
 
 /* GET /acts */
 router.get('/', function __getActs(req, res, next) {
@@ -66,13 +35,13 @@ router.post('/', function __postAct(req, res, next) {
   });
 });
 
-/* GET /acts/:act_id */
-router.get('/:act_id', function __getAct(req, res) {
+/* GET /acts/:act */
+router.get('/:act', function __getAct(req, res) {
   res.status(200).json(req.act);
 });
 
-/* DELETE /acts/:act_id */
-router.delete('/:act_id', function __deleteAct(req, res, next) {
+/* DELETE /acts/:act */
+router.delete('/:act', function __deleteAct(req, res, next) {
   req.act.remove(function __actRemove(err) {
     if (err) { return next(err); }
 
@@ -80,8 +49,8 @@ router.delete('/:act_id', function __deleteAct(req, res, next) {
   });
 });
 
-/* GET /acts/:act_id/likes */
-router.get('/:act_id/likes', function __getActLikes(req, res, next) {
+/* GET /acts/:act/likes */
+router.get('/:act/likes', function __getActLikes(req, res, next) {
   Like.find({ 'target.act': req.act._id }, function __likeFindByAct(err, likes) {
     if (err) { return next(err); }
 
@@ -89,8 +58,8 @@ router.get('/:act_id/likes', function __getActLikes(req, res, next) {
   });
 });
 
-/* POST /acts/:act_id/likes */
-router.post('/:act_id/likes', function __postActLike(req, res, next) {
+/* POST /acts/:act/likes */
+router.post('/:act/likes', function __postActLike(req, res, next) {
   req.body = _.pick(req.body, Like.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
   req.body.target = { act: req.act._id };
@@ -102,8 +71,8 @@ router.post('/:act_id/likes', function __postActLike(req, res, next) {
   });
 });
 
-/* DELETE /acts:act_id/likes/:like_id */
-router.delete('/:act_id/likes/:like_id', function __deleteActLike(req, res, next) {
+/* DELETE /acts:act/likes/:like */
+router.delete('/:act/likes/:like', function __deleteActLike(req, res, next) {
   req.like.remove(function __likeRemove(err) {
     if (err) { return next(err); }
 
@@ -111,8 +80,8 @@ router.delete('/:act_id/likes/:like_id', function __deleteActLike(req, res, next
   });
 });
 
-/* GET /acts/:act_id/comments */
-router.get('/:act_id/comments', function __getActComments(req, res, next) {
+/* GET /acts/:act/comments */
+router.get('/:act/comments', function __getActComments(req, res, next) {
   Comment.find({ 'target.act': req.act._id }, function __commentFindByAct(err, comments) {
     if (err) { return next(err); }
 
@@ -120,8 +89,8 @@ router.get('/:act_id/comments', function __getActComments(req, res, next) {
   });
 });
 
-/* POST /acts/:act_id/comments */
-router.post('/:act_id/comments', function __postActComment(req, res, next) {
+/* POST /acts/:act/comments */
+router.post('/:act/comments', function __postActComment(req, res, next) {
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
   req.body.target = { act: req.act._id };
@@ -133,8 +102,8 @@ router.post('/:act_id/comments', function __postActComment(req, res, next) {
   });
 });
 
-/* PUT /acts/:act_id/comments/:comment_id */
-router.put('/:act_id/comments/:comment_id', function __putActComment(req, res, next) {
+/* PUT /acts/:act/comments/:comment */
+router.put('/:act/comments/:comment', function __putActComment(req, res, next) {
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.modified = new Date();
 
@@ -145,8 +114,8 @@ router.put('/:act_id/comments/:comment_id', function __putActComment(req, res, n
   });
 });
 
-/* DELETE /acts/:act_id/comments/:comment_id */
-router.delete('/:act_id/comments/:comment_id', function __deleteActComment(req, res, next) {
+/* DELETE /acts/:act/comments/:comment */
+router.delete('/:act/comments/:comment', function __deleteActComment(req, res, next) {
   req.comment.remove(function __commentRemove(err) {
     if (err) { return next(err); }
 

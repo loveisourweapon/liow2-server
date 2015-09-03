@@ -47,7 +47,7 @@ describe('/countries', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('/:country_id', function __describe() {
+  describe('/:country', function __describe() {
     it('GET non-existent ID should return status 400 and an error message', function __it(done) {
       request(app)
         .get('/countries/' + ObjectId())
@@ -71,7 +71,7 @@ describe('/countries', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('/:country_id/groups', function __describe() {
+  describe('/:country/groups', function __describe() {
     it('GET should return status 200 and an array', function __it(done) {
       request(app)
         .get('/countries/' + countryId + '/groups')

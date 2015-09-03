@@ -79,7 +79,7 @@ describe('/deeds', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('/:deed_id', function __describe() {
+  describe('/:deed', function __describe() {
     beforeEach(function __beforeEach(done) {
       new Deed(validDeed).save(function __deedSave(err, deed) {
         if (err) { return done(err); }
@@ -96,7 +96,7 @@ describe('/deeds', function __describe() {
         .expect(400)
         .expect('Content-Type', /json/)
         .expect(function __expect(res) {
-          expect(res.body).to.have.property('message', 'Invalid deed_id');
+          expect(res.body).to.have.property('message', 'Invalid deed');
         })
         .end(done);
     }); // it()
@@ -232,14 +232,14 @@ describe('/deeds', function __describe() {
           .end(done);
       }); // it()
 
-      describe('/:like_id', function __describe() {
+      describe('/:like', function __describe() {
         it('DELETE invalid ID should return status 400 and an error message', function __it(done) {
           request(app)
             .delete('/deeds/' + deedId + '/likes/invalid')
             .expect(400)
             .expect('Content-Type', /json/)
             .expect(function __expect(res) {
-              expect(res.body).to.have.property('message', 'Invalid like_id');
+              expect(res.body).to.have.property('message', 'Invalid like');
             })
             .end(done);
         }); // it()
@@ -338,14 +338,14 @@ describe('/deeds', function __describe() {
           .end(done);
       }); // it()
 
-      describe('/:comment_id', function __describe() {
+      describe('/:comment', function __describe() {
         it('DELETE invalid ID should return status 400 and an error message', function __it(done) {
           request(app)
             .delete('/deeds/' + deedId + '/comments/invalid')
             .expect(400)
             .expect('Content-Type', /json/)
             .expect(function __expect(res) {
-              expect(res.body).to.have.property('message', 'Invalid comment_id');
+              expect(res.body).to.have.property('message', 'Invalid comment');
             })
             .end(done);
         }); // it()

@@ -80,7 +80,7 @@ describe('/acts', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('/:act_id', function __describe() {
+  describe('/:act', function __describe() {
     beforeEach(function __beforeEach(done) {
       new Act(validAct).save(function __actSave(err, act) {
         if (err) { return done(err); }
@@ -97,7 +97,7 @@ describe('/acts', function __describe() {
         .expect(400)
         .expect('Content-Type', /json/)
         .expect(function __expect(res) {
-          expect(res.body).to.have.property('message', 'Invalid act_id');
+          expect(res.body).to.have.property('message', 'Invalid act');
         })
         .end(done);
     }); // it()
@@ -110,7 +110,13 @@ describe('/acts', function __describe() {
         .expect(function __expect(res) {
           expect(res.body).to.have.property('message');
         })
-        .end(done);
+        .end(function (err, res) {
+          console.log('ERR', err);
+          console.log('RES', res.body);
+
+          done();
+        });
+        //.end(done);
     }); // it()
 
     it('GET valid ID should return status 200 and the Act', function __it(done) {
@@ -204,14 +210,14 @@ describe('/acts', function __describe() {
           .end(done);
       }); // it()
 
-      describe('/:like_id', function __describe() {
+      describe('/:like', function __describe() {
         it('DELETE invalid ID should return status 400 and an error message', function __it(done) {
           request(app)
             .delete('/acts/' + actId + '/likes/invalid')
             .expect(400)
             .expect('Content-Type', /json/)
             .expect(function __expect(res) {
-              expect(res.body).to.have.property('message', 'Invalid like_id');
+              expect(res.body).to.have.property('message', 'Invalid like');
             })
             .end(done);
         }); // it()
@@ -310,14 +316,14 @@ describe('/acts', function __describe() {
           .end(done);
       }); // it()
 
-      describe('/:comment_id', function __describe() {
+      describe('/:comment', function __describe() {
         it('DELETE invalid ID should return status 400 and an error message', function __it(done) {
           request(app)
             .delete('/acts/' + actId + '/comments/invalid')
             .expect(400)
             .expect('Content-Type', /json/)
             .expect(function __expect(res) {
-              expect(res.body).to.have.property('message', 'Invalid comment_id');
+              expect(res.body).to.have.property('message', 'Invalid comment');
             })
             .end(done);
         }); // it()
