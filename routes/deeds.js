@@ -56,11 +56,10 @@ router.get('/', function __getDeeds(req, res, next) {
 router.post('/', function __postDeed(req, res, next) {
   req.body = _.pick(req.body, Deed.getFilter());
 
-  var deed = new Deed(req.body);
-  deed.save(function __deedSave(err) {
+  new Deed(req.body).save(function __deedSave(err, deed) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/deeds/' + deed._id).json(deed);
   });
 });
 
@@ -74,10 +73,10 @@ router.put('/:deed_id', function __putDeed(req, res, next) {
   req.body = _.pick(req.body, Deed.getFilter());
   req.body.modified = new Date();
 
-  req.deed.update(req.body, function(err) {
+  Deed.findByIdAndUpdate(req.deed._id, req.body, { new: true }, function __deedFindAndUpdate(err, deed) {
     if (err) { return next(err); }
 
-    res.status(204).send();
+    res.status(200).json(deed);
   });
 });
 
@@ -92,7 +91,7 @@ router.delete('/:deed_id', function __deleteDeed(req, res, next) {
 
 /* GET /deeds/:deed_id/likes */
 router.get('/:deed_id/likes', function __getDeedLikes(req, res, next) {
-  Like.find({ 'target.deed': req.deed }, function __likeFindByDeed(err, likes) {
+  Like.find({ 'target.deed': req.deed._id }, function __likeFindByDeed(err, likes) {
     if (err) { return next(err); }
 
     res.status(200).json(likes);
@@ -103,13 +102,12 @@ router.get('/:deed_id/likes', function __getDeedLikes(req, res, next) {
 router.post('/:deed_id/likes', function __postDeedLike(req, res, next) {
   req.body = _.pick(req.body, Like.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { deed: req.deed };
+  req.body.target = { deed: req.deed._id };
 
-  var like = new Like(req.body);
-  like.save(function __likeSave(err) {
+  new Like(req.body).save(function __likeSave(err, like) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/deeds/' + req.deed._id + '/likes/' + like._id).json(like);
   });
 });
 
@@ -124,7 +122,7 @@ router.delete('/:deed_id/likes/:like_id', function __deleteDeedLike(req, res, ne
 
 /* GET /deeds/:deed_id/comments */
 router.get('/:deed_id/comments', function __getDeedComments(req, res, next) {
-  Comment.find({ 'target.deed': req.deed }, function __commentFindByDeed(err, comments) {
+  Comment.find({ 'target.deed': req.deed._id }, function __commentFindByDeed(err, comments) {
     if (err) { return next(err); }
 
     res.status(200).json(comments);
@@ -135,13 +133,12 @@ router.get('/:deed_id/comments', function __getDeedComments(req, res, next) {
 router.post('/:deed_id/comments', function __postDeedComment(req, res, next) {
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { deed: req.deed };
+  req.body.target = { deed: req.deed._id };
 
-  var comment = new Comment(req.body);
-  comment.save(function __commentSave(err) {
+  new Comment(req.body).save(function __commentSave(err, comment) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/deeds/' + req.deed._id + '/comments/' + comment._id).json(comment);
   });
 });
 
@@ -150,10 +147,10 @@ router.put('/:deed_id/comments/:comment_id', function __putDeedComment(req, res,
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.modified = new Date();
 
-  req.comment.update(req.body, function __commentUpdate(err) {
+  Comment.findByIdAndUpdate(req.comment._id, req.body, { new: true }, function __commentFindAndUpdate(err, comment) {
     if (err) { return next(err); }
 
-    res.status(204).send();
+    res.status(200).json(comment);
   });
 });
 
