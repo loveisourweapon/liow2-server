@@ -82,12 +82,8 @@ describe('Comment', function __describe() {
   }); // describe()
 
   describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it(done) {
-      var filter = Comment.getFilter();
-
-      expect(filter).to.be.an('array').and.have.length.above(0);
-
-      done();
+    it('should return an array of strings', function __it() {
+      expect(Comment.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()
 }); // describe()

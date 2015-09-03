@@ -25,9 +25,7 @@ describe('News', function __describe() {
     }); // afterEach()
 
     it('should require author, title, url_title and content', function __it(done) {
-      var news = new News();
-
-      news.save(function __newsSave(err, news) {
+      new News().save(function __newsSave(err, news) {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.author.kind', 'required');
         expect(err).to.have.deep.property('errors.title.kind', 'required');
@@ -40,9 +38,7 @@ describe('News', function __describe() {
     }); // it()
 
     it('should create url_title as a kebab case copy of title', function __it(done) {
-      var news = new News(validNews);
-
-      news.save(function __newsSave(err, news) {
+      new News(validNews).save(function __newsSave(err, news) {
         expect(err).to.not.exist;
         expect(news).to.have.property('url_title', _.kebabCase(validNews.title));
 
@@ -51,9 +47,7 @@ describe('News', function __describe() {
     }); // it()
 
     it('should save a valid News item', function __it(done) {
-      var news = new News(validNews);
-
-      news.save(function __newsSave(err, news) {
+      new News(validNews).save(function __newsSave(err, news) {
         expect(err).to.not.exist;
         expect(news).to.be.an('object').and.an.instanceof(News);
 
@@ -63,12 +57,8 @@ describe('News', function __describe() {
   }); // describe()
 
   describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it(done) {
-      var filter = News.getFilter();
-
-      expect(filter).to.be.an('array').and.have.length.above(0);
-
-      done();
+    it('should return an array of strings', function __it() {
+      expect(News.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()
 }); // describe()
