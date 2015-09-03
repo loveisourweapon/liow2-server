@@ -57,11 +57,10 @@ router.post('/', function __postNews(req, res, next) {
   req.body = _.pick(req.body, News.getFilter());
   req.body.author = ObjectId.isValid(req.body.author) ? ObjectId(req.body.author) : null;
 
-  var news = new News(req.body);
-  news.save(function __newsSave(err) {
+  new News(req.body).save(function __newsSave(err, news) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/news/' + news._id).json(news);
   });
 });
 
@@ -75,10 +74,10 @@ router.put('/:news_id', function __putNews(req, res, next) {
   req.body = _.pick(req.body, News.getFilter());
   req.body.modified = new Date();
 
-  req.news.update(req.body, function __newsUpdate(err) {
+  News.findByIdAndUpdate(req.news._id, req.body, { new: true }, function __newsFindAndUpdate(err, news) {
     if (err) { return next(err); }
 
-    res.status(204).send();
+    res.status(200).json(news);
   });
 });
 
@@ -93,7 +92,7 @@ router.delete('/:news_id', function __deleteNews(req, res, next) {
 
 /* GET /news/:news_id/likes */
 router.get('/:news_id/likes', function __getNewsLikes(req, res, next) {
-  Like.find({ 'target.news': req.news }, function __likeFindByNews(err, likes) {
+  Like.find({ 'target.news': req.news._id }, function __likeFindByNews(err, likes) {
     if (err) { return next(err); }
 
     res.status(200).json(likes);
@@ -104,13 +103,12 @@ router.get('/:news_id/likes', function __getNewsLikes(req, res, next) {
 router.post('/:news_id/likes', function __postNewsLike(req, res, next) {
   req.body = _.pick(req.body, Like.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { news: req.news };
+  req.body.target = { news: req.news._id };
 
-  var like = new Like(req.body);
-  like.save(function __likeSave(err) {
+  new Like(req.body).save(function __likeSave(err, news) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/news/' + req.news._id + '/likes/' + news._id).json(news);
   });
 });
 
@@ -125,7 +123,7 @@ router.delete('/:news_id/likes/:like_id', function __deleteNewsLike(req, res, ne
 
 /* GET /news/:news_id/comments */
 router.get('/:news_id/comments', function __getNewsComments(req, res, next) {
-  Comment.find({ 'target.news': req.news }, function __commentFindByNews(err, comments) {
+  Comment.find({ 'target.news': req.news._id }, function __commentFindByNews(err, comments) {
     if (err) { return next(err); }
 
     res.status(200).json(comments);
@@ -136,13 +134,12 @@ router.get('/:news_id/comments', function __getNewsComments(req, res, next) {
 router.post('/:news_id/comments', function __postNewsComment(req, res, next) {
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { news: req.news };
+  req.body.target = { news: req.news._id };
 
-  var comment = new Comment(req.body);
-  comment.save(function __commentSave(err) {
+  new Comment(req.body).save(function __commentSave(err, comment) {
     if (err) { return next(err); }
 
-    res.status(201).send();
+    res.status(201).location('/news/' + req.news._id + '/comments/' + comment._id).json(comment);
   });
 });
 
@@ -151,10 +148,10 @@ router.put('/:news_id/comments/:comment_id', function __putNewsComment(req, res,
   req.body = _.pick(req.body, Comment.getFilter());
   req.body.modified = new Date();
 
-  req.comment.update(req.body, function __commentUpdate(err) {
+  Comment.findByIdAndUpdate(req.comment._id, req.body, { new: true }, function __commentFindAndUpdate(err, comment) {
     if (err) { return next(err); }
 
-    res.status(204).send();
+    res.status(200).json(comment);
   });
 });
 
