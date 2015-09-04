@@ -1,24 +1,16 @@
 var _ = require('lodash'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    oneOf = require('../utils/models').oneOf;
 
 function validateOneTarget(target) {
   // Exactly one of user, group, deed, act or news should be set as the target
-  return (
-    ( _.has(target, 'user') && target.user instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'user')) ) ||
-    ( _.has(target, 'group') && target.group instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'group')) ) ||
-    ( _.has(target, 'deed') && target.deed instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'deed')) ) ||
-    ( _.has(target, 'act') && target.act instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'act')) ) ||
-    ( _.has(target, 'news') && target.news instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'news')) )
-  );
+  return oneOf(target, ['user', 'group', 'deed', 'act', 'news']);
 }
 
 function validateHasContent(content) {
   // Ensure text or image field is included
-  return (
-    ( _.has(content, 'text') && _.isString(content.text) ) ||
-    ( _.has(content, 'image') && _.isString(content.image) )
-  );
+  return _.isString(content.text) || _.isString(content.image);
 }
 
 var CommentSchema = new mongoose.Schema({

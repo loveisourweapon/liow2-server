@@ -1,14 +1,10 @@
-var _ = require('lodash'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var mongoose = require('mongoose'),
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    oneOf = require('../utils/models').oneOf;
 
 function validateOneTarget(target) {
   // Exactly one of deed, act or news should be set as the target
-  return (
-    ( _.has(target, 'deed') && target.deed instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'deed')) ) ||
-    ( _.has(target, 'act') && target.act instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'act')) ) ||
-    ( _.has(target, 'news') && target.news instanceof mongoose.Types.ObjectId && _.isEmpty(_.omit(target, 'news')) )
-  );
+  return oneOf(target, ['deed', 'act', 'news']);
 }
 
 var LikeSchema = new mongoose.Schema({
