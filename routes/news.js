@@ -1,16 +1,16 @@
-var utils = require('../utils/routes'),
-    _ = require('lodash'),
+var _ = require('lodash'),
     express = require('express'),
-    router = express.Router();
+    router = express.Router(),
+    paramHandler = require('../utils/routes').paramHandler;
 
 var ObjectId = require('mongoose').Types.ObjectId,
     News = require('../models/News'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('news', utils.paramHandler.bind(News));
-router.param('like', utils.paramHandler.bind(Like));
-router.param('comment', utils.paramHandler.bind(Comment));
+router.param('news', paramHandler.bind(News));
+router.param('like', paramHandler.bind(Like));
+router.param('comment', paramHandler.bind(Comment));
 
 /* GET /news */
 router.get('/', function __getNews(req, res, next) {

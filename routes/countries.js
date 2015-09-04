@@ -1,11 +1,11 @@
-var utils = require('../utils/routes'),
-    express = require('express'),
-    router = express.Router();
+var express = require('express'),
+    router = express.Router(),
+    paramHandler = require('../utils/routes').paramHandler;
 
 var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country', utils.paramHandler.bind(Country));
+router.param('country', paramHandler.bind(Country));
 
 /* GET /countries */
 router.get('/', function __getCountries(req, res, next) {

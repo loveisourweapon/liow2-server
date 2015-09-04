@@ -1,5 +1,5 @@
-var testUtils = require('../../utils/tests'),
-    routeUtils = require('../../utils/routes'),
+var utils = require('../../utils/tests'),
+    paramHandler = require('../../utils/routes').paramHandler,
     expect = require('chai').expect,
     ObjectId = require('mongoose').Types.ObjectId,
     Country = require('../../models/Country');
@@ -11,8 +11,8 @@ var validCountry = {
 };
 
 describe('utils/routes', function __describe() {
-  before(testUtils.dbConnect);
-  after(testUtils.dbDisconnect);
+  before(utils.dbConnect);
+  after(utils.dbDisconnect);
 
   describe('#paramHandler()', function __describe() {
     beforeEach(function __beforeEach(done) {
@@ -34,7 +34,7 @@ describe('utils/routes', function __describe() {
 
     it('should return an error when not bound to a mongoose Model', function __it(done) {
       var req = {}, res = {};
-      routeUtils.paramHandler(req, res, function __next(err) {
+      paramHandler(req, res, function __next(err) {
         expect(err).to.be.an.instanceof(Error);
         expect(err.message).to.match(/mongoose\smodel/);
 
@@ -44,7 +44,7 @@ describe('utils/routes', function __describe() {
 
     it('should return an error when called with an invalid ID', function __it(done) {
       var req = {}, res = {};
-      routeUtils.paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, function __next(err) {
         expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid country');
 
         done();
@@ -53,7 +53,7 @@ describe('utils/routes', function __describe() {
 
     it('should return an error when called with a non-existent ID', function __it(done) {
       var req = {}, res = {}, id = ObjectId().toString();
-      routeUtils.paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, function __next(err) {
         expect(err).to.be.an.instanceof(Error).and.have.property('message', 'Country ' + id + ' not found');
 
         done();
@@ -62,7 +62,7 @@ describe('utils/routes', function __describe() {
 
     it('should attach a document when given a valid ID and bound to a Model', function __it(done) {
       var req = {}, res = {};
-      routeUtils.paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, function __next(err) {
         expect(err).to.not.exist;
         expect(req.country).to.be.an.instanceof(Country).and.to.have.property('id', countryId);
 
