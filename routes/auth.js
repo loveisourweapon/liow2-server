@@ -8,20 +8,20 @@ var LocalStrategy = require('passport-local').Strategy,
 
 var User = require('../models/User');
 
-module.exports = function __setupAuthRouter(config, passport) {
+module.exports = function(config, passport) {
   // Configure passport LocalStrategy
   passport.use(new LocalStrategy({
       usernameField: 'email',
       passReqToCallback: false // TODO: Investigate this
-    }, function __verifyLocal(email, password, done) {
-      User.findOne({ email: email }, function __userFindOne(err, user) {
+    }, (email, password, done) => {
+      User.findOne({ email: email }, (err, user) => {
         if (err) { return done(err); }
 
         if (!user) {
           return done(null, false, { message: 'Incorrect email' });
         }
 
-        user.validatePassword(password, function __userValidatePassword(err, isMatch) {
+        user.validatePassword(password, (err, isMatch) => {
           if (err) { return done(err); }
 
           if (!isMatch) {
@@ -40,7 +40,7 @@ module.exports = function __setupAuthRouter(config, passport) {
       clientSecret: config.auth.facebook.clientSecret,
       callbackURL: config.auth.facebook.callbackURL,
       enableProof: false // TODO: Investigate this
-    }, function __verifyFacebook(accessToken, refreshToken, profile, done) {
+    }, (accessToken, refreshToken, profile, done) => {
       User.findOrCreate({
         email: profile.emails[0].value,
         name: profile.displayName,
@@ -49,7 +49,7 @@ module.exports = function __setupAuthRouter(config, passport) {
           accessToken: accessToken,
           refreshToken: refreshToken
         }
-      }, function(err, user) {
+      }, (err, user) => {
         if (err) { return done(err); }
 
         done(null, user);
@@ -58,23 +58,21 @@ module.exports = function __setupAuthRouter(config, passport) {
   ));
 
   // Configure passport BearerStrategy
-  passport.use(new BearerStrategy(
-    function __verifyBearer(token, done) {
-      User.findOne({ accessToken: token }, function __userFindOne(err, user) {
-        if (err) { return done(err); }
+  passport.use(new BearerStrategy((token, done) => {
+    User.findOne({ accessToken: token }, (err, user) => {
+      if (err) { return done(err); }
 
-        if (!user) {
-          return done(null, false, { message: 'Invalid token' });
-        }
+      if (!user) {
+        return done(null, false, { message: 'Invalid token' });
+      }
 
-        done(null, user, { scope: 'all' });
-      });
-    }
-  ));
+      done(null, user, { scope: 'all' });
+    });
+  }));
 
   // Receive normal form login requests at /auth/login
-  router.post('/login', function __postLogin(req, res, next) {
-    passport.authenticate('local', { session: false }, function __localAuthanticate(err, user, response) {
+  router.post('/login', (req, res, next) => {
+    passport.authenticate('local', { session: false }, (err, user, response) => {
       if (err) { return next(err); }
 
       if (!user) {
@@ -82,9 +80,8 @@ module.exports = function __setupAuthRouter(config, passport) {
       }
 
       // TODO: set token expiry?
-      var token = jwt.sign(user.email, config.secret);
-      user.accessToken = token;
-      user.save(function __userSave(err, user) {
+      user.accessToken = jwt.sign(user.email, config.secret);
+      user.save((err, user) => {
         if (err) { return next(err); }
 
         res.status(200).json({ message: 'Logged in', accessToken: user.accessToken });
@@ -107,12 +104,10 @@ module.exports = function __setupAuthRouter(config, passport) {
     passport.authenticate('facebook', {
       failureRedirect: config.loginPage,
       session: false
-    }),
-    function __getFacebookCallback(req, res, next) {
+    }), (req, res, next) => {
       // TODO: set token expiry?
-      var token = jwt.sign(req.user.email, config.secret);
-      req.user.accessToken = token;
-      req.user.save(function __userSave(err, user) {
+      req.user.accessToken = jwt.sign(req.user.email, config.secret);
+      req.user.save((err, user) => {
         if (err) { return next(err); }
 
         res.redirect(config.loginPage + '?access_token=' + user.accessToken);

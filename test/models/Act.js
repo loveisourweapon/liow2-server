@@ -10,21 +10,21 @@ var validAct = {
   deed: ObjectId(),
 };
 
-describe('Act', function __describe() {
+describe('Act', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Act.remove({}, function __actRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Act.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require user, group and deed', function __it(done) {
-      new Act().save(function __actSave(err, act) {
+    it('should require user, group and deed', (done) => {
+      new Act().save((err, act) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.user.kind', 'required');
         expect(err).to.have.deep.property('errors.group.kind', 'required');
@@ -35,8 +35,8 @@ describe('Act', function __describe() {
       });
     }); // it()
 
-    it('should save a valid Act', function __it(done) {
-      new Act(validAct).save(function __actSave(err, act) {
+    it('should save a valid Act', (done) => {
+      new Act(validAct).save((err, act) => {
         expect(err).to.not.exist;
         expect(act).to.be.an('object').and.an.instanceof(Act);
 
@@ -45,8 +45,8 @@ describe('Act', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(Act.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()

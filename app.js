@@ -20,11 +20,11 @@ var db = mongoose.connection,
     debug = require('debug')('liow2:mongo');
 mongoose.connect(config.db.url);
 
-db.on('error', function(err) {
-  debug('Connection error: ' + err.message);
+db.on('error', (err) => {
+  debug(`Connection error: ${err.message}`);
 });
-db.once('open', function() {
-  debug('Connected to ' + config.db.url);
+db.once('open', () => {
+  debug(`Connected to ${config.db.url}`);
 });
 
 // Add express middleware
@@ -57,7 +57,7 @@ app.use('/auth', auth);
 // TODO: add authentication to individual routes instead of whole routers?
 
 // Catch 404 and forward to error handler
-app.use(function __catch404(req, res, next) {
+app.use((req, res, next) => {
   var err = new Error('Not Found');
   err.status = 404;
   return next(err);
@@ -65,7 +65,7 @@ app.use(function __catch404(req, res, next) {
 
 // Error handlers
 // Development error handler, will print stacktrace
-app.use(function __errorHandlerDev(err, req, res, next) { // jshint ignore:line
+app.use((err, req, res, next) => {
   if (app.get('env') !== 'development') {
     return next(err);
   }
@@ -77,7 +77,7 @@ app.use(function __errorHandlerDev(err, req, res, next) { // jshint ignore:line
 });
 
 // Production error handler, no stacktraces leaked to user
-app.use(function __errorHandlerProd(err, req, res, next) { // jshint ignore:line
+app.use((err, req, res, next) => { // jshint ignore:line
   res.status(err.status || 400).json({
     message: err.message,
     error: {}

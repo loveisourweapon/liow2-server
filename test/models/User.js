@@ -5,15 +5,15 @@ var utils = require('../../utils/tests'),
 
 var User = require('../../models/User');
 
-describe('User', function __describe() {
+describe('User', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
+  describe('#save()', () => {
     afterEach(utils.removeUsers);
 
-    it('should require an email address and a username', function __it(done) {
-      new User().save(function __userSave(err, user) {
+    it('should require an email address and a username', (done) => {
+      new User().save((err, user) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.email.kind', 'required');
         expect(err).to.have.deep.property('errors.username.kind', 'required');
@@ -23,20 +23,18 @@ describe('User', function __describe() {
       });
     }); // it()
 
-    it('should hash password on save', function __it(done) {
-      new User(credentials).save(function __userSave(err, user) {
-        if (err) { return done(err); }
-
+    it('should hash password on save', (done) => {
+      new User(credentials).save((err, user) => {
+        expect(err).to.not.exist;
         expect(user.password).to.exist.and.not.to.equal(credentials.password);
 
         done();
       });
     }); // it()
 
-    it('should not hash if no password is set', function __it(done) {
-      new User(_.omit(credentials, 'password')).save(function __userSave(err, user) {
-        if (err) { return done(err); }
-
+    it('should not hash if no password is set', (done) => {
+      new User(_.omit(credentials, 'password')).save((err, user) => {
+        expect(err).to.not.exist;
         expect(user.password).to.not.exist;
 
         done();
@@ -44,20 +42,19 @@ describe('User', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#validatePassword()', function __describe() {
+  describe('#validatePassword()', () => {
     afterEach(utils.removeUsers);
 
-    beforeEach(function __beforeEach(done) {
+    beforeEach((done) => {
       utils.saveUser(credentials, done);
     }); // beforeEach()
 
-    it('should return true when password is correct', function __it(done) {
-      User.findOne({ email: credentials.email }, function __userFindOne(err, user) {
-        if (err) { return done(err); }
+    it('should return true when password is correct', (done) => {
+      User.findOne({ email: credentials.email }, (err, user) => {
+        expect(err).to.not.exist;
 
-        user.validatePassword(credentials.password, function __userValidatePassword(err, res) {
-          if (err) { return done(err); }
-
+        user.validatePassword(credentials.password, (err, res) => {
+          expect(err).to.not.exist;
           expect(res).to.be.true;
 
           done();
@@ -65,13 +62,12 @@ describe('User', function __describe() {
       });
     }); // it()
 
-    it('should return false when password is incorrect', function __it(done) {
-      User.findOne({ email: credentials.email }, function __userFindOne(err, user) {
-        if (err) { return done(err); }
+    it('should return false when password is incorrect', (done) => {
+      User.findOne({ email: credentials.email }, (err, user) => {
+        expect(err).to.not.exist;
 
-        user.validatePassword('wrongpassword', function __userValidatePassword(err, res) {
-          if (err) { return done(err); }
-
+        user.validatePassword('wrongpassword', (err, res) => {
+          expect(err).to.not.exist;
           expect(res).to.be.false;
 
           done();
@@ -79,17 +75,16 @@ describe('User', function __describe() {
       });
     }); // it()
 
-    it('should return false when user has no password', function __it(done) {
-      User.findOne({ email: credentials.email }, function __userFindOne(err, user) {
-        if (err) { return done(err); }
+    it('should return false when user has no password', (done) => {
+      User.findOne({ email: credentials.email }, (err, user) => {
+        expect(err).to.not.exist;
 
         user.password = void 0;
-        user.save(function __userSave(err, user) {
-          if (err) { return done(err); }
+        user.save((err, user) => {
+          expect(err).to.not.exist;
 
-          user.validatePassword(credentials.password, function __userValidatePassword(err, res) {
-            if (err) { return done(err); }
-
+          user.validatePassword(credentials.password, (err, res) => {
+            expect(err).to.not.exist;
             expect(res).to.be.false;
 
             done();
@@ -99,16 +94,15 @@ describe('User', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#findOrCreate()', function __describe() {
+  describe('#findOrCreate()', () => {
     afterEach(utils.removeUsers);
 
-    it('should return an existing user', function __it(done) {
-      new User(credentials).save(function __userSave(err, user) {
-        if (err) { return done(err); }
+    it('should return an existing user', (done) => {
+      new User(credentials).save((err, user) => {
+        expect(err).to.not.exist;
 
-        User.findOrCreate(credentials, function __userFindOrCreate(err, foundUser) {
-          if (err) { return done(err); }
-
+        User.findOrCreate(credentials, (err, foundUser) => {
+          expect(err).to.not.exist;
           expect(foundUser).to.exist.and.to.be.an.instanceof(User);
           expect(foundUser.id).to.equal(user.id);
           expect(foundUser.email).to.equal(credentials.email);
@@ -118,15 +112,13 @@ describe('User', function __describe() {
       });
     }); // it()
 
-    it('should create a new user', function __describe(done) {
-      User.findOne({ email: credentials.email }, function __userFindOne(err, user) {
-        if (err) { return done(err); }
-
+    it('should create a new user', (done) => {
+      User.findOne({ email: credentials.email }, (err, user) => {
+        expect(err).to.not.exist;
         expect(user).to.not.exist;
 
-        User.findOrCreate(credentials, function __userFindOrCreate(err, user) {
-          if (err) { return done(err); }
-
+        User.findOrCreate(credentials, (err, user) => {
+          expect(err).to.not.exist;
           expect(user).to.exist.and.to.be.an.instanceof(User);
           expect(user.email).to.equal(credentials.email);
 
@@ -136,8 +128,8 @@ describe('User', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(User.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()

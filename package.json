@@ -47,6 +47,9 @@
     "mocha-lcov-reporter": "0.0.2",
     "supertest": "^1.0.1"
   },
+  "engines": {
+    "node": ">=4.0"
+  },
   "config": {
     "blanket": {
       "pattern": [

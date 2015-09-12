@@ -9,21 +9,21 @@ var validCountry = {
   code: 'AU'
 };
 
-describe('Country', function __describe() {
+describe('Country', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Country.remove({}, function __countryRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Country.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require name and code', function __it(done) {
-      new Country().save(function __countrySave(err, country) {
+    it('should require name and code', (done) => {
+      new Country().save((err, country) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.name.kind', 'required');
         expect(err).to.have.deep.property('errors.code.kind', 'required');
@@ -33,8 +33,8 @@ describe('Country', function __describe() {
       });
     }); // it()
 
-    it('should require code to be exactly 2 characters', function __it(done) {
-      new Country(_.defaults({ code: 'toolong' }, validCountry)).save(function __countrySave(err, country) {
+    it('should require code to be exactly 2 characters', (done) => {
+      new Country(_.defaults({ code: 'toolong' }, validCountry)).save((err, country) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.code.kind', 'maxlength');
         expect(country).to.not.exist;
@@ -43,9 +43,9 @@ describe('Country', function __describe() {
       });
     }); // it()
 
-    it('should uppercase code', function __it(done) {
+    it('should uppercase code', (done) => {
       new Country(_.defaults({ code: validCountry.code.toLowerCase() }, validCountry))
-        .save(function __countrySave(err, country) {
+        .save((err, country) => {
           expect(err).to.not.exist;
           expect(country).to.have.property('code', validCountry.code.toUpperCase());
 
@@ -53,8 +53,8 @@ describe('Country', function __describe() {
         });
     }); // it()
 
-    it('should save a valid Country', function __it(done) {
-      new Country(validCountry).save(function __countrySave(err, country) {
+    it('should save a valid Country', (done) => {
+      new Country(validCountry).save((err, country) => {
         expect(err).to.not.exist;
         expect(country).to.be.an('object').and.an.instanceof(Country);
 

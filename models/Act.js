@@ -8,7 +8,7 @@ var ActSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true }
 });
 
-ActSchema.statics.getFilter = function __getFilter() {
+ActSchema.statics.getFilter = function() {
   return ['user', 'group', 'deed'];
 };
 

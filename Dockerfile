@@ -1,4 +1,4 @@
-FROM node:0.12
+FROM node:4.0
 MAINTAINER Ben Booth <bkbooth@gmail.com>
 
 EXPOSE 3000

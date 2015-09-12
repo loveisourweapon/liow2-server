@@ -11,10 +11,14 @@ var credentials = {
   password: 'password'
 };
 
-// Create a new database connection if there isn't an existing connection
+/**
+ * Create a new database connection if there isn't an existing connection
+ *
+ * @param {Function} done
+ */
 function dbConnect(done) {
   if (mongoose.connection.readyState === 0) {
-    mongoose.connect(config.db.url, function __mongooseConnect(err) {
+    mongoose.connect(config.db.url, (err) => {
       if (err) { return done(err); }
 
       done();
@@ -22,51 +26,68 @@ function dbConnect(done) {
   } else {
     done();
   }
-} // dbConnect()
+}
 
-// Disconnect database connection
+/**
+ * Disconnect database connection
+ *
+ * @param {Function} done
+ */
 function dbDisconnect(done) {
-  mongoose.disconnect(function __mongooseDisconnect(err) {
+  mongoose.disconnect((err) => {
     if (err) { return done(err); }
 
     done();
   });
-} // dbDisconnect()
+}
 
-// Save a User to the database
+/**
+ * Save a User to the database
+ *
+ * @param {Object} credentials
+ * @param {Function} done
+ */
 function saveUser(credentials, done) {
   var user = new User(credentials);
 
-  user.save(function __userSave(err, user) {
+  user.save((err, user) => {
     if (err) { return done(err); }
 
     done(null, user);
   });
-} // saveUser()
+}
 
-// Remove all Users from the database
+/**
+ * Remove all Users from the database
+ *
+ * @param {Function} done
+ */
 function removeUsers(done) {
-  User.remove({}, function __userRemove(err) {
+  User.remove({}, (err) => {
     if (err) { return done(err); }
 
     done();
   });
-} // removeUsers()
+}
 
-// Get an accessToken for testing the API
-// Connects to the database and saves a testing User
+/**
+ * Get an accessToken for testing the API
+ * Connects to the database and saves a testing User
+ *
+ * @param {Function} done
+ */
 function getAccessToken(done) {
-  dbConnect(function __dbConnect(err) {
+  dbConnect((err) => {
     if (err) { return done(err); }
 
-    saveUser(credentials, function __saveUser(err) {
+    saveUser(credentials, (err) => {
       if (err) { return done(err); }
 
       request(app)
         .post('/auth/login')
-        .send('email=' + credentials.email)
-        .send('password=' + credentials.password)
-        .end(function __requestEnd(err, res) {
+        .send(`email=${credentials.email}`)
+        .send(`password=${credentials.password}`)
+        .end((err, res) => {
           if (err) { return done(err); }
 
           if (!res.body.accessToken) {
@@ -77,13 +98,13 @@ function getAccessToken(done) {
         });
     });
   });
-} // getAccessToken()
+}
 
 module.exports = {
-  credentials: credentials,
-  dbConnect: dbConnect,
-  dbDisconnect: dbDisconnect,
-  saveUser: saveUser,
-  removeUsers: removeUsers,
-  getAccessToken: getAccessToken
+  credentials,
+  dbConnect,
+  dbDisconnect,
+  saveUser,
+  removeUsers,
+  getAccessToken
 };

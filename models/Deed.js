@@ -11,12 +11,12 @@ var DeedSchema = new mongoose.Schema({
   modified: Date
 });
 
-DeedSchema.pre('validate', function __preValidate(next) {
+DeedSchema.pre('validate', function(next) {
   this.url_title = _.kebabCase(this.title);
   next();
 });
 
-DeedSchema.statics.getFilter = function __getFilter() {
+DeedSchema.statics.getFilter = function() {
   return ['title', 'content', 'video_url', 'cover_image'];
 };
 

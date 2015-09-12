@@ -24,40 +24,40 @@ var UserSchema = new mongoose.Schema({
   modified: Date
 });
 
-UserSchema.pre('save', function __preSave(next) {
+UserSchema.pre('save', function(next) {
   // Only hash the password if it has been modified (or is new)
   if (!this.password || !this.isModified('password')) { return next(); }
 
   // Hash the password with automatic salt
-  bcrypt.hash(this.password, SALT_ROUNDS, function __bcryptHash(err, hash) {
+  bcrypt.hash(this.password, SALT_ROUNDS, (err, hash) => {
       if (err) { return next(err); }
 
-      // Override the cleartext password with the hashed one
+      // Override the clear text password with the hashed one
       this.password = hash;
       next();
-  }.bind(this));
+  });
 });
 
-UserSchema.methods.validatePassword = function __validatePassword(password, done) {
+UserSchema.methods.validatePassword = function(password, done) {
   // Return false if no password set
   if (!this.password) { return done(null, false); }
 
   // Compare the input password with the hashed password
-  bcrypt.compare(password, this.password, function __bcryptCompare(err, res) {
+  bcrypt.compare(password, this.password, (err, res) => {
       if (err) { return done(err); }
 
       done(null, res);
   });
 };
 
-UserSchema.statics.findOrCreate = function __findOrCreate(newUser, done) {
-  this.findOne({ email: newUser.email }, function __userFindOne(err, user) {
+UserSchema.statics.findOrCreate = function(newUser, done) {
+  this.findOne({ email: newUser.email }, (err, user) => {
     if (err) { return done(err); }
 
     if (!user) {
       // Provide defaults with _.extend?
       user = new this(newUser);
-      user.save(function __userSave(err, user) {
+      user.save((err, user) => {
         if (err) { return done(err); }
 
         done(null, user);
@@ -65,10 +65,10 @@ UserSchema.statics.findOrCreate = function __findOrCreate(newUser, done) {
     } else {
       done(null, user);
     }
-  }.bind(this));
+  });
 };
 
-UserSchema.statics.getFilter = function __getFilter() {
+UserSchema.statics.getFilter = function() {
   return ['email', 'username', 'password', 'name', 'picture', 'cover_image', 'country', 'groups'];
 };
 

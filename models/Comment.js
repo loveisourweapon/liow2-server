@@ -3,13 +3,25 @@ var _ = require('lodash'),
     ObjectId = mongoose.Schema.Types.ObjectId,
     oneOf = require('../utils/models').oneOf;
 
+/**
+ * Exactly one of user, group, deed, act or news should be set as the target
+ *
+ * @param {Object} target
+ *
+ * @returns {boolean|Error}
+ */
 function validateOneTarget(target) {
-  // Exactly one of user, group, deed, act or news should be set as the target
   return oneOf(target, ['user', 'group', 'deed', 'act', 'news']);
 }
 
+/**
+ * Ensure text or image field is included
+ *
+ * @param {Object} content
+ *
+ * @returns {boolean}
+ */
 function validateHasContent(content) {
-  // Ensure text or image field is included
   return _.isString(content.text) || _.isString(content.image);
 }
 
@@ -29,7 +41,7 @@ var CommentSchema = new mongoose.Schema({
   content: {
     type: {
       text: String,
-      image: String,
+      image: String
     },
     required: true,
     validate: [validateHasContent, 'Text or image should be included', 'hascontent']
@@ -38,7 +50,7 @@ var CommentSchema = new mongoose.Schema({
   modified: Date
 });
 
-CommentSchema.statics.getFilter = function __getFilter() {
+CommentSchema.statics.getFilter = function() {
   return ['user', 'content'];
 };
 

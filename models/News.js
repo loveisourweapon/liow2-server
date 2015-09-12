@@ -13,12 +13,12 @@ var NewsSchema = new mongoose.Schema({
   modified: Date
 });
 
-NewsSchema.pre('validate', function __preValidate(next) {
+NewsSchema.pre('validate', function(next) {
   this.url_title = _.kebabCase(this.title);
   next();
 });
 
-NewsSchema.statics.getFilter = function __getFilter() {
+NewsSchema.statics.getFilter = function() {
   return ['author', 'title', 'content', 'video_url', 'cover_image'];
 };
 

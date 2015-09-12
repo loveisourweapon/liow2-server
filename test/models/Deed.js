@@ -8,21 +8,21 @@ var validDeed = {
   content: 'Deed content should be a bit longer.'
 };
 
-describe('Deed', function __describe() {
+describe('Deed', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Deed.remove({}, function __deedRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Deed.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require title, url_title and content', function __it(done) {
-      new Deed().save(function __deedSave(err, deed) {
+    it('should require title, url_title and content', (done) => {
+      new Deed().save((err, deed) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.title.kind', 'required');
         expect(err).to.have.deep.property('errors.url_title.kind', 'required');
@@ -33,8 +33,8 @@ describe('Deed', function __describe() {
       });
     }); // it()
 
-    it('should create url_title as a kebab case copy of title', function __it(done) {
-      new Deed(validDeed).save(function __deedSave(err, deed) {
+    it('should create url_title as a kebab case copy of title', (done) => {
+      new Deed(validDeed).save((err, deed) => {
         expect(err).to.not.exist;
         expect(deed).to.have.property('url_title', _.kebabCase(validDeed.title));
 
@@ -42,8 +42,8 @@ describe('Deed', function __describe() {
       });
     }); // it()
 
-    it('should save a valid Deed', function __it(done) {
-      new Deed(validDeed).save(function __deedSave(err, deed) {
+    it('should save a valid Deed', (done) => {
+      new Deed(validDeed).save((err, deed) => {
         expect(err).to.not.exist;
         expect(deed).to.be.an('object').and.an.instanceof(Deed);
 
@@ -52,8 +52,8 @@ describe('Deed', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(Deed.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()

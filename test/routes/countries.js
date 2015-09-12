@@ -12,12 +12,12 @@ var validCountry = {
   code: 'AU'
 };
 
-describe('/countries', function __describe() {
+describe('/countries', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  beforeEach(function __beforeEach(done) {
-    new Country(validCountry).save(function __countrySave(err, country) {
+  beforeEach((done) => {
+    new Country(validCountry).save((err, country) => {
       if (err) { return done(err); }
 
       countryId = country._id;
@@ -26,58 +26,58 @@ describe('/countries', function __describe() {
     });
   }); // beforeEach()
 
-  afterEach(function __afterEach(done) {
-    Country.remove({}, function __countryRemove(err) {
+  afterEach((done) => {
+    Country.remove({}, (err) => {
       if (err) { return done(err); }
 
       done();
     });
   }); // afterEach()
 
-  describe('/', function __describe() {
-    it('GET should return status 200 and an array', function __it(done) {
+  describe('/', () => {
+    it('GET should return status 200 and an array', (done) => {
       request(app)
         .get('/countries')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(function __expect(res) {
+        .expect((res) => {
           expect(res.body).to.be.an('array');
         })
         .end(done);
     }); // it()
   }); // describe()
 
-  describe('/:country', function __describe() {
-    it('GET non-existent ID should return status 400 and an error message', function __it(done) {
+  describe('/:country', () => {
+    it('GET non-existent ID should return status 400 and an error message', (done) => {
       request(app)
-        .get('/countries/' + ObjectId())
+        .get(`/countries/${ObjectId()}`)
         .expect(400)
         .expect('Content-Type', /json/)
-        .expect(function __expect(res) {
+        .expect((res) => {
           expect(res.body).to.have.property('message');
         })
         .end(done);
     }); // it()
 
-    it('GET valid ID should return status 200 and a Country', function __it(done) {
+    it('GET valid ID should return status 200 and a Country', (done) => {
       request(app)
-        .get('/countries/' + countryId)
+        .get(`/countries/${countryId}`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(function __expect(res) {
-          expect(res.body).to.be.an('object').and.to.have.property('_id');
+        .expect((res) => {
+          expect(res.body).to.have.property('_id', countryId.toString());
         })
         .end(done);
     }); // it()
   }); // describe()
 
-  describe('/:country/groups', function __describe() {
-    it('GET should return status 200 and an array', function __it(done) {
+  describe('/:country/groups', () => {
+    it('GET should return status 200 and an array', (done) => {
       request(app)
-        .get('/countries/' + countryId + '/groups')
+        .get(`/countries/${countryId}/groups`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(function __expect(res) {
+        .expect((res) => {
           expect(res.body).to.be.an('array');
         })
         .end(done);

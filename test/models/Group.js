@@ -12,21 +12,21 @@ var validGroup = {
   admins: [groupOwner]
 };
 
-describe('Group', function __describe() {
+describe('Group', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Group.remove({}, function __groupRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Group.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require name, url_name, owner and admins', function __it(done) {
-      new Group().save(function __groupSave(err, group) {
+    it('should require name, url_name, owner and admins', (done) => {
+      new Group().save((err, group) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.name.kind', 'required');
         expect(err).to.have.deep.property('errors.url_name.kind', 'required');
@@ -38,8 +38,8 @@ describe('Group', function __describe() {
       });
     }); // it()
 
-    it('should require owner to be an admin', function __it(done) {
-      new Group(_.defaults({ owner: ObjectId() }, validGroup)).save(function __groupSave(err, group) {
+    it('should require owner to be an admin', (done) => {
+      new Group(_.defaults({ owner: ObjectId() }, validGroup)).save((err, group) => {
         expect(err).to.have.deep.property('errors.admins.kind', 'ownerisadmin');
         expect(group).to.not.exist;
 
@@ -47,8 +47,8 @@ describe('Group', function __describe() {
       });
     }); // it()
 
-    it('should create url_name as a kebab case copy of name', function __it(done) {
-      new Group(validGroup).save(function __groupSave(err, group) {
+    it('should create url_name as a kebab case copy of name', (done) => {
+      new Group(validGroup).save((err, group) => {
         expect(err).to.not.exist;
         expect(group).to.have.property('url_name', _.kebabCase(validGroup.name));
 
@@ -56,8 +56,8 @@ describe('Group', function __describe() {
       });
     }); // it()
 
-    it('should save a valid Group', function __it(done) {
-      new Group(validGroup).save(function __groupSave(err, group) {
+    it('should save a valid Group', (done) => {
+      new Group(validGroup).save((err, group) => {
         expect(err).to.not.exist;
         expect(group).to.be.an('object').and.an.instanceof(Group);
 
@@ -66,8 +66,8 @@ describe('Group', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(Group.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()

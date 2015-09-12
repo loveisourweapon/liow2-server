@@ -2,16 +2,28 @@ var _ = require('lodash'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
-// At least one admin
+/**
+ * At least one admin
+ *
+ * @param {ObjectId[]} admins
+ *
+ * @returns {boolean}
+ */
 function validateHasAdmin(admins) {
   return admins.length > 0;
 }
 
-// One of the admins is the owner
+/**
+ * One of the admins is the owner
+ *
+ * @param {ObjectId[]} admins
+ *
+ * @returns {boolean}
+ */
 function validateOwnerIsAdmin(admins) {
-  return !! _.find(admins, function __find(admin) {
+  return !! _.find(admins, (admin) => {
     return admin === this.owner;
-  }.bind(this));
+  });
 }
 
 var GroupSchema = new mongoose.Schema({
@@ -34,12 +46,12 @@ var GroupSchema = new mongoose.Schema({
   modified: Date
 });
 
-GroupSchema.pre('validate', function __preValidate(next) {
+GroupSchema.pre('validate', function(next) {
   this.url_name = _.kebabCase(this.name);
   next();
 });
 
-GroupSchema.statics.getFilter = function __getFilter() {
+GroupSchema.statics.getFilter = function() {
   return ['name', 'owner', 'country', 'logo', 'cover_image', 'welcome_message'];
 };
 

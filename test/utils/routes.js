@@ -10,13 +10,13 @@ var validCountry = {
   code: 'AU'
 };
 
-describe('utils/routes', function __describe() {
+describe('utils/routes', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#paramHandler()', function __describe() {
-    beforeEach(function __beforeEach(done) {
-      new Country(validCountry).save(function __countrySave(err, country) {
+  describe('#paramHandler()', () => {
+    beforeEach((done) => {
+      new Country(validCountry).save((err, country) => {
         if (err) { return done(err); }
 
         countryId = country.id;
@@ -24,17 +24,17 @@ describe('utils/routes', function __describe() {
       });
     }); // beforeEach()
 
-    afterEach(function __afterEach(done) {
-      Country.remove({}, function __countryRemove(err) {
+    afterEach((done) => {
+      Country.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should return an error when not bound to a mongoose Model', function __it(done) {
+    it('should return an error when not bound to a mongoose Model', (done) => {
       var req = {}, res = {};
-      paramHandler(req, res, function __next(err) {
+      paramHandler(req, res, (err) => {
         expect(err).to.be.an.instanceof(Error);
         expect(err.message).to.match(/mongoose\smodel/);
 
@@ -42,27 +42,27 @@ describe('utils/routes', function __describe() {
       }, countryId, 'country');
     }); // it()
 
-    it('should return an error when called with an invalid ID', function __it(done) {
+    it('should return an error when called with an invalid ID', (done) => {
       var req = {}, res = {};
-      paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, (err) => {
         expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid country');
 
         done();
       }, 'invalid', 'country');
     }); // it()
 
-    it('should return an error when called with a non-existent ID', function __it(done) {
+    it('should return an error when called with a non-existent ID', (done) => {
       var req = {}, res = {}, id = ObjectId().toString();
-      paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, (err) => {
         expect(err).to.be.an.instanceof(Error).and.have.property('message', 'Country ' + id + ' not found');
 
         done();
       }, id, 'country');
     }); // it()
 
-    it('should attach a document when given a valid ID and bound to a Model', function __it(done) {
+    it('should attach a document when given a valid ID and bound to a Model', (done) => {
       var req = {}, res = {};
-      paramHandler.call(Country, req, res, function __next(err) {
+      paramHandler.call(Country, req, res, (err) => {
         expect(err).to.not.exist;
         expect(req.country).to.be.an.instanceof(Country).and.to.have.property('id', countryId);
 

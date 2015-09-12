@@ -4,17 +4,16 @@ var utils = require('../../utils/tests'),
     mongoose = require('mongoose'),
     User = require('../../models/User');
 
-describe('utils/tests', function __describe() {
-  describe('#dbConnect()', function __describe() {
+describe('utils/tests', () => {
+  describe('#dbConnect()', () => {
     beforeEach(utils.dbDisconnect);
     afterEach(utils.dbDisconnect);
 
-    it('should return when connected to database', function __it(done) {
+    it('should return when connected to database', (done) => {
       expect(mongoose.connection.readyState).to.equal(0); // disconnected
 
-      utils.dbConnect(function __dbConnect(err) {
-        if (err) { return done(err); }
-
+      utils.dbConnect((err) => {
+        expect(err).to.not.exist;
         expect(mongoose.connection.readyState).to.equal(1); // connected
 
         done();
@@ -24,15 +23,14 @@ describe('utils/tests', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#dbDisconnect()', function __describe() {
+  describe('#dbDisconnect()', () => {
     beforeEach(utils.dbConnect);
 
-    it('should return when disconnected from database', function __it(done) {
+    it('should return when disconnected from database', (done) => {
       expect(mongoose.connection.readyState).to.equal(1); // connected
 
-      utils.dbDisconnect(function __dbDisconnect(err) {
-        if (err) { return done(err); }
-
+      utils.dbDisconnect((err) => {
+        expect(err).to.not.exist;
         expect(mongoose.connection.readyState).to.equal(0); // disconnected
 
         done();
@@ -40,15 +38,14 @@ describe('utils/tests', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#saveUser()', function __describe() {
+  describe('#saveUser()', () => {
     before(utils.dbConnect);
     afterEach(utils.removeUsers);
     after(utils.dbDisconnect);
 
-    it('should save and return a user for testing', function __it(done) {
-      utils.saveUser(credentials, function(err, user) {
-        if (err) { return done(err); }
-
+    it('should save and return a user for testing', (done) => {
+      utils.saveUser(credentials, (err, user) => {
+        expect(err).to.not.exist;
         expect(user).to.exist.and.to.have.property('email', credentials.email);
         expect(user.password).to.exist.and.not.be.empty;
 
@@ -57,21 +54,20 @@ describe('utils/tests', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#removeUsers()', function __describe() {
+  describe('#removeUsers()', () => {
     before(utils.dbConnect);
     after(utils.dbDisconnect);
 
-    beforeEach(function __beforeEach(done) {
+    beforeEach((done) => {
       utils.saveUser(credentials, done);
     }); // beforeEach()
 
-    it('should remove all users', function __it(done) {
-      utils.removeUsers(function __removeUsers(err) {
-        if (err) { return done(err); }
+    it('should remove all users', (done) => {
+      utils.removeUsers((err) => {
+        expect(err).to.not.exist;
 
-        User.find({}, function(err, users) {
-          if (err) { return done(err); }
-
+        User.find({}, (err, users) => {
+          expect(err).to.not.exist;
           expect(users).to.exist.and.to.be.empty;
 
           done();
@@ -80,19 +76,18 @@ describe('utils/tests', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getAccessToken()', function __describe() {
+  describe('#getAccessToken()', () => {
     before(utils.dbConnect);
     afterEach(utils.removeUsers);
     after(utils.dbDisconnect);
 
-    it('should return a valid accessToken for testing', function __it(done) {
-      utils.getAccessToken(function __getAccessToken(err, accessToken) {
-        if (err) { return done(err); }
-
+    it('should return a valid accessToken for testing', (done) => {
+      utils.getAccessToken((err, accessToken) => {
+        expect(err).to.not.exist;
         expect(accessToken).to.exist.and.to.be.a('string');
-        User.findOne({ accessToken: accessToken }, function __userFindOne(err, user) {
-          if (err) { return done(err); }
 
+        User.findOne({ accessToken: accessToken }, (err, user) => {
+          expect(err).to.not.exist;
           expect(user).to.exist.and.to.be.an.instanceof(User);
 
           done();

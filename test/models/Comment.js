@@ -15,21 +15,21 @@ var validComment = {
   }
 };
 
-describe('Comment', function __describe() {
+describe('Comment', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Comment.remove({}, function __commentRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Comment.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require user, target and content', function __it(done) {
-      new Comment().save(function __commentSave(err, comment) {
+    it('should require user, target and content', (done) => {
+      new Comment().save((err, comment) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.user.kind', 'required');
         expect(err).to.have.deep.property('errors.target.kind', 'required');
@@ -40,8 +40,8 @@ describe('Comment', function __describe() {
       });
     }); // it()
 
-    it('should require a single target', function __it(done) {
-      new Comment(_.defaults({ target: {} }, validComment)).save(function __commentSave(err, comment) {
+    it('should require a single target', (done) => {
+      new Comment(_.defaults({ target: {} }, validComment)).save((err, comment) => {
         expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
         expect(comment).to.not.exist;
 
@@ -52,7 +52,7 @@ describe('Comment', function __describe() {
               deed: ObjectId()
             }
           }, validComment)
-        ).save(function __commentSave(err, comment) {
+        ).save((err, comment) => {
           expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
           expect(comment).to.not.exist;
 
@@ -61,8 +61,8 @@ describe('Comment', function __describe() {
       });
     }); // it()
 
-    it('should require content text or image', function __it(done) {
-      new Comment(_.defaults({ content: {} }, validComment)).save(function __commentSave(err, comment) {
+    it('should require content text or image', (done) => {
+      new Comment(_.defaults({ content: {} }, validComment)).save((err, comment) => {
         expect(err).to.have.deep.property('errors.content.kind', 'hascontent');
         expect(comment).to.not.exist;
 
@@ -71,8 +71,8 @@ describe('Comment', function __describe() {
 
     }); // it()
 
-    it('should save a valid Comment', function __it(done) {
-      new Comment(validComment).save(function __commentSave(err, comment) {
+    it('should save a valid Comment', (done) => {
+      new Comment(validComment).save((err, comment) => {
         expect(err).to.not.exist;
         expect(comment).to.be.an('object').and.an.instanceof(Comment);
 
@@ -81,8 +81,8 @@ describe('Comment', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(Comment.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()

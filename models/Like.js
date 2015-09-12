@@ -2,8 +2,14 @@ var mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId,
     oneOf = require('../utils/models').oneOf;
 
+/**
+ * Exactly one of deed, act or news should be set as the target
+ *
+ * @param {Object} target
+ *
+ * @returns {boolean|Error}
+ */
 function validateOneTarget(target) {
-  // Exactly one of deed, act or news should be set as the target
   return oneOf(target, ['deed', 'act', 'news']);
 }
 
@@ -21,7 +27,7 @@ var LikeSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true }
 });
 
-LikeSchema.statics.getFilter = function __getFilter() {
+LikeSchema.statics.getFilter = function() {
   return ['user'];
 };
 

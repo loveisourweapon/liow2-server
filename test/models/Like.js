@@ -12,21 +12,21 @@ var validLike = {
   }
 };
 
-describe('Like', function __describe() {
+describe('Like', () => {
   before(utils.dbConnect);
   after(utils.dbDisconnect);
 
-  describe('#save()', function __describe() {
-    afterEach(function __afterEach(done) {
-      Like.remove({}, function __likeRemove(err) {
+  describe('#save()', () => {
+    afterEach((done) => {
+      Like.remove({}, (err) => {
         if (err) { return done(err); }
 
         done();
       });
     }); // afterEach()
 
-    it('should require user and target', function __it(done) {
-      new Like().save(function __likeSave(err, like) {
+    it('should require user and target', (done) => {
+      new Like().save((err, like) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.user.kind', 'required');
         expect(err).to.have.deep.property('errors.target.kind', 'required');
@@ -36,8 +36,8 @@ describe('Like', function __describe() {
       });
     }); // it()
 
-    it('should require a single target', function __it(done) {
-      new Like(_.defaults({ target: {} }, validLike)).save(function __likeSave(err, like) {
+    it('should require a single target', (done) => {
+      new Like(_.defaults({ target: {} }, validLike)).save((err, like) => {
         expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
         expect(like).to.not.exist;
 
@@ -48,7 +48,7 @@ describe('Like', function __describe() {
               act: ObjectId()
             }
           }, validLike)
-        ).save(function __likeSave(err, like) {
+        ).save((err, like) => {
           expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
           expect(like).to.not.exist;
 
@@ -57,8 +57,8 @@ describe('Like', function __describe() {
       });
     }); // it()
 
-    it('should save a valid Like', function __it(done) {
-      new Like(validLike).save(function __likeSave(err, like) {
+    it('should save a valid Like', (done) => {
+      new Like(validLike).save((err, like) => {
         expect(err).to.not.exist;
         expect(like).to.be.an('object').and.an.instanceof(Like);
 
@@ -67,8 +67,8 @@ describe('Like', function __describe() {
     }); // it()
   }); // describe()
 
-  describe('#getFilter()', function __describe() {
-    it('should return an array of strings', function __it() {
+  describe('#getFilter()', () => {
+    it('should return an array of strings', () => {
       expect(Like.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()
