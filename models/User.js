@@ -2,7 +2,7 @@ var bcrypt = require('bcrypt'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
-var SALT_ROUNDS = 10;
+const SALT_ROUNDS = 10;
 
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
@@ -30,11 +30,11 @@ UserSchema.pre('save', function(next) {
 
   // Hash the password with automatic salt
   bcrypt.hash(this.password, SALT_ROUNDS, (err, hash) => {
-      if (err) { return next(err); }
+    if (err) { return next(err); }
 
-      // Override the clear text password with the hashed one
-      this.password = hash;
-      next();
+    // Override the clear text password with the hashed one
+    this.password = hash;
+    next();
   });
 });
 
@@ -44,9 +44,9 @@ UserSchema.methods.validatePassword = function(password, done) {
 
   // Compare the input password with the hashed password
   bcrypt.compare(password, this.password, (err, res) => {
-      if (err) { return done(err); }
+    if (err) { return done(err); }
 
-      done(null, res);
+    done(null, res);
   });
 };
 

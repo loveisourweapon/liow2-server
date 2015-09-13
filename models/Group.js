@@ -21,9 +21,11 @@ function validateHasAdmin(admins) {
  * @returns {boolean}
  */
 function validateOwnerIsAdmin(admins) {
-  return !! _.find(admins, (admin) => {
-    return admin === this.owner;
-  });
+  return Boolean(
+    _.find(admins, (admin) => {
+      return admin === this.owner;
+    })
+  );
 }
 
 var GroupSchema = new mongoose.Schema({
