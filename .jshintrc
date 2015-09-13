@@ -1,5 +1,17 @@
 {
   "node": true,
+  "mocha": true,
+  "bitwise": true,
   "curly": true,
+  "esnext": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "expr": true,
+  "forin": true,
+  "latedef": true,
+  "noarg": true,
+  "nonew": true,
+  "quotmark": "single",
+  "undef": true,
   "unused": true
 }

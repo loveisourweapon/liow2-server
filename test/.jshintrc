@@ -1,7 +1,0 @@
-{
-  "node": true,
-  "mocha": true,
-  "curly": true,
-  "unused": true,
-  "expr": true
-}
