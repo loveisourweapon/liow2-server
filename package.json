@@ -50,6 +50,11 @@
   "engines": {
     "node": ">=4.0"
   },
+  "apidoc": {
+    "name": "LIOW API Server",
+    "title": "LIOW API Server",
+    "url": "https://api.loveisourweapon.com/v1"
+  },
   "config": {
     "blanket": {
       "pattern": [
@@ -59,7 +64,8 @@
         "bin/",
         "config/",
         "node_modules/",
-        "test/"
+        "test/",
+        "public/"
       ]
     }
   }

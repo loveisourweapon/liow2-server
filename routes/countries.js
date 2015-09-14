@@ -9,17 +9,33 @@ var Country = require('../models/Country'),
 router.param('country', route.paramHandler.bind(Country));
 
 /**
- * GET /countries
+ * @api {get} /countries List countries
+ * @apiName GetCountries
+ * @apiGroup Countries
+ *
+ * @apiUse GetCountriesSuccess
  */
 router.get('/', route.getAll.bind(Country));
 
 /**
- * GET /countries/:country
+ * @api {get} /countries/:country Get country
+ * @apiName GetCountry
+ * @apiGroup Countries
+ *
+ * @apiParam {string} country Unique country ObjectId
+ *
+ * @apiUse GetCountrySuccess
  */
 router.get('/:country', _.partialRight(route.getByParam, 'country'));
 
 /**
- * GET /countries/:country/groups
+ * @api {get} /countries/:country/groups Get country groups
+ * @apiName GetCountryGroups
+ * @apiGroup Countries
+ *
+ * @apiParam {string} country Unique country ObjectId
+ *
+ * @apiSuccess {Group[]} groups Collection of groups belonging to a country
  */
 router.get('/:country/groups', (req, res, next) => {
   Group.find({ country: req.country._id }, (err, groups) => {
