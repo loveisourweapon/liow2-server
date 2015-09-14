@@ -1,16 +1,16 @@
 var _ = require('lodash'),
     express = require('express'),
     router = express.Router(),
-    paramHandler = require('../utils/routes').paramHandler;
+    route = require('../utils/route');
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Deed = require('../models/Deed'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('deed', paramHandler.bind(Deed));
-router.param('like', paramHandler.bind(Like));
-router.param('comment', paramHandler.bind(Comment));
+router.param('deed', route.paramHandler.bind(Deed));
+router.param('like', route.paramHandler.bind(Like));
+router.param('comment', route.paramHandler.bind(Comment));
 
 /**
  * GET /deeds

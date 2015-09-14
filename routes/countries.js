@@ -1,29 +1,22 @@
-var express = require('express'),
+var _ = require('lodash'),
+    express = require('express'),
     router = express.Router(),
-    paramHandler = require('../utils/routes').paramHandler;
+    route = require('../utils/route');
 
 var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country', paramHandler.bind(Country));
+router.param('country', route.paramHandler.bind(Country));
 
 /**
  * GET /countries
  */
-router.get('/', (req, res, next) => {
-  Country.find((err, countries) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(countries);
-  });
-});
+router.get('/', route.getAll.bind(Country));
 
 /**
  * GET /countries/:country
  */
-router.get('/:country', (req, res) => {
-  res.status(200).json(req.country);
-});
+router.get('/:country', _.partialRight(route.getByParam, 'country'));
 
 /**
  * GET /countries/:country/groups

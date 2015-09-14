@@ -1,27 +1,21 @@
 var _ = require('lodash'),
     express = require('express'),
     router = express.Router(),
-    paramHandler = require('../utils/routes').paramHandler;
+    route = require('../utils/route');
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Act = require('../models/Act'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('act', paramHandler.bind(Act));
-router.param('like', paramHandler.bind(Like));
-router.param('comment', paramHandler.bind(Comment));
+router.param('act', route.paramHandler.bind(Act));
+router.param('like', route.paramHandler.bind(Like));
+router.param('comment', route.paramHandler.bind(Comment));
 
 /**
  * GET /acts
  */
-router.get('/', (req, res, next) => {
-  Act.find((err, acts) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(acts);
-  });
-});
+router.get('/', route.getAll.bind(Act));
 
 /**
  * POST /acts
@@ -42,20 +36,12 @@ router.post('/', (req, res, next) => {
 /**
  * GET /acts/:act
  */
-router.get('/:act', (req, res) => {
-  res.status(200).json(req.act);
-});
+router.get('/:act', _.partialRight(route.getByParam, 'act'));
 
 /**
  * DELETE /acts/:act
  */
-router.delete('/:act', (req, res, next) => {
-  req.act.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:act', _.partialRight(route.deleteByParam, 'act'));
 
 /**
  * GET /acts/:act/likes
@@ -86,13 +72,7 @@ router.post('/:act/likes', (req, res, next) => {
 /**
  * DELETE /acts:act/likes/:like
  */
-router.delete('/:act/likes/:like', (req, res, next) => {
-  req.like.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:act/likes/:like', _.partialRight(route.deleteByParam, 'like'));
 
 /**
  * GET /acts/:act/comments
@@ -123,26 +103,11 @@ router.post('/:act/comments', (req, res, next) => {
 /**
  * PUT /acts/:act/comments/:comment
  */
-router.put('/:act/comments/:comment', (req, res, next) => {
-  req.body = _.pick(req.body, Comment.getFilter());
-  req.body.modified = new Date();
-
-  Comment.findByIdAndUpdate(req.comment._id, req.body, { new: true }, (err, comment) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comment);
-  });
-});
+router.put('/:act/comments/:comment', _.partialRight(route.putByParam, 'comment').bind(Comment));
 
 /**
  * DELETE /acts/:act/comments/:comment
  */
-router.delete('/:act/comments/:comment', (req, res, next) => {
-  req.comment.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:act/comments/:comment', _.partialRight(route.deleteByParam, 'comment'));
 
 module.exports = router;
