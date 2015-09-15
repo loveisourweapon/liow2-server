@@ -7,7 +7,7 @@
   "scripts": {
     "start": "./bin/www",
     "test": "mocha",
-    "test-cov": "mocha --require blanket --reporter mocha-lcov-reporter"
+    "test-cov": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R min"
   },
   "repository": {
     "type": "git",
@@ -41,9 +41,8 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "blanket": "^1.1.7",
-    "mocha-lcov-reporter": "0.0.2",
     "chai": "^3.2.0",
+    "istanbul": "^0.3.20",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0"
   },
@@ -54,19 +53,5 @@
     "name": "LIOW API Server",
     "title": "LIOW API Server",
     "url": "https://api.loveisourweapon.com/v1"
-  },
-  "config": {
-    "blanket": {
-      "pattern": [
-        ""
-      ],
-      "data-cover-never": [
-        "bin/",
-        "config/",
-        "node_modules/",
-        "test/",
-        "public/"
-      ]
-    }
   }
 }
