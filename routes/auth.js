@@ -36,9 +36,9 @@ module.exports = function(config, passport) {
 
   // Configure passport FacebookStrategy
   passport.use(new FacebookStrategy({
-      clientID: config.auth.facebook.clientID,
-      clientSecret: config.auth.facebook.clientSecret,
-      callbackURL: config.auth.facebook.callbackURL,
+      clientID: process.env.LIOW_AUTH_FACEBOOK_CLIENT_ID || config.auth.facebook.clientID,
+      clientSecret: process.env.LIOW_AUTH_FACEBOOK_CLIENT_SECRET || config.auth.facebook.clientSecret,
+      callbackURL: process.env.LIOW_AUTH_FACEBOOK_CALLBACK_URL || config.auth.facebook.callbackURL,
       enableProof: false // TODO: Investigate this
     }, (accessToken, refreshToken, profile, done) => {
       User.findOrCreate({
@@ -80,7 +80,7 @@ module.exports = function(config, passport) {
       }
 
       // TODO: set token expiry?
-      user.accessToken = jwt.sign(user.email, config.secret);
+      user.accessToken = jwt.sign(user.email, process.env.LIOW_SECRET || config.secret);
       user.save((err, user) => {
         if (err) { return next(err); }
 
@@ -102,15 +102,15 @@ module.exports = function(config, passport) {
   // authentication has failed.
   router.get('/facebook/callback',
     passport.authenticate('facebook', {
-      failureRedirect: config.loginPage,
+      failureRedirect: '/',
       session: false
     }), (req, res, next) => {
       // TODO: set token expiry?
-      req.user.accessToken = jwt.sign(req.user.email, config.secret);
+      req.user.accessToken = jwt.sign(req.user.email, process.env.LIOW_SECRET || config.secret);
       req.user.save((err, user) => {
         if (err) { return next(err); }
 
-        res.redirect(config.loginPage + '?access_token=' + user.accessToken);
+        res.redirect(`/?access_token=${user.accessToken}`);
       });
     }
   );

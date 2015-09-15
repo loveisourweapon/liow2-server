@@ -1,4 +1,4 @@
-var config = require('../config/config'),
+var config = require('../config'),
     request = require('supertest'),
     mongoose = require('mongoose'),
     app = require('../app'),

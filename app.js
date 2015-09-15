@@ -1,4 +1,4 @@
-var config = require('./config/config'),
+var config = require('./config'),
     express = require('express'),
     app = express(),
     logger = require('morgan'),
@@ -17,14 +17,15 @@ var auth = require('./routes/auth')(config, passport),
 
 // Connect to database
 var db = mongoose.connection,
+    dbUrl = process.env.LIOW_DB_URL || config.db.url,
     debug = require('debug')('liow2:mongo');
-mongoose.connect(config.db.url);
+mongoose.connect(dbUrl);
 
 db.on('error', (err) => {
   debug(`Connection error: ${err.message}`);
 });
 db.once('open', () => {
-  debug(`Connected to ${config.db.url}`);
+  debug(`Connected to ${dbUrl}`);
 });
 
 // Add express middleware
@@ -34,8 +35,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(passport.initialize());
 
-// Ignore logging for testing and Travis CI environments
-if (app.get('env') !== 'testing' && app.get('env') !== 'travis') {
+// Ignore logging for testing environments
+if (app.get('env') !== 'testing') {
   app.use(logger('dev'));
 }
 

@@ -19,6 +19,7 @@ test:
     - .:/usr/src/app
   environment:
     - NODE_ENV=testing
+    - LIOW_DB_URL=mongodb://mongo/liow2-test
 
 mongo:
   image: mongo

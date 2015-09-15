@@ -17,8 +17,9 @@ describe('Error handler', () => {
   }); // it()
 
   describe('development', () => {
+    var appEnv = app.get('env');
     before(() => { app.set('env', 'development'); });
-    after(() => { app.set('env', process.env.NODE_ENV); });
+    after(() => { app.set('env', appEnv); });
 
     it('should return a non-empty error object', (done) => {
       request(app)
@@ -34,8 +35,9 @@ describe('Error handler', () => {
   }); // describe()
 
   describe('production', () => {
+    var appEnv = app.get('env');
     before(() => { app.set('env', 'production'); });
-    after(() => { app.set('env', process.env.NODE_ENV); });
+    after(() => { app.set('env', appEnv); });
 
     it('should return an empty error object', (done) => {
       request(app)

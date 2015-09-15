@@ -6,7 +6,7 @@ services:
   - mongodb
 
 env:
-  - NODE_ENV=travis
+  - NODE_ENV=testing LIOW_DB_URL=mongodb://localhost/liow2
 
 addons:
   apt:
@@ -23,6 +23,9 @@ install:
   - export CXX=g++-4.8
   - $CXX --version
   - npm install
+
+before_script:
+  - cp config.example.js config.js
 
 after_success:
   - "npm install -g coveralls && npm run -s test-cov | coveralls"

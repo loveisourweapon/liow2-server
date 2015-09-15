@@ -43,4 +43,4 @@ node_modules
 npm-debug.log
 
 # Local config overrides
-config.local.js
+/config.js
