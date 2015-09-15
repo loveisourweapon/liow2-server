@@ -1,0 +1,8 @@
+languages:
+  JavaScript: true
+exclude_paths:
+  - "config.example.js"
+  - "bin/*"
+  - "test/*"
+  - "public/*"
+  - "node_modules/*"
