@@ -15,9 +15,9 @@ var ObjectId = require('mongoose').Types.ObjectId,
  *   HTTP/1.1 204 No Content
  */
 
-router.param('act', route.paramHandler.bind(Act));
-router.param('like', route.paramHandler.bind(Like));
-router.param('comment', route.paramHandler.bind(Comment));
+router.param('act', _.partialRight(route.paramHandler, Act));
+router.param('like', _.partialRight(route.paramHandler, Like));
+router.param('comment', _.partialRight(route.paramHandler, Comment));
 
 /**
  * @api {get} /acts List acts
@@ -26,7 +26,7 @@ router.param('comment', route.paramHandler.bind(Comment));
  *
  * @apiUse GetActsSuccess
  */
-router.get('/', route.getAll.bind(Act));
+router.get('/', _.partialRight(route.getAll, Act));
 
 /**
  * @api {post} /acts Create act
@@ -150,7 +150,7 @@ router.post('/:act/comments', (req, res, next) => {
  *
  * @apiUse GetCommentSuccess
  */
-router.put('/:act/comments/:comment', _.partialRight(route.putByParam, 'comment').bind(Comment));
+router.put('/:act/comments/:comment', _.partialRight(route.putByParam, Comment, 'comment'));
 
 /**
  * @api {delete} /acts/:act/comments/:comment Remove act comment

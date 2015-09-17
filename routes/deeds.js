@@ -8,20 +8,14 @@ var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('deed', route.paramHandler.bind(Deed));
-router.param('like', route.paramHandler.bind(Like));
-router.param('comment', route.paramHandler.bind(Comment));
+router.param('deed', _.partialRight(route.paramHandler, Deed));
+router.param('like', _.partialRight(route.paramHandler, Like));
+router.param('comment', _.partialRight(route.paramHandler, Comment));
 
 /**
  * GET /deeds
  */
-router.get('/', (req, res, next) => {
-  Deed.find((err, deeds) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(deeds);
-  });
-});
+router.get('/', _.partialRight(route.getAll, Deed));
 
 /**
  * POST /deeds
@@ -39,34 +33,17 @@ router.post('/', (req, res, next) => {
 /**
  * GET /deeds/:deed
  */
-router.get('/:deed', (req, res) => {
-  res.status(200).json(req.deed);
-});
+router.get('/:deed', _.partialRight(route.getByParam, 'deed'));
 
 /**
  * PUT /deeds/:deed
  */
-router.put('/:deed', (req, res, next) => {
-  req.body = _.pick(req.body, Deed.getFilter());
-  req.body.modified = new Date();
-
-  Deed.findByIdAndUpdate(req.deed._id, req.body, { new: true }, (err, deed) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(deed);
-  });
-});
+router.put('/:deed', _.partialRight(route.putByParam, Deed, 'deed'));
 
 /**
  * DELETE /deeds/:deed
  */
-router.delete('/:deed', (req, res, next) => {
-  req.deed.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:deed', _.partialRight(route.deleteByParam, 'deed'));
 
 /**
  * GET /deeds/:deed/likes
@@ -97,13 +74,7 @@ router.post('/:deed/likes', (req, res, next) => {
 /**
  * DELETE /deeds/:deed/likes/:like
  */
-router.delete('/:deed/likes/:like', (req, res, next) => {
-  req.like.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:deed/likes/:like', _.partialRight(route.deleteByParam, 'like'));
 
 /**
  * GET /deeds/:deed/comments
@@ -134,26 +105,11 @@ router.post('/:deed/comments', (req, res, next) => {
 /**
  * PUT /deeds/:deed/comments/:comment
  */
-router.put('/:deed/comments/:comment', (req, res, next) => {
-  req.body = _.pick(req.body, Comment.getFilter());
-  req.body.modified = new Date();
-
-  Comment.findByIdAndUpdate(req.comment._id, req.body, { new: true }, (err, comment) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comment);
-  });
-});
+router.put('/:deed/comments/:comment', _.partialRight(route.putByParam, Comment, 'comment'));
 
 /**
  * DELETE /deeds/:deed/comments/:comment
  */
-router.delete('/:deed/comments/:comment', (req, res, next) => {
-  req.comment.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:deed/comments/:comment', _.partialRight(route.deleteByParam, 'comment'));
 
 module.exports = router;

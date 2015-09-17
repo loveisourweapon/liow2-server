@@ -6,7 +6,7 @@ var _ = require('lodash'),
 var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country', route.paramHandler.bind(Country));
+router.param('country', _.partialRight(route.paramHandler, Country));
 
 /**
  * @api {get} /countries List countries
@@ -15,7 +15,7 @@ router.param('country', route.paramHandler.bind(Country));
  *
  * @apiUse GetCountriesSuccess
  */
-router.get('/', route.getAll.bind(Country));
+router.get('/', _.partialRight(route.getAll, Country));
 
 /**
  * @api {get} /countries/:country Get country

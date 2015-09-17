@@ -8,20 +8,14 @@ var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('news', route.paramHandler.bind(News));
-router.param('like', route.paramHandler.bind(Like));
-router.param('comment', route.paramHandler.bind(Comment));
+router.param('news', _.partialRight(route.paramHandler, News));
+router.param('like', _.partialRight(route.paramHandler, Like));
+router.param('comment', _.partialRight(route.paramHandler, Comment));
 
 /**
  * GET /news
  */
-router.get('/', (req, res, next) => {
-  News.find((err, news) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(news);
-  });
-});
+router.get('/', _.partialRight(route.getAll, News));
 
 /**
  * POST /news
@@ -40,34 +34,17 @@ router.post('/', (req, res, next) => {
 /**
  * GET /news/:news
  */
-router.get('/:news', (req, res) => {
-  res.status(200).json(req.news);
-});
+router.get('/:news', _.partialRight(route.getByParam, 'news'));
 
 /**
  * PUT /news/:news
  */
-router.put('/:news', (req, res, next) => {
-  req.body = _.pick(req.body, News.getFilter());
-  req.body.modified = new Date();
-
-  News.findByIdAndUpdate(req.news._id, req.body, { new: true }, (err, news) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(news);
-  });
-});
+router.put('/:news', _.partialRight(route.putByParam, News, 'news'));
 
 /**
  * DELETE /news/:news
  */
-router.delete('/:news', (req, res, next) => {
-  req.news.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:news', _.partialRight(route.deleteByParam, 'news'));
 
 /**
  * GET /news/:news/likes
@@ -98,13 +75,7 @@ router.post('/:news/likes', (req, res, next) => {
 /**
  * DELETE /news/:news/likes/:like
  */
-router.delete('/:news/likes/:like', (req, res, next) => {
-  req.like.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:news/likes/:like', _.partialRight(route.deleteByParam, 'like'));
 
 /**
  * GET /news/:news/comments
@@ -135,26 +106,11 @@ router.post('/:news/comments', (req, res, next) => {
 /**
  * PUT /news/:news/comments/:comment
  */
-router.put('/:news/comments/:comment', (req, res, next) => {
-  req.body = _.pick(req.body, Comment.getFilter());
-  req.body.modified = new Date();
-
-  Comment.findByIdAndUpdate(req.comment._id, req.body, { new: true }, (err, comment) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comment);
-  });
-});
+router.put('/:news/comments/:comment', _.partialRight(route.putByParam, Comment, 'comment'));
 
 /**
  * DELETE /news/:news/comments/:comment
  */
-router.delete('/:news/comments/:comment', (req, res, next) => {
-  req.comment.remove((err) => {
-    if (err) { return next(err); }
-
-    res.status(204).send();
-  });
-});
+router.delete('/:news/comments/:comment', _.partialRight(route.deleteByParam, 'comment'));
 
 module.exports = router;
