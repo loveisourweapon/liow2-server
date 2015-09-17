@@ -1,17 +1,7 @@
 var _ = require('lodash'),
+    utils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
-
-/**
- * At least one admin
- *
- * @param {ObjectId[]} admins
- *
- * @returns {boolean}
- */
-function validateHasAdmin(admins) {
-  return admins.length > 0;
-}
 
 /**
  * One of the admins is the owner
@@ -21,11 +11,9 @@ function validateHasAdmin(admins) {
  * @returns {boolean}
  */
 function validateOwnerIsAdmin(admins) {
-  return Boolean(
-    _.find(admins, (admin) => {
-      return admin === this.owner;
-    })
-  );
+  return _.some(admins, (admin) => {
+    return admin === this.owner;
+  });
 }
 
 var GroupSchema = new mongoose.Schema({
@@ -36,7 +24,7 @@ var GroupSchema = new mongoose.Schema({
     type: [{ type: ObjectId, ref: 'User' }],
     required: true,
     validate: [
-      { validator: validateHasAdmin, msg: 'An admin user is required', type: 'hasadmin' },
+      { validator: utils.hasOne, msg: 'An admin user is required', type: 'hasadmin' },
       { validator: validateOwnerIsAdmin, msg: 'The owner needs to be an admin', type: 'ownerisadmin' }
     ]
   },

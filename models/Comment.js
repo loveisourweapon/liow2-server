@@ -1,18 +1,7 @@
 var _ = require('lodash'),
+    utils = require('../utils/models'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
-    oneOf = require('../utils/models').oneOf;
-
-/**
- * Exactly one of user, group, deed, act or news should be set as the target
- *
- * @param {Object} target
- *
- * @returns {boolean|Error}
- */
-function validateOneTarget(target) {
-  return oneOf(target, ['user', 'group', 'deed', 'act', 'news']);
-}
+    ObjectId = mongoose.Schema.Types.ObjectId;
 
 /**
  * Ensure text or image field is included
@@ -36,7 +25,11 @@ var CommentSchema = new mongoose.Schema({
       news: { type: ObjectId, ref: 'News' }
     },
     required: true,
-    validate: [validateOneTarget, 'One target should be set', 'onetarget']
+    validate: [
+      _.partialRight(utils.oneOf, ['user', 'group', 'deed', 'act', 'news']),
+      'One target should be set',
+      'onetarget'
+    ]
   },
   content: {
     type: {

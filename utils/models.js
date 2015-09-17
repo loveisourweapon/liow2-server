@@ -20,6 +20,19 @@ module.exports = {
         _.isEmpty(_.omit(object, property))
       );
     });
+  },
+
+  /**
+   * Check that an array has at least one element
+   *
+   * @param {Array} property
+   *
+   * @returns {boolean|Error}
+   */
+  hasOne(property) {
+    if (!_.isArray(property)) { return new Error('Property should be an Array'); }
+
+    return property.length > 0;
   }
 
 };

@@ -1,19 +1,9 @@
-var bcrypt = require('bcrypt'),
+var utils = require('../utils/models'),
+    bcrypt = require('bcrypt'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
 const SALT_ROUNDS = 10;
-
-/**
- * At least one group
- *
- * @param {ObjectId[]} groups
- *
- * @returns {boolean}
- */
-function validateHasGroup(groups) {
-  return groups.length > 0;
-}
 
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
@@ -31,7 +21,7 @@ var UserSchema = new mongoose.Schema({
   groups: {
     type: [{ type: ObjectId, ref: 'Group' }],
     required: true,
-    validate: [validateHasGroup, 'At least one group is required', 'hasgroup']
+    validate: [utils.hasOne, 'At least one group is required', 'hasgroup']
   },
   superAdmin: { type: Boolean, default: false, required: true },
   accessToken: String,
