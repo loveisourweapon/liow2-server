@@ -21,11 +21,11 @@ describe('Deed', () => {
       });
     }); // afterEach()
 
-    it('should require title, url_title and content', (done) => {
+    it('should require title, urlTitle and content', (done) => {
       new Deed().save((err, deed) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.title.kind', 'required');
-        expect(err).to.have.deep.property('errors.url_title.kind', 'required');
+        expect(err).to.have.deep.property('errors.urlTitle.kind', 'required');
         expect(err).to.have.deep.property('errors.content.kind', 'required');
         expect(deed).to.not.exist;
 
@@ -33,10 +33,10 @@ describe('Deed', () => {
       });
     }); // it()
 
-    it('should create url_title as a kebab case copy of title', (done) => {
+    it('should create urlTitle as a kebab case copy of title', (done) => {
       new Deed(validDeed).save((err, deed) => {
         expect(err).to.not.exist;
-        expect(deed).to.have.property('url_title', _.kebabCase(validDeed.title));
+        expect(deed).to.have.property('urlTitle', _.kebabCase(validDeed.title));
 
         done();
       });

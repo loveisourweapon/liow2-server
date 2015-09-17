@@ -5,21 +5,21 @@ var _ = require('lodash'),
 var NewsSchema = new mongoose.Schema({
   author: { type: ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
-  url_title: { type: String, required: true, index: { unique: true } },
+  urlTitle: { type: String, required: true, index: { unique: true } },
   content: { type: String, required: true },
-  video_url: String,
-  cover_image: String,
+  videoUrl: String,
+  coverImage: String,
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
 
 NewsSchema.pre('validate', function(next) {
-  this.url_title = _.kebabCase(this.title);
+  this.urlTitle = _.kebabCase(this.title);
   next();
 });
 
 NewsSchema.statics.getFilter = function() {
-  return ['author', 'title', 'content', 'video_url', 'cover_image'];
+  return ['author', 'title', 'content', 'videoUrl', 'coverImage'];
 };
 
 module.exports = mongoose.model('News', NewsSchema);

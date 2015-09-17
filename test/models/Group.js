@@ -25,11 +25,11 @@ describe('Group', () => {
       });
     }); // afterEach()
 
-    it('should require name, url_name, owner and admins', (done) => {
+    it('should require name, urlName, owner and admins', (done) => {
       new Group().save((err, group) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.name.kind', 'required');
-        expect(err).to.have.deep.property('errors.url_name.kind', 'required');
+        expect(err).to.have.deep.property('errors.urlName.kind', 'required');
         expect(err).to.have.deep.property('errors.owner.kind', 'required');
         expect(err).to.have.deep.property('errors.admins.kind', 'required');
         expect(group).to.not.exist;
@@ -47,10 +47,10 @@ describe('Group', () => {
       });
     }); // it()
 
-    it('should create url_name as a kebab case copy of name', (done) => {
+    it('should create urlName as a kebab case copy of name', (done) => {
       new Group(validGroup).save((err, group) => {
         expect(err).to.not.exist;
-        expect(group).to.have.property('url_name', _.kebabCase(validGroup.name));
+        expect(group).to.have.property('urlName', _.kebabCase(validGroup.name));
 
         done();
       });

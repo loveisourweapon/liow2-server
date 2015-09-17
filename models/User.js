@@ -10,7 +10,7 @@ var UserSchema = new mongoose.Schema({
   password: String, // validate password or facebook.id set
   name: String,
   picture: String,
-  cover_image: String,
+  coverImage: String,
   facebook: {
     id: Number, // validate password or facebook.id set
     accessToken: String,
@@ -18,7 +18,7 @@ var UserSchema = new mongoose.Schema({
   },
   country: { type: ObjectId, ref: 'Country' },
   groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one group?
-  admin: { type: Boolean, default: false, required: true },
+  superAdmin: { type: Boolean, default: false, required: true },
   accessToken: String,
   created: { type: Date, default: Date.now, required: true },
   modified: Date
@@ -69,7 +69,7 @@ UserSchema.statics.findOrCreate = function(newUser, done) {
 };
 
 UserSchema.statics.getFilter = function() {
-  return ['email', 'username', 'password', 'name', 'picture', 'cover_image', 'country', 'groups'];
+  return ['email', 'username', 'password', 'name', 'picture', 'coverImage', 'country', 'groups'];
 };
 
 module.exports = mongoose.model('User', UserSchema);

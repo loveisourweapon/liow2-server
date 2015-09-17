@@ -3,21 +3,21 @@ var _ = require('lodash'),
 
 var DeedSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  url_title: { type: String, required: true, index: { unique: true } },
+  urlTitle: { type: String, required: true, index: { unique: true } },
   content: { type: String, required: true },
-  video_url: String,
-  cover_image: String,
+  videoUrl: String,
+  coverImage: String,
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
 
 DeedSchema.pre('validate', function(next) {
-  this.url_title = _.kebabCase(this.title);
+  this.urlTitle = _.kebabCase(this.title);
   next();
 });
 
 DeedSchema.statics.getFilter = function() {
-  return ['title', 'content', 'video_url', 'cover_image'];
+  return ['title', 'content', 'videoUrl', 'coverImage'];
 };
 
 module.exports = mongoose.model('Deed', DeedSchema);

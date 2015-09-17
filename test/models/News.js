@@ -24,12 +24,12 @@ describe('News', () => {
       });
     }); // afterEach()
 
-    it('should require author, title, url_title and content', (done) => {
+    it('should require author, title, urlTitle and content', (done) => {
       new News().save((err, news) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.author.kind', 'required');
         expect(err).to.have.deep.property('errors.title.kind', 'required');
-        expect(err).to.have.deep.property('errors.url_title.kind', 'required');
+        expect(err).to.have.deep.property('errors.urlTitle.kind', 'required');
         expect(err).to.have.deep.property('errors.content.kind', 'required');
         expect(news).to.not.exist;
 
@@ -37,10 +37,10 @@ describe('News', () => {
       });
     }); // it()
 
-    it('should create url_title as a kebab case copy of title', (done) => {
+    it('should create urlTitle as a kebab case copy of title', (done) => {
       new News(validNews).save((err, news) => {
         expect(err).to.not.exist;
-        expect(news).to.have.property('url_title', _.kebabCase(validNews.title));
+        expect(news).to.have.property('urlTitle', _.kebabCase(validNews.title));
 
         done();
       });
