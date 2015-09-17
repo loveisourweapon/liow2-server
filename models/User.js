@@ -4,6 +4,17 @@ var bcrypt = require('bcrypt'),
 
 const SALT_ROUNDS = 10;
 
+/**
+ * At least one group
+ *
+ * @param {ObjectId[]} groups
+ *
+ * @returns {boolean}
+ */
+function validateHasGroup(groups) {
+  return groups.length > 0;
+}
+
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
   username: { type: String, index: { unique: true }, required: true },
@@ -17,11 +28,16 @@ var UserSchema = new mongoose.Schema({
     refreshToken: String
   },
   country: { type: ObjectId, ref: 'Country' },
-  groups: [{ type: ObjectId, ref: 'Group' }], // validate at least one group?
+  groups: {
+    type: [{ type: ObjectId, ref: 'Group' }],
+    required: true,
+    validate: [validateHasGroup, 'At least one group is required', 'hasgroup']
+  },
   superAdmin: { type: Boolean, default: false, required: true },
   accessToken: String,
   created: { type: Date, default: Date.now, required: true },
-  modified: Date
+  modified: Date,
+  lastSeen: Date
 });
 
 UserSchema.pre('save', function(next) {

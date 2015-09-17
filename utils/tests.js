@@ -1,14 +1,17 @@
 var config = require('../config'),
     request = require('supertest'),
     mongoose = require('mongoose'),
-    app = require('../app'),
-    User = require('../models/User');
+    app = require('../app');
+
+var User = require('../models/User'),
+    ObjectId = require('mongoose').Types.ObjectId;
 
 // Default login credentials
 var credentials = {
   email: 'test@example.com',
   username: 'username',
-  password: 'password'
+  password: 'password',
+  groups: [ObjectId()]
 };
 
 /**

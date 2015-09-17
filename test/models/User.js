@@ -12,11 +12,12 @@ describe('User', () => {
   describe('#save()', () => {
     afterEach(utils.removeUsers);
 
-    it('should require an email address and a username', (done) => {
+    it('should require an email address, username and groups', (done) => {
       new User().save((err, user) => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.email.kind', 'required');
         expect(err).to.have.deep.property('errors.username.kind', 'required');
+        expect(err).to.have.deep.property('errors.groups.kind', 'required');
         expect(user).to.not.exist;
 
         done();
@@ -36,6 +37,15 @@ describe('User', () => {
       new User(_.omit(credentials, 'password')).save((err, user) => {
         expect(err).to.not.exist;
         expect(user.password).to.not.exist;
+
+        done();
+      });
+    }); // it()
+
+    it('should require at least one group', (done) => {
+      new User(_.defaults({ groups: [] }, credentials)).save((err, user) => {
+        expect(err).to.have.deep.property('errors.groups.kind', 'required');
+        expect(user).to.not.exist;
 
         done();
       });
