@@ -49,13 +49,7 @@ router.delete('/:news', _.partialRight(route.deleteByParam, 'news'));
 /**
  * GET /news/:news/likes
  */
-router.get('/:news/likes', (req, res, next) => {
-  Like.find({ 'target.news': req.news._id }, (err, likes) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(likes);
-  });
-});
+router.get('/:news/likes', _.partialRight(route.getByTarget, Like, 'news'));
 
 /**
  * POST /news/:news/likes
@@ -80,13 +74,7 @@ router.delete('/:news/likes/:like', _.partialRight(route.deleteByParam, 'like'))
 /**
  * GET /news/:news/comments
  */
-router.get('/:news/comments', (req, res, next) => {
-  Comment.find({ 'target.news': req.news._id }, (err, comments) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comments);
-  });
-});
+router.get('/:news/comments', _.partialRight(route.getByTarget, Comment, 'news'));
 
 /**
  * POST /news/:news/comments

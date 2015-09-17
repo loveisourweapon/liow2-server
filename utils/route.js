@@ -52,6 +52,25 @@ module.exports = {
   },
 
   /**
+   * Get a collection of documents based on a target parameter
+   * Target should already be populated by param middleware
+   */
+  getByTarget(req, res, next, model, target) {
+    if (!_.has(model, 'base') || model.base !== mongoose) {
+      return next(new Error('Must be called with a mongoose model'));
+    }
+    if (!_.has(req.params, target) || _.isUndefined(req[target])) {
+      return next(new Error(`Invalid target ${target}`));
+    }
+
+    model.find({ [`target.${target}`]: req[target]._id }, (err, documents) => {
+      if (err) { return next(err); }
+
+      res.status(200).json(documents);
+    });
+  },
+
+  /**
    * Update a document
    * Should already be populated by a param middleware
    */

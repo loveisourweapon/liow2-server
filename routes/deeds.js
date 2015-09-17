@@ -48,13 +48,7 @@ router.delete('/:deed', _.partialRight(route.deleteByParam, 'deed'));
 /**
  * GET /deeds/:deed/likes
  */
-router.get('/:deed/likes', (req, res, next) => {
-  Like.find({ 'target.deed': req.deed._id }, (err, likes) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(likes);
-  });
-});
+router.get('/:deed/likes', _.partialRight(route.getByTarget, Like, 'deed'));
 
 /**
  * POST /deeds/:deed/likes
@@ -79,13 +73,7 @@ router.delete('/:deed/likes/:like', _.partialRight(route.deleteByParam, 'like'))
 /**
  * GET /deeds/:deed/comments
  */
-router.get('/:deed/comments', (req, res, next) => {
-  Comment.find({ 'target.deed': req.deed._id }, (err, comments) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comments);
-  });
-});
+router.get('/:deed/comments', _.partialRight(route.getByTarget, Comment, 'deed'));
 
 /**
  * POST /deeds/:deed/comments

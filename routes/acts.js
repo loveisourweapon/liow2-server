@@ -73,13 +73,7 @@ router.delete('/:act', _.partialRight(route.deleteByParam, 'act'));
  *
  * @apiUse GetLikesSuccess
  */
-router.get('/:act/likes', (req, res, next) => {
-  Like.find({ 'target.act': req.act._id }, (err, likes) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(likes);
-  });
-});
+router.get('/:act/likes', _.partialRight(route.getByTarget, Like, 'act'));
 
 /**
  * @api {post} /acts/:act/likes Create act like
@@ -116,13 +110,7 @@ router.delete('/:act/likes/:like', _.partialRight(route.deleteByParam, 'like'));
  *
  * @apiUse GetCommentsSuccess
  */
-router.get('/:act/comments', (req, res, next) => {
-  Comment.find({ 'target.act': req.act._id }, (err, comments) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(comments);
-  });
-});
+router.get('/:act/comments', _.partialRight(route.getByTarget, Comment, 'act'));
 
 /**
  * @api {post} /acts/:act/comments Create act comment
