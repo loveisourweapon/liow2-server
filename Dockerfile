@@ -1,4 +1,4 @@
-FROM node:4.0
+FROM node
 MAINTAINER Ben Booth <bkbooth@gmail.com>
 
 EXPOSE 3000
@@ -13,8 +13,8 @@ VOLUME ${APP_DIR}
 COPY . ${APP_DIR}
 
 # Install nodemon and node dependencies
-RUN npm install -g nodemon && \
-    npm install && \
+RUN npm install --quiet -g nodemon && \
+    npm install --quiet && \
     npm cache clear
 
 # Run with nodemon
