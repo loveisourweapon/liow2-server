@@ -32,11 +32,36 @@ module.exports = {
       return next(new Error('Must be called with to a mongoose model'));
     }
 
-    model.find((err, documents) => {
-      if (err) { return next(err); }
+    // Extract query conditions
+    var conditions = {};
+    if (req.query.query && _.isFunction(model.getSearchable)) {
+      // Search if search query included
+      conditions.$or = _.map(model.getSearchable(), (field) => {
+        return { [field]: new RegExp(_.escapeRegExp(req.query.query), 'i') };
+      });
+    } else {
+      // Match schema fields
+      var fields = _.filter(_.keys(req.query), (field) => _.has(model.schema.paths, field));
+      if (fields.length) {
+        conditions.$and = _.map(fields, (field) => {
+          return { [field]: req.query[field] };
+        });
+      }
+    }
 
-      res.status(200).json(documents);
-    });
+    model
+      .find(conditions)
+      .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
+      .exec((err, documents) => {
+        if (err) { return next(err); }
+
+        // Limit returned fields
+        if (req.query.fields && _.isString(req.query.fields)) {
+          documents = _.map(documents, _.partialRight(_.pick, req.query.fields.split(',')));
+        }
+
+        res.status(200).json(documents);
+      });
   },
 
   /**
@@ -109,3 +134,7 @@ module.exports = {
   }
 
 };
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
