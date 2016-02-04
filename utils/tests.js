@@ -21,11 +21,9 @@ var credentials = {
  */
 function dbConnect(done) {
   if (mongoose.connection.readyState === 0) {
-    mongoose.connect(config.db.url, (err) => {
-      if (err) { return done(err); }
-
-      done();
-    });
+    mongoose.connect(config.db.url)
+      .then(() => done())
+      .catch((err) => done(err));
   } else {
     done();
   }
@@ -37,11 +35,9 @@ function dbConnect(done) {
  * @param {Function} done
  */
 function dbDisconnect(done) {
-  mongoose.disconnect((err) => {
-    if (err) { return done(err); }
-
-    done();
-  });
+  mongoose.disconnect()
+    .then(() => done())
+    .catch((err) => done(err));
 }
 
 /**
