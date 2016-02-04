@@ -1,4 +1,4 @@
-FROM node
+FROM mhart/alpine-node:4
 MAINTAINER Ben Booth <bkbooth@gmail.com>
 
 EXPOSE 3000
