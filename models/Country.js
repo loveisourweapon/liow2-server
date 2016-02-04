@@ -8,6 +8,10 @@ var CountrySchema = new mongoose.Schema({
   }
 });
 
+CountrySchema.statics.getSearchable = function() {
+  return ['code', 'name'];
+};
+
 module.exports = mongoose.model('Country', CountrySchema);
 
 /**

@@ -45,4 +45,8 @@ GroupSchema.statics.getFilter = function() {
   return ['name', 'owner', 'country', 'logo', 'coverImage', 'welcomeMessage'];
 };
 
+GroupSchema.statics.getSearchable = function() {
+  return ['name'];
+};
+
 module.exports = mongoose.model('Group', GroupSchema);

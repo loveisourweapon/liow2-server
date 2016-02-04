@@ -13,7 +13,10 @@ var auth = require('./routes/auth')(config, passport),
     deeds = require('./routes/deeds'),
     news = require('./routes/news'),
     acts = require('./routes/acts'),
-    countries = require('./routes/countries');
+    countries = require('./routes/countries'),
+    groups = require('./routes/groups'),
+    likes = require('./routes/likes'),
+    comments = require('./routes/comments');
 
 // Connect to database
 var db = mongoose.connection,
@@ -49,6 +52,9 @@ app.use('/deeds', deeds);
 app.use('/news', news);
 app.use('/acts', acts);
 app.use('/countries', countries);
+app.use('/groups', groups);
+app.use('/likes', likes);
+app.use('/comments', comments);
 
 // Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
