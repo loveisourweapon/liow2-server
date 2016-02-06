@@ -5,11 +5,10 @@ var config = require('./config'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     cors = require('cors'),
-    mongoose = require('mongoose'),
-    passport = require('passport');
+    mongoose = require('mongoose');
 
 // Configure routes
-var auth = require('./routes/auth')(config, passport),
+var auth = require('./routes/auth'),
     deeds = require('./routes/deeds'),
     news = require('./routes/news'),
     acts = require('./routes/acts'),
@@ -36,7 +35,6 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(passport.initialize());
 
 // Ignore logging for testing environments
 if (app.get('env') !== 'testing') {
@@ -58,7 +56,6 @@ app.use('/comments', comments);
 
 // Add auth routes then use bearer auth for remaining routes
 app.use('/auth', auth);
-//app.use(passport.authenticate('bearer', { session: false }));
 
 // Add authenticated routes
 // TODO: add authentication to individual routes instead of whole routers?

@@ -1,119 +1,131 @@
-var jwt = require('jsonwebtoken'),
+var config = require('../config'),
+    jwt = require('jsonwebtoken'),
+    moment = require('moment'),
+    request = require('request'),
     express = require('express'),
     router = express.Router();
 
-var LocalStrategy = require('passport-local').Strategy,
-    FacebookStrategy = require('passport-facebook').Strategy,
-    BearerStrategy = require('passport-http-bearer').Strategy;
-
 var User = require('../models/User');
 
-module.exports = function(config, passport) {
-  // Configure passport LocalStrategy
-  passport.use(new LocalStrategy({
-      usernameField: 'email',
-      passReqToCallback: false // TODO: Investigate this
-    }, (email, password, done) => {
-      User.findOne({ email: email }, (err, user) => {
-        if (err) { return done(err); }
+/**
+ * Middleware to ensure authenticated user
+ * TODO: move to utils/route.js
+ *
+ * @param req
+ * @param res
+ * @param next
+ *
+ * @returns {*}
+ */
+function ensureAuthenticated(req, res, next) {
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
+  }
 
-        if (!user) {
-          return done(null, false, { message: 'Incorrect email' });
-        }
+  var token = req.headers.authorization.split(' ')[1];
 
-        user.validatePassword(password, (err, isMatch) => {
-          if (err) { return done(err); }
+  var payload = null;
+  try {
+    payload = jwt.decode(token, config.secret);
+  } catch (err) {
+    return res.status(401).send({ message: err.message });
+  }
 
-          if (!isMatch) {
-            return done(null, false, { message: 'Incorrect password' });
+  if (payload.exp <= moment().unix()) {
+    return res.status(401).send({ message: 'Token has expired' });
+  }
+  req.user = payload.sub;
+  next();
+}
+
+/**
+ * Login with Facebook
+ * POST /auth/facebook
+ */
+router.post('/facebook', function(req, res) {
+  var fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name'];
+  var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
+  var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
+  var params = {
+    code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.auth.facebook.clientSecret,
+    redirect_uri: req.body.redirectUri
+  };
+
+  // Step 1. Exchange authorization code for access token.
+  request.get({ url: accessTokenUrl, qs: params, json: true }, function(err, response, accessToken) {
+    if (response.statusCode !== 200) {
+      return res.status(500).send({ message: accessToken.error.message });
+    }
+
+    // Step 2. Retrieve profile information about the current user.
+    request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
+      if (response.statusCode !== 200) {
+        return res.status(500).send({ message: profile.error.message });
+      }
+
+      if (req.headers.authorization) {
+        User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
+          }
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.secret);
+          User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
+            user.facebook = { id: profile.id };
+            user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
+            user.name = user.displayName || profile.name;
+            user.save(function() {
+              var token = jwt.sign(user._id, config.secret);
+              res.send({ token: token });
+            });
+          });
+        });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ email: profile.email }, function(err, existingUser) {
+          var user;
+          if (existingUser) {
+            user = existingUser;
+          } else {
+            user = new User();
+            user.name = profile.name;
           }
 
-          done(null, user);
+          user.facebook = { id: profile.id };
+          user.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
+          user.save(function() {
+            var token = jwt.sign(user._id, config.secret);
+            res.send({ token: token });
+          });
         });
-      });
-    }
-  ));
-
-  // Configure passport FacebookStrategy
-  passport.use(new FacebookStrategy({
-      clientID: process.env.LIOW_AUTH_FACEBOOK_CLIENT_ID || config.auth.facebook.clientID,
-      clientSecret: process.env.LIOW_AUTH_FACEBOOK_CLIENT_SECRET || config.auth.facebook.clientSecret,
-      callbackURL: process.env.LIOW_AUTH_FACEBOOK_CALLBACK_URL || config.auth.facebook.callbackURL,
-      enableProof: false // TODO: Investigate this
-    }, (accessToken, refreshToken, profile, done) => {
-      User.findOrCreate({
-        email: profile.emails[0].value,
-        name: profile.displayName,
-        facebook: {
-          id: profile.id,
-          accessToken: accessToken,
-          refreshToken: refreshToken
-        }
-      }, (err, user) => {
-        if (err) { return done(err); }
-
-        done(null, user);
-      });
-    }
-  ));
-
-  // Configure passport BearerStrategy
-  passport.use(new BearerStrategy((token, done) => {
-    User.findOne({ accessToken: token }, (err, user) => {
-      if (err) { return done(err); }
-
-      if (!user) {
-        return done(null, false, { message: 'Invalid token' });
       }
-
-      done(null, user, { scope: 'all' });
     });
-  }));
+  });
+});
 
-  // Receive normal form login requests at /auth/login
-  router.post('/login', (req, res, next) => {
-    passport.authenticate('local', { session: false }, (err, user, response) => {
-      if (err) { return next(err); }
+/**
+ * Login with email and password
+ * POST /auth/login
+ */
+router.post('/login', function(req, res) {
+  User.findOne({ email: req.body.email }, function(err, user) {
+    if (!user) {
+      return res.status(401).send({ message: 'Invalid email and/or password' });
+    }
 
-      if (!user) {
-        return res.status(401).json({ message: response.message || 'Not logged in' });
+    user.validatePassword(req.body.password, function(err, isMatch) {
+      if (!isMatch) {
+        return res.status(401).send({ message: 'Invalid email and/or password' });
       }
 
-      // TODO: set token expiry?
-      user.accessToken = jwt.sign(user.email, process.env.LIOW_SECRET || config.secret);
-      user.save((err, user) => {
-        if (err) { return next(err); }
-
-        res.status(200).json({ message: 'Logged in', accessToken: user.accessToken });
-      });
-    })(req, res, next);
+      res.send({ token: jwt.sign(user._id, config.secret) });
+    });
   });
+});
 
-  // Redirect the user to Facebook for authentication. When complete,
-  // Facebook will redirect the user back to the application at
-  //   /auth/facebook/callback
-  router.get('/facebook',
-    passport.authenticate('facebook', { scope: ['email'] })
-  );
-
-  // Facebook will redirect the user to this URL after approval. Finish the
-  // authentication process by attempting to obtain an access token. If
-  // access was granted, the user will be logged in. Otherwise,
-  // authentication has failed.
-  router.get('/facebook/callback',
-    passport.authenticate('facebook', {
-      failureRedirect: '/',
-      session: false
-    }), (req, res, next) => {
-      // TODO: set token expiry?
-      req.user.accessToken = jwt.sign(req.user.email, process.env.LIOW_SECRET || config.secret);
-      req.user.save((err, user) => {
-        if (err) { return next(err); }
-
-        res.redirect(`/?access_token=${user.accessToken}`);
-      });
-    }
-  );
-
-  return router;
-};
+module.exports = router;

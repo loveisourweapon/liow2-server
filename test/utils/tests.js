@@ -75,24 +75,4 @@ describe('utils/tests', () => {
       });
     }); // it()
   }); // describe()
-
-  describe('#getAccessToken()', () => {
-    before(utils.dbConnect);
-    afterEach(utils.removeUsers);
-    after(utils.dbDisconnect);
-
-    it('should return a valid accessToken for testing', (done) => {
-      utils.getAccessToken((err, accessToken) => {
-        expect(err).to.not.exist;
-        expect(accessToken).to.exist.and.to.be.a('string');
-
-        User.findOne({ accessToken: accessToken }, (err, user) => {
-          expect(err).to.not.exist;
-          expect(user).to.exist.and.to.be.an.instanceof(User);
-
-          done();
-        });
-      });
-    }); // it()
-  }); // describe()
 }); //describe()

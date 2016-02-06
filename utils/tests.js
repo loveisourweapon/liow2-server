@@ -69,41 +69,10 @@ function removeUsers(done) {
   });
 }
 
-/**
- * Get an accessToken for testing the API
- * Connects to the database and saves a testing User
- *
- * @param {Function} done
- */
-function getAccessToken(done) {
-  dbConnect((err) => {
-    if (err) { return done(err); }
-
-    saveUser(credentials, (err) => {
-      if (err) { return done(err); }
-
-      request(app)
-        .post('/auth/login')
-        .send(`email=${credentials.email}`)
-        .send(`password=${credentials.password}`)
-        .end((err, res) => {
-          if (err) { return done(err); }
-
-          if (!res.body.accessToken) {
-            return done(new Error('Failed getting accessing token'));
-          }
-
-          done(null, res.body.accessToken);
-        });
-    });
-  });
-}
-
 module.exports = {
   credentials,
   dbConnect,
   dbDisconnect,
   saveUser,
-  removeUsers,
-  getAccessToken
+  removeUsers
 };
