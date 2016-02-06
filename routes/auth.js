@@ -1,6 +1,5 @@
 var config = require('../config'),
     jwt = require('jsonwebtoken'),
-    moment = require('moment'),
     request = require('request'),
     express = require('express'),
     router = express.Router();
@@ -8,41 +7,10 @@ var config = require('../config'),
 var User = require('../models/User');
 
 /**
- * Middleware to ensure authenticated user
- * TODO: move to utils/route.js
- *
- * @param req
- * @param res
- * @param next
- *
- * @returns {*}
- */
-function ensureAuthenticated(req, res, next) {
-  if (!req.headers.authorization) {
-    return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
-  }
-
-  var token = req.headers.authorization.split(' ')[1];
-
-  var payload = null;
-  try {
-    payload = jwt.decode(token, config.secret);
-  } catch (err) {
-    return res.status(401).send({ message: err.message });
-  }
-
-  if (payload.exp <= moment().unix()) {
-    return res.status(401).send({ message: 'Token has expired' });
-  }
-  req.user = payload.sub;
-  next();
-}
-
-/**
  * Login with Facebook
  * POST /auth/facebook
  */
-router.post('/facebook', function(req, res) {
+router.post('/facebook', function(req, res, next) {
   var fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name'];
   var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
   var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
@@ -79,8 +47,10 @@ router.post('/facebook', function(req, res) {
             user.facebook = { id: profile.id };
             user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
             user.name = user.displayName || profile.name;
-            user.save(function() {
-              var token = jwt.sign(user._id, config.secret);
+            user.save(function(err, user) {
+              if (err) { return next(err); }
+
+              var token = jwt.sign(user.id, config.secret);
               res.send({ token: token });
             });
           });
@@ -93,13 +63,17 @@ router.post('/facebook', function(req, res) {
             user = existingUser;
           } else {
             user = new User();
+            user.email = profile.email;
+            user.username = profile.email;
             user.name = profile.name;
           }
 
           user.facebook = { id: profile.id };
           user.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
-          user.save(function() {
-            var token = jwt.sign(user._id, config.secret);
+          user.save(function(err, user) {
+            if (err) { return next(err); }
+
+            var token = jwt.sign(user.id, config.secret);
             res.send({ token: token });
           });
         });
@@ -123,7 +97,7 @@ router.post('/login', function(req, res) {
         return res.status(401).send({ message: 'Invalid email and/or password' });
       }
 
-      res.send({ token: jwt.sign(user._id, config.secret) });
+      res.send({ token: jwt.sign(user.id, config.secret) });
     });
   });
 });

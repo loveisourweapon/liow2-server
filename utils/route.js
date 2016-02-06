@@ -1,6 +1,12 @@
 var _ = require('lodash'),
+    jwt = require('jsonwebtoken'),
+    config = require('../config'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId;
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 module.exports = {
 
@@ -131,10 +137,23 @@ module.exports = {
 
       res.status(204).send();
     });
+  },
+
+  /**
+   * Middleware to ensure authenticated user
+   */
+  ensureAuthenticated(req, res, next) {
+    if (!req.headers.authorization) {
+      return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
+    }
+
+    var token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, config.secret, (err, userId) => {
+      if (err) { return next(err); }
+
+      req.user = userId;
+      next();
+    });
   }
 
 };
-
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}

@@ -17,7 +17,7 @@ describe('User', () => {
         expect(err).to.exist.and.to.have.property('name', 'ValidationError');
         expect(err).to.have.deep.property('errors.email.kind', 'required');
         expect(err).to.have.deep.property('errors.username.kind', 'required');
-        expect(err).to.have.deep.property('errors.groups.kind', 'required');
+        //expect(err).to.have.deep.property('errors.groups.kind', 'required');
         expect(user).to.not.exist;
 
         done();
@@ -42,14 +42,14 @@ describe('User', () => {
       });
     }); // it()
 
-    it('should require at least one group', (done) => {
+    /*it('should require at least one group', (done) => {
       new User(_.defaults({ groups: [] }, credentials)).save((err, user) => {
         expect(err).to.have.deep.property('errors.groups.kind', 'required');
         expect(user).to.not.exist;
 
         done();
       });
-    }); // it()
+    });*/ // it()
   }); // describe()
 
   describe('#validatePassword()', () => {

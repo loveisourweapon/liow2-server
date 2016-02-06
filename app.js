@@ -9,6 +9,7 @@ var config = require('./config'),
 
 // Configure routes
 var auth = require('./routes/auth'),
+    users = require('./routes/users'),
     deeds = require('./routes/deeds'),
     news = require('./routes/news'),
     acts = require('./routes/acts'),
@@ -46,6 +47,7 @@ app.use(cors());
 app.options('*', cors()); // CORS OPTIONS pre-flight request
 
 // Add non-authenticated routes
+app.use('/users', users);
 app.use('/deeds', deeds);
 app.use('/news', news);
 app.use('/acts', acts);

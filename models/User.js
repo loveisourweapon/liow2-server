@@ -1,4 +1,5 @@
-var utils = require('../utils/models'),
+var _ = require('lodash'),
+    utils = require('../utils/models'),
     bcrypt = require('bcrypt'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
@@ -20,8 +21,8 @@ var UserSchema = new mongoose.Schema({
   country: { type: ObjectId, ref: 'Country' },
   groups: {
     type: [{ type: ObjectId, ref: 'Group' }],
-    required: true,
-    validate: [utils.hasOne, 'At least one group is required', 'hasgroup']
+    //required: true,
+    //validate: [utils.hasOne, 'At least one group is required', 'hasgroup']
   },
   superAdmin: { type: Boolean, default: false, required: true },
   accessToken: String,
@@ -54,6 +55,10 @@ UserSchema.methods.validatePassword = function(password, done) {
 
     done(null, res);
   });
+};
+
+UserSchema.methods.toJSON = function() {
+  return _.omit(this.toObject(), ['password', 'facebook', 'superAdmin']);
 };
 
 UserSchema.statics.findOrCreate = function(newUser, done) {
