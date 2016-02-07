@@ -2,8 +2,16 @@ var _ = require('lodash'),
     jwt = require('jsonwebtoken'),
     config = require('../config'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Types.ObjectId;
+    ObjectId = mongoose.Types.ObjectId,
+    HttpError = require('../utils/general').HttpError;
 
+/**
+ * Check if n is numeric
+ *
+ * @param {*} n
+ *
+ * @returns {boolean}
+ */
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -144,7 +152,7 @@ module.exports = {
    */
   ensureAuthenticated(req, res, next) {
     if (!req.headers.authorization) {
-      return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
+      return next(new HttpError('Please make sure your request has an Authorization header', 401));
     }
 
     var token = req.headers.authorization.split(' ')[1];

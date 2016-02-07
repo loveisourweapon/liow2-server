@@ -5,7 +5,8 @@ var config = require('./config'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     cors = require('cors'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    HttpError = require('./utils/general').HttpError;
 
 // Configure routes
 var auth = require('./routes/auth'),
@@ -64,9 +65,7 @@ app.use('/auth', auth);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
-  var err = new Error('Not Found');
-  err.status = 404;
-  return next(err);
+  return next(new HttpError('Not Found', 404));
 });
 
 // Error handlers
