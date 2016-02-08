@@ -11,15 +11,18 @@ var User = require('../models/User');
  * GET /users/me
  */
 router.get('/me', route.ensureAuthenticated, (req, res, next) => {
-  User.findById(req.user, (err, user) => {
-    if (err) { return next(err); }
+  User
+    .findById(req.user)
+    .populate('country groups', '_id name urlName admins')
+    .exec()
+    .then(user => {
+      if (!user) {
+        return next(new HttpError('Not Found', 404));
+      }
 
-    if (!user) {
-      return next(new HttpError('Not Found', 404));
-    }
-
-    res.status(200).json(user);
-  });
+      res.status(200).json(user);
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;

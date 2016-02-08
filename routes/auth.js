@@ -12,7 +12,7 @@ var User = require('../models/User');
  * POST /auth/facebook
  */
 router.post('/facebook', function(req, res, next) {
-  var fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name'];
+  var fields = ['id', 'email', 'first_name', 'last_name', 'name'];
   var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
   var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
   var params = {
@@ -50,8 +50,9 @@ router.post('/facebook', function(req, res, next) {
               }
 
               user.facebook = { id: profile.id };
-              user.picture = user.picture || `https://graph.facebook.com/${profile.id}/picture?type=large`;
+              user.picture = user.picture || `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
               user.name = user.name || profile.name;
+              user.groups.push(req.body.group || null);
               user.save(function(err, user) {
                 if (err) { return next(err); }
 
@@ -72,7 +73,8 @@ router.post('/facebook', function(req, res, next) {
           }
 
           user.facebook = { id: profile.id };
-          user.picture = `https://graph.facebook.com/${profile.id}/picture?type=large`;
+          user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
+          user.groups.push(req.body.group || null);
           user.save(function(err, user) {
             if (err) { return next(err); }
 
