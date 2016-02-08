@@ -41,7 +41,7 @@ module.exports = {
   /**
    * Get a collection of documents from a mongoose model
    */
-  getAll(req, res, next, model) {
+  getAll(req, res, next, model, populate) {
     if (!_.has(model, 'base') || model.base !== mongoose) {
       return next(new Error('Must be called with to a mongoose model'));
     }
@@ -65,6 +65,7 @@ module.exports = {
 
     model
       .find(conditions)
+      .populate(_.isString(populate) ? populate : '')
       .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
       .exec((err, documents) => {
         if (err) { return next(err); }
@@ -82,9 +83,13 @@ module.exports = {
    * Get a single document from a mongoose model
    * Should already be populated by a param middleware
    */
-  getByParam(req, res, next, param) {
+  getByParam(req, res, next, param, populate) {
     if (!_.has(req.params, param) || _.isUndefined(req[param])) {
       return next(new Error(`Invalid param ${param}`));
+    }
+
+    if (_.isString(populate)) {
+      req[param].populate(populate);
     }
 
     res.status(200).json(req[param]);

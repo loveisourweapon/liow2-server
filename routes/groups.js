@@ -15,7 +15,7 @@ router.param('group', _.partialRight(route.paramHandler, Group));
  *
  * @apiUse GetGroupsSuccess
  */
-router.get('/', _.partialRight(route.getAll, Group));
+router.get('/', _.partialRight(route.getAll, Group, 'country'));
 
 /**
  * @api {post} /groups Create group
@@ -44,7 +44,7 @@ router.post('/', (req, res, next) => {
  *
  * @apiUse GetGroupSuccess
  */
-router.get('/:group', _.partialRight(route.getByParam, 'group'));
+router.get('/:group', _.partialRight(route.getByParam, 'group', 'country'));
 
 /**
  * @api {put} /groups/:group Update group
