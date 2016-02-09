@@ -1,7 +1,8 @@
 var _ = require('lodash'),
     utils = require('../utils/models'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    uniqueValidator = require('mongoose-unique-validator');
 
 /**
  * One of the admins is the owner
@@ -18,7 +19,7 @@ function validateOwnerIsAdmin(admins) {
 
 var GroupSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  urlName: { type: String, required: true, index: { unique: true } },
+  urlName: { type: String, required: true, unique: true },
   owner: { type: ObjectId, ref: 'User', required: true },
   admins: {
     type: [{ type: ObjectId, ref: 'User' }],
@@ -35,6 +36,8 @@ var GroupSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
+
+GroupSchema.plugin(uniqueValidator, { message: 'Name is already taken' });
 
 GroupSchema.pre('validate', function(next) {
   this.urlName = _.kebabCase(this.name);
