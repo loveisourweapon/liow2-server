@@ -1,12 +1,9 @@
 var _ = require('lodash'),
-    express = require('express'),
-    router = express.Router(),
-    route = require('../utils/route');
-
-var ObjectId = require('mongoose').Types.ObjectId,
+    router = require('express').Router(),
+    routeUtils = require('../utils/route'),
     Group = require('../models/Group');
 
-router.param('group', _.partialRight(route.paramHandler, Group));
+router.param('group', _.partialRight(routeUtils.paramHandler, Group));
 
 /**
  * @api {get} /groups List groups
@@ -15,7 +12,7 @@ router.param('group', _.partialRight(route.paramHandler, Group));
  *
  * @apiUse GetGroupsSuccess
  */
-router.get('/', _.partialRight(route.getAll, Group, 'country'));
+router.get('/', _.partialRight(routeUtils.getAll, Group, 'country'));
 
 /**
  * @api {post} /groups Create group
@@ -24,17 +21,16 @@ router.get('/', _.partialRight(route.getAll, Group, 'country'));
  *
  * @apiUse CreateGroupSuccess
  */
-router.post('/', route.ensureAuthenticated, (req, res, next) => {
+router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Group.getFilter());
-  req.body.owner = ObjectId.isValid(req.body.owner) ? ObjectId(req.body.owner) : null;
-  req.body.admins = [req.body.owner];
-  req.body.country = ObjectId.isValid(req.body.country) ? ObjectId(req.body.country) : null;
+  req.body.owner = req.user._id;
+  req.body.admins = [req.user._id];
+  req.body.country = req.user.country;
 
-  new Group(req.body).save((err, group) => {
-    if (err) { return next(err); }
-
-    res.status(201).location(`/groups/${group._id}`).json(group);
-  });
+  new Group(req.body)
+    .save()
+    .then(group => res.status(201).location(`/groups/${group._id}`).json(group))
+    .catch(err => next(err));
 });
 
 /**
@@ -44,7 +40,7 @@ router.post('/', route.ensureAuthenticated, (req, res, next) => {
  *
  * @apiUse GetGroupSuccess
  */
-router.get('/:group', _.partialRight(route.getByParam, 'group', 'country'));
+router.get('/:group', _.partialRight(routeUtils.getByParam, 'group', 'country'));
 
 /**
  * @api {put} /groups/:group Update group
@@ -53,7 +49,7 @@ router.get('/:group', _.partialRight(route.getByParam, 'group', 'country'));
  *
  * @apiUse GetGroupSuccess
  */
-router.put('/:group', _.partialRight(route.putByParam, Group, 'group'));
+router.put('/:group', _.partialRight(routeUtils.putByParam, Group, 'group'));
 
 /**
  * @api {delete} /groups/:group Remove group
@@ -62,6 +58,6 @@ router.put('/:group', _.partialRight(route.putByParam, Group, 'group'));
  *
  * @apiUse NoContentSuccess
  */
-router.delete('/:group', _.partialRight(route.deleteByParam, 'group'));
+router.delete('/:group', _.partialRight(routeUtils.deleteByParam, 'group'));
 
 module.exports = router;
