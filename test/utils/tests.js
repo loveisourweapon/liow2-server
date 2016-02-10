@@ -1,7 +1,9 @@
-var utils = require('../../utils/tests'),
+var config = require('../../config'),
+    utils = require('../../utils/tests'),
     credentials = utils.credentials,
     expect = require('chai').expect,
     mongoose = require('mongoose'),
+    jwt = require('jsonwebtoken'),
     User = require('../../models/User');
 
 describe('utils/tests', () => {
@@ -71,6 +73,31 @@ describe('utils/tests', () => {
           expect(users).to.exist.and.to.be.empty;
 
           done();
+        });
+      });
+    }); // it()
+  }); // describe()
+
+  describe('#getApiToken()', () => {
+    before(utils.dbConnect);
+    afterEach(utils.removeUsers);
+    after(utils.dbDisconnect);
+
+    it('should return a valid API token for testing', (done) => {
+      utils.getApiToken((err, token) => {
+        expect(err).to.not.exist;
+        expect(token).to.exist.and.to.be.a('string');
+
+        jwt.verify(token, config.secret, (err, userId) => {
+          expect(err).to.not.exist;
+          expect(userId).to.exist.and.to.be.a('string');
+
+          User.findById(userId, (err, user) => {
+            expect(err).to.not.exist;
+            expect(user).to.exist.and.to.be.an.instanceof(User);
+
+            done();
+          });
         });
       });
     }); // it()

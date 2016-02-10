@@ -1,17 +1,14 @@
 var config = require('../config'),
     request = require('supertest'),
     mongoose = require('mongoose'),
-    app = require('../app');
-
-var User = require('../models/User'),
-    ObjectId = require('mongoose').Types.ObjectId;
+    app = require('../app'),
+    User = require('../models/User');
 
 // Default login credentials
 var credentials = {
   email: 'test@example.com',
   username: 'username',
-  password: 'password',
-  groups: [ObjectId()]
+  password: 'password'
 };
 
 /**
@@ -23,7 +20,7 @@ function dbConnect(done) {
   if (mongoose.connection.readyState === 0) {
     mongoose.connect(config.db.url)
       .then(() => done())
-      .catch((err) => done(err));
+      .catch(err => done(err));
   } else {
     done();
   }
@@ -37,7 +34,7 @@ function dbConnect(done) {
 function dbDisconnect(done) {
   mongoose.disconnect()
     .then(() => done())
-    .catch((err) => done(err));
+    .catch(err => done(err));
 }
 
 /**
@@ -69,10 +66,41 @@ function removeUsers(done) {
   });
 }
 
+/**
+ * Get a token for testing the API
+ * Connects to the database and saves a testing User
+ *
+ * @param {Function} done
+ */
+function getApiToken(done) {
+  dbConnect((err) => {
+    if (err) { return done(err); }
+
+    saveUser(credentials, (err) => {
+      if (err) { return done(err); }
+
+      request(app)
+        .post('/auth/login')
+        .send(`email=${credentials.email}`)
+        .send(`password=${credentials.password}`)
+        .end((err, res) => {
+          if (err) { return done(err); }
+
+          if (!res.body.token) {
+            return done(new Error('Failed getting accessing token'));
+          }
+
+          done(null, res.body.token);
+        });
+    });
+  });
+}
+
 module.exports = {
   credentials,
   dbConnect,
   dbDisconnect,
   saveUser,
-  removeUsers
+  removeUsers,
+  getApiToken
 };

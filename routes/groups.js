@@ -24,7 +24,7 @@ router.get('/', _.partialRight(route.getAll, Group, 'country'));
  *
  * @apiUse CreateGroupSuccess
  */
-router.post('/', (req, res, next) => {
+router.post('/', route.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Group.getFilter());
   req.body.owner = ObjectId.isValid(req.body.owner) ? ObjectId(req.body.owner) : null;
   req.body.admins = [req.body.owner];

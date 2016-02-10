@@ -20,7 +20,7 @@ router.get('/', _.partialRight(route.getAll, Deed));
 /**
  * POST /deeds
  */
-router.post('/', (req, res, next) => {
+router.post('/', route.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Deed.getFilter());
 
   new Deed(req.body).save((err, deed) => {
