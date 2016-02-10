@@ -12,9 +12,7 @@ var _ = require('lodash'),
  * @returns {boolean}
  */
 function validateOwnerIsAdmin(admins) {
-  return _.some(admins, (admin) => {
-    return admin === this.owner;
-  });
+  return _.some(admins, admin => admin.equals(this.owner));
 }
 
 var GroupSchema = new mongoose.Schema({
@@ -46,7 +44,7 @@ GroupSchema.pre('validate', function(next) {
 });
 
 GroupSchema.statics.getFilter = function() {
-  return ['name', 'owner', 'country', 'logo', 'coverImage', 'welcomeMessage'];
+  return ['name', 'logo', 'coverImage', 'welcomeMessage'];
 };
 
 GroupSchema.statics.getSearchable = function() {

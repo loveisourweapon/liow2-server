@@ -130,11 +130,10 @@ module.exports = {
     req.body = _.pick(req.body, model.getFilter());
     req.body.modified = new Date();
 
-    model.findByIdAndUpdate(req[param]._id, req.body, { new: true }, (err, document) => {
-      if (err) { return next(err); }
-
-      res.status(200).json(document);
-    });
+    model.findById(req[param]._id)
+      .then(document => _.merge(document, req.body).save())
+      .then(document => res.status(200).json(document))
+      .catch(err => next(err));
   },
 
   /**

@@ -75,7 +75,10 @@ router.post('/facebook', function(req, res, next) {
 
           user.facebook = { id: profile.id };
           user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
-          _.has(req.body, 'group') && user.groups.push(req.body.group);
+          if (_.has(req.body, 'group') && !_.some(user.groups, group => String(group) === String(req.body.group))) {
+            user.groups.push(req.body.group);
+          }
+
           user.save(function(err, user) {
             if (err) { return next(err); }
 
