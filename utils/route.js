@@ -3,7 +3,8 @@ var _ = require('lodash'),
     config = require('../config'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
-    HttpError = require('../utils/general').HttpError;
+    HttpError = require('../utils/general').HttpError,
+    User = require('../models/User');
 
 /**
  * Check if n is numeric
@@ -164,8 +165,12 @@ module.exports = {
     jwt.verify(token, config.secret, (err, userId) => {
       if (err) { return next(err); }
 
-      req.user = userId;
-      next();
+      User.findById(userId)
+        .then(user => {
+          req.user = user;
+          next();
+        })
+        .catch(err => next(err));
     });
   }
 

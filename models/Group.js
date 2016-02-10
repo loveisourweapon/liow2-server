@@ -37,6 +37,7 @@ var GroupSchema = new mongoose.Schema({
   modified: Date
 });
 
+GroupSchema.plugin(utils.findOneOrThrow);
 GroupSchema.plugin(uniqueValidator, { message: 'Name is already taken' });
 
 GroupSchema.pre('validate', function(next) {

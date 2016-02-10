@@ -31,6 +31,8 @@ var UserSchema = new mongoose.Schema({
   lastSeen: Date
 });
 
+UserSchema.plugin(utils.findOneOrThrow);
+
 UserSchema.pre('save', function(next) {
   // Only hash the password if it has been modified (or is new)
   if (!this.password || !this.isModified('password')) { return next(); }
@@ -63,18 +65,15 @@ UserSchema.methods.toJSON = function() {
 
 UserSchema.statics.findOrCreate = function(newUser, done) {
   this.findOne({ email: newUser.email }, (err, user) => {
-    if (err) { return done(err); }
-
-    if (!user) {
-      // Provide defaults with _.extend?
+    if (user) {
+      return done(null, user);
+    } else if (err.message === 'Not Found') {
       user = new this(newUser);
-      user.save((err, user) => {
-        if (err) { return done(err); }
-
-        done(null, user);
-      });
+      user.save()
+        .then(user => done(null, user))
+        .catch(err => done(err));
     } else {
-      done(null, user);
+      done(err);
     }
   });
 };

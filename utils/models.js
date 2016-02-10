@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+    HttpError = require('./general').HttpError;
 
 module.exports = {
 
@@ -33,6 +34,21 @@ module.exports = {
     if (!_.isArray(property)) { return new Error('Property should be an Array'); }
 
     return property.length > 0;
+  },
+
+  /**
+   * Mongoose plugin to throw an error when findOne and findById queries return no result
+   *
+   * @param {Object} schema
+   */
+  findOneOrThrow(schema) {
+    schema.post('findOne', (res, next) => {
+      if (!res) {
+        return next(new HttpError('Not Found', 404));
+      }
+
+      next();
+    });
   }
 
 };

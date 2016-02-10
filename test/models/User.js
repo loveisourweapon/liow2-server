@@ -124,7 +124,7 @@ describe('User', () => {
 
     it('should create a new user', (done) => {
       User.findOne({ email: credentials.email }, (err, user) => {
-        expect(err).to.not.exist;
+        expect(err).to.exist.and.to.have.property('message', 'Not Found');
         expect(user).to.not.exist;
 
         User.findOrCreate(credentials, (err, user) => {

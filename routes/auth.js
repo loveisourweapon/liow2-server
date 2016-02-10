@@ -1,4 +1,5 @@
-var config = require('../config'),
+var _ = require('lodash'),
+    config = require('../config'),
     jwt = require('jsonwebtoken'),
     request = require('request'),
     express = require('express'),
@@ -52,7 +53,7 @@ router.post('/facebook', function(req, res, next) {
               user.facebook = { id: profile.id };
               user.picture = user.picture || `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
               user.name = user.name || profile.name;
-              user.groups.push(req.body.group || null);
+              _.has(req.body, 'group') && user.groups.push(req.body.group);
               user.save(function(err, user) {
                 if (err) { return next(err); }
 
@@ -74,7 +75,7 @@ router.post('/facebook', function(req, res, next) {
 
           user.facebook = { id: profile.id };
           user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
-          user.groups.push(req.body.group || null);
+          _.has(req.body, 'group') && user.groups.push(req.body.group);
           user.save(function(err, user) {
             if (err) { return next(err); }
 
