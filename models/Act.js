@@ -3,13 +3,13 @@ var mongoose = require('mongoose'),
 
 var ActSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
-  group: { type: ObjectId, ref: 'Group', required: true },
   deed: { type: ObjectId, ref: 'Deed', required: true },
+  group: { type: ObjectId, ref: 'Group' },
   created: { type: Date, default: Date.now, required: true }
 });
 
 ActSchema.statics.getFilter = function() {
-  return ['user', 'group', 'deed'];
+  return ['deed', 'group'];
 };
 
 module.exports = mongoose.model('Act', ActSchema);

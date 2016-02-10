@@ -17,10 +17,11 @@ var validAct = {
 
 describe('/acts', () => {
   before(utils.dbConnect);
+  beforeEach(utils.removeUsers);
   after(utils.dbDisconnect);
 
-  afterEach((done) => {
-    Act.remove({}, (err) => {
+  afterEach(done => {
+    Act.remove({}, err => {
       if (err) { return done(err); }
 
       done();
@@ -28,60 +29,62 @@ describe('/acts', () => {
   }); // afterEach()
 
   describe('/', () => {
-    it('GET should return status 200 and an empty array', (done) => {
+    it('GET should return status 200 and an empty array', done => {
       request(app)
         .get('/acts')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.be.an('array').and.to.have.length(0);
-        })
+        .expect(res => expect(res.body).to.be.an('array').and.to.have.length(0))
         .end(done);
     }); // it()
 
-    it('GET should return status 200 and a non-empty array', (done) => {
-      new Act(validAct).save((err) => {
+    it('GET should return status 200 and a non-empty array', done => {
+      new Act(validAct).save(err => {
         if (err) { return done(err); }
 
         request(app)
           .get('/acts')
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect((res) => {
-            expect(res.body).to.be.an('array').and.to.have.length.above(0);
-          })
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
           .end(done);
       });
     }); // it()
 
-    it('POST invalid data should return status 400 and an error message', (done) => {
-      request(app)
-        .post('/acts')
-        .send({})
-        .expect(400)
-        .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).property('message', 'Act validation failed');
-        })
-        .end(done);
+    it('POST invalid data should return status 400 and an error message', done => {
+      utils.getApiToken((err, token) => {
+        expect(err).to.not.exist;
+
+        request(app)
+          .post('/acts')
+          .set('Authorization', `Bearer ${token}`)
+          .send({})
+          .expect(400)
+          .expect('Content-Type', /json/)
+          .expect(res => expect(res.body).property('message', 'Act validation failed'))
+          .end(done);
+      });
     }); // it()
 
-    it('POST valid data should return status 201 and the created Act', (done) => {
-      request(app)
-        .post('/acts')
-        .send(validAct)
-        .expect(201)
-        .expect('Content-Type', /json/)
-        .expect('Location', /acts/)
-        .expect((res) => {
-          expect(res.body).be.be.an('object').and.to.have.property('_id');
-        })
-        .end(done);
+    it('POST valid data should return status 201 and the created Act', done => {
+      utils.getApiToken((err, token) => {
+        expect(err).to.not.exist;
+
+        request(app)
+          .post('/acts')
+          .set('Authorization', `Bearer ${token}`)
+          .send(validAct)
+          .expect(201)
+          .expect('Content-Type', /json/)
+          .expect('Location', /acts/)
+          .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id'))
+          .end(done);
+      });
     }); // it()
   }); // describe()
 
   describe('/:act', () => {
-    beforeEach((done) => {
+    beforeEach(done => {
       new Act(validAct).save((err, act) => {
         if (err) { return done(err); }
 
@@ -91,46 +94,38 @@ describe('/acts', () => {
       });
     }); // beforeEach()
 
-    it('GET invalid ID should return status 400 and an error message', (done) => {
+    it('GET invalid ID should return status 400 and an error message', done => {
       request(app)
         .get('/acts/invalid')
         .expect(400)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.have.property('message', 'Invalid act');
-        })
+        .expect(res => expect(res.body).to.have.property('message', 'Invalid act'))
         .end(done);
     }); // it()
 
-    it('GET non-existent ID should return status 400 and an error message', (done) => {
+    it('GET non-existent ID should return status 400 and an error message', done => {
       request(app)
         .get(`/acts/${ObjectId()}`)
         .expect(400)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.have.property('message');
-        })
+        .expect(res => expect(res.body).to.have.property('message'))
         .end(done);
     }); // it()
 
-    it('GET valid ID should return status 200 and the Act', (done) => {
+    it('GET valid ID should return status 200 and the Act', done => {
       request(app)
         .get(`/acts/${actId}`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.have.property('_id', actId.toString());
-        })
+        .expect(res => expect(res.body).to.have.property('_id', actId.toString()))
         .end(done);
     }); // it()
 
-    it('DELETE should return status 204 and delete the Act', (done) => {
+    it('DELETE should return status 204 and delete the Act', done => {
       request(app)
         .delete(`/acts/${actId}`)
         .expect(204)
-        .expect((res) => {
-          expect(res.body).to.be.empty;
-        })
+        .expect(res => expect(res.body).to.be.empty)
         .end(() => {
           Act.findById(actId, (err, act) => {
             expect(err).to.not.exist;
@@ -147,7 +142,7 @@ describe('/acts', () => {
         user: ObjectId()
       };
 
-      beforeEach((done) => {
+      beforeEach(done => {
         validLike.target = { act: actId };
 
         new Like(validLike).save((err, like) => {
@@ -159,81 +154,66 @@ describe('/acts', () => {
         });
       }); // beforeEach()
 
-      afterEach((done) => {
-        Like.remove({}, (err) => {
+      afterEach(done => {
+        Like.remove({}, err => {
           if (err) { return done(err); }
 
           done();
         });
       }); // afterEach()
 
-      it('GET should return status 200 and a non-empty array', (done) => {
+      it('GET should return status 200 and a non-empty array', done => {
         request(app)
           .get(`/acts/${actId}/likes`)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect((res) => {
-            expect(res.body).to.be.an('array').and.to.have.length.above(0);
-          })
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
           .end(done);
       }); // it()
 
-      it('POST invalid data should return status 400 and an error message', (done) => {
-        request(app)
-          .post(`/acts/${actId}/likes`)
-          .send({})
-          .expect(400)
-          .expect('Content-Type', /json/)
-          .expect((res) => {
-            expect(res.body).to.have.property('message', 'Like validation failed');
-          })
-          .end(done);
-      }); // it()
+      it('POST valid data should return status 201 and the created Like', done => {
+        utils.getApiToken((err, token) => {
+          expect(err).to.not.exist;
 
-      it('POST valid data should return status 201 and the created Like', (done) => {
-        request(app)
-          .post(`/acts/${actId}/likes`)
-          .send({ user: ObjectId() })
-          .expect(201)
-          .expect('Content-Type', /json/)
-          .expect('Location', /likes/)
-          .expect((res) => {
-            expect(res.body).be.be.an('object').and.to.have.property('_id');
-            expect(res.body).to.have.deep.property('target.act', actId.toString());
-          })
-          .end(done);
+          request(app)
+            .post(`/acts/${actId}/likes`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({})
+            .expect(201)
+            .expect('Content-Type', /json/)
+            .expect('Location', /likes/)
+            .expect(res => {
+              expect(res.body).be.be.an('object').and.to.have.property('_id');
+              expect(res.body).to.have.deep.property('target.act', actId.toString());
+            })
+            .end(done);
+        });
       }); // it()
 
       describe('/:like', () => {
-        it('DELETE invalid ID should return status 400 and an error message', (done) => {
+        it('DELETE invalid ID should return status 400 and an error message', done => {
           request(app)
             .delete(`/acts/${actId}/likes/invalid`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect((res) => {
-              expect(res.body).to.have.property('message', 'Invalid like');
-            })
+            .expect(res => expect(res.body).to.have.property('message', 'Invalid like'))
             .end(done);
         }); // it()
 
-        it('DELETE non-existent ID should return status 400 and an error message', (done) => {
+        it('DELETE non-existent ID should return status 400 and an error message', done => {
           request(app)
             .delete(`/acts/${actId}/likes/${ObjectId()}`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect((res) => {
-              expect(res.body).to.have.property('message');
-            })
+            .expect(res => expect(res.body).to.have.property('message'))
             .end(done);
         }); // it()
 
-        it('DELETE valid ID should return status 204 and delete the Like', (done) => {
+        it('DELETE valid ID should return status 204 and delete the Like', done => {
           request(app)
             .delete(`/acts/${actId}/likes/${likeId}`)
             .expect(204)
-            .expect((res) => {
-              expect(res.body).to.be.empty;
-            })
+            .expect(res => expect(res.body).to.be.empty)
             .end(() => {
               Like.findById(likeId, (err, like) => {
                 expect(err).to.not.exist;
@@ -253,7 +233,7 @@ describe('/acts', () => {
         content: { text: 'Comment text' }
       };
 
-      beforeEach((done) => {
+      beforeEach(done => {
         validComment.target = { act: actId };
 
         new Comment(validComment).save((err, comment) => {
@@ -265,81 +245,81 @@ describe('/acts', () => {
         });
       }); // beforeEach()
 
-      afterEach((done) => {
-        Comment.remove({}, (err) => {
+      afterEach(done => {
+        Comment.remove({}, err => {
           if (err) { return done(err); }
 
           done();
         });
       }); // afterEach()
 
-      it('GET should return status 200 and a non-empty array', (done) => {
+      it('GET should return status 200 and a non-empty array', done => {
         request(app)
           .get(`/acts/${actId}/comments`)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect((res) => {
-            expect(res.body).to.be.an('array').and.to.have.length.above(0);
-          })
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
           .end(done);
       }); // it()
 
-      it('POST invalid data should return status 400 and an error message', (done) => {
-        request(app)
-          .post(`/acts/${actId}/comments`)
-          .send({})
-          .expect(400)
-          .expect('Content-Type', /json/)
-          .expect((res) => {
-            expect(res.body).to.have.property('message', 'Comment validation failed');
-          })
-          .end(done);
+      it('POST invalid data should return status 400 and an error message', done => {
+        utils.getApiToken((err, token) => {
+          expect(err).to.not.exist;
+
+          request(app)
+            .post(`/acts/${actId}/comments`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({})
+            .expect(400)
+            .expect('Content-Type', /json/)
+            .expect(res => expect(res.body).to.have.property('message', 'Comment validation failed'))
+            .end(done);
+        });
       }); // it()
 
-      it('POST valid data should return status 201 and the created Comment', (done) => {
-        request(app)
-          .post(`/acts/${actId}/comments`)
-          .send(validComment)
-          .expect(201)
-          .expect('Content-Type', /json/)
-          .expect('Location', /comments/)
-          .expect((res) => {
-            expect(res.body).be.be.an('object').and.to.have.property('_id');
-            expect(res.body).to.have.deep.property('target.act', actId.toString());
-          })
-          .end(done);
+      it('POST valid data should return status 201 and the created Comment', done => {
+        utils.getApiToken((err, token) => {
+          expect(err).to.not.exist;
+
+          request(app)
+            .post(`/acts/${actId}/comments`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(validComment)
+            .expect(201)
+            .expect('Content-Type', /json/)
+            .expect('Location', /comments/)
+            .expect(res => {
+              expect(res.body).be.be.an('object').and.to.have.property('_id');
+              expect(res.body).to.have.deep.property('target.act', actId.toString());
+            })
+            .end(done);
+        });
       }); // it()
 
       describe('/:comment', () => {
-        it('DELETE invalid ID should return status 400 and an error message', (done) => {
+        it('DELETE invalid ID should return status 400 and an error message', done => {
           request(app)
             .delete(`/acts/${actId}/comments/invalid`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect((res) => {
-              expect(res.body).to.have.property('message', 'Invalid comment');
-            })
+            .expect(res => expect(res.body).to.have.property('message', 'Invalid comment'))
             .end(done);
         }); // it()
 
-        it('DELETE non-existent ID should return status 400 and an error message', (done) => {
+        it('DELETE non-existent ID should return status 400 and an error message', done => {
           request(app)
             .delete(`/acts/${actId}/comments/${ObjectId()}`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect((res) => {
-              expect(res.body).to.have.property('message');
-            })
+            .expect(res => expect(res.body).to.have.property('message'))
             .end(done);
         }); // it()
 
-        it('DELETE valid ID should return status 204 and delete the Comment', (done) => {
+        it('DELETE valid ID should return status 204 and delete the Comment', done => {
           request(app)
             .delete(`/acts/${actId}/comments/${commentId}`)
             .expect(204)
-            .expect((res) => {
-              expect(res.body).to.be.empty;
-            })
+            .expect(res => expect(res.body).to.be.empty)
             .end(() => {
               Comment.findById(commentId, (err, comment) => {
                 expect(err).to.not.exist;
@@ -350,20 +330,20 @@ describe('/acts', () => {
             });
         }); // it()
 
-        it('PUT extra data should be ignored', (done) => {
+        it('PUT extra data should be ignored', done => {
           request(app)
             .put(`/acts/${actId}/comments/${commentId}`)
             .send({ extra: 'Extra data' })
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect((res) => {
+            .expect(res => {
               expect(res.body).to.have.property('_id', commentId.toString());
               expect(res.body).to.not.have.property('extra');
             })
             .end(done);
         }); // it()
 
-        it('PUT valid data should return status 200 and update the Comment', (done) => {
+        it('PUT valid data should return status 200 and update the Comment', done => {
           var update = { content: { text: 'Updated text' } };
 
           request(app)
@@ -371,7 +351,7 @@ describe('/acts', () => {
             .send(update)
             .expect(200)
             .expect('Content-Type', /json/)
-            .expect((res) => {
+            .expect(res => {
               expect(res.body).to.have.property('_id', commentId.toString());
               expect(res.body).to.have.property('modified');
               expect(res.body).to.have.deep.property('content.text', update.content.text);
