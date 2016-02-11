@@ -1,20 +1,19 @@
 var _ = require('lodash'),
+    routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router(),
-    route = require('../utils/route');
+    Like = require('../models/Like');
 
-var Like = require('../models/Like');
-
-router.param('like', _.partialRight(route.paramHandler, Like));
+router.param('like', _.partialRight(routeUtils.paramHandler, Like));
 
 /**
  * GET /likes
  */
-router.get('/', _.partialRight(route.getAll, Like));
+router.get('/', _.partialRight(routeUtils.getAll, Like));
 
 /**
  * DELETE /likes/:like
  */
-router.delete('/:like', _.partialRight(route.deleteByParam, 'like'));
+router.delete('/:like', _.partialRight(routeUtils.deleteByParam, 'like'));
 
 module.exports = router;

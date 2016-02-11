@@ -1,6 +1,6 @@
-var utils = require('../../utils/tests'),
+var _ = require('lodash'),
+    testUtils = require('../../utils/tests'),
     expect = require('chai').expect,
-    _ = require('lodash'),
     Deed = require('../../models/Deed');
 
 var validDeed = {
@@ -9,46 +9,30 @@ var validDeed = {
 };
 
 describe('Deed', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#save()', () => {
-    afterEach((done) => {
-      Deed.remove({}, (err) => {
-        if (err) { return done(err); }
+    afterEach(() => Deed.remove({}));
 
-        done();
-      });
-    }); // afterEach()
-
-    it('should require title, urlTitle and content', (done) => {
-      new Deed().save((err, deed) => {
-        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.title.kind', 'required');
-        expect(err).to.have.deep.property('errors.urlTitle.kind', 'required');
-        expect(err).to.have.deep.property('errors.content.kind', 'required');
-        expect(deed).to.not.exist;
-
-        done();
-      });
+    it('should require title, urlTitle and content', () => {
+      return new Deed().save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.title.kind', 'required');
+          expect(err).to.have.deep.property('errors.urlTitle.kind', 'required');
+          expect(err).to.have.deep.property('errors.content.kind', 'required');
+        });
     }); // it()
 
-    it('should create urlTitle as a kebab case copy of title', (done) => {
-      new Deed(validDeed).save((err, deed) => {
-        expect(err).to.not.exist;
-        expect(deed).to.have.property('urlTitle', _.kebabCase(validDeed.title));
-
-        done();
-      });
+    it('should save a valid Deed', () => {
+      return new Deed(validDeed).save()
+        .then(deed => expect(deed).to.be.an('object').and.an.instanceof(Deed));
     }); // it()
 
-    it('should save a valid Deed', (done) => {
-      new Deed(validDeed).save((err, deed) => {
-        expect(err).to.not.exist;
-        expect(deed).to.be.an('object').and.an.instanceof(Deed);
-
-        done();
-      });
+    it('should create urlTitle as a kebab case copy of title', () => {
+      return new Deed(validDeed).save()
+        .then(deed => expect(deed).to.have.property('urlTitle', _.kebabCase(validDeed.title)));
     }); // it()
   }); // describe()
 

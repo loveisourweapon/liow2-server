@@ -1,4 +1,4 @@
-var utils = require('../utils/models'),
+var modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -10,11 +10,13 @@ var CampaignSchema = new mongoose.Schema({
   deeds: {
     type: [{ type: ObjectId, ref: 'Deed' }],
     required: true,
-    validate: [utils.hasOne, 'At least one deed is required', 'hasdeed']
+    validate: [modelUtils.hasOne, 'At least one deed is required', 'hasdeed']
   }
 });
 
-CampaignSchema.statics.getFilter = function() {
+CampaignSchema.plugin(modelUtils.findOneOrThrow);
+
+CampaignSchema.statics.getFilter = function () {
   return ['dateStart', 'dateEnd', 'active', 'deeds'];
 };
 

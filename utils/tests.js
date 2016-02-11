@@ -1,5 +1,5 @@
 var config = require('../config'),
-    request = require('supertest'),
+    request = require('supertest-as-promised'),
     mongoose = require('mongoose'),
     app = require('../app'),
     User = require('../models/User');
@@ -14,85 +14,70 @@ var credentials = {
 /**
  * Create a new database connection if there isn't an existing connection
  *
- * @param {Function} done
+ * @returns {MongooseThenable}
  */
-function dbConnect(done) {
+function dbConnect() {
   if (mongoose.connection.readyState === 0) {
-    mongoose.connect(config.db.url)
-      .then(() => done())
-      .catch(err => done(err));
+    return mongoose.connect(config.db.url);
   } else {
-    done();
+    return Promise.resolve();
   }
 }
 
 /**
  * Disconnect database connection
  *
- * @param {Function} done
+ * @returns {MongooseThenable}
  */
-function dbDisconnect(done) {
-  mongoose.disconnect()
-    .then(() => done())
-    .catch(err => done(err));
+function dbDisconnect() {
+  return mongoose.disconnect();
 }
 
 /**
  * Save a User to the database
  *
- * @param {Object} credentials
- * @param {Function} done
+ * @param {object} credentials
+ *
+ * @returns {Promise}
  */
-function saveUser(credentials, done) {
-  var user = new User(credentials);
-
-  user.save((err, user) => {
-    if (err) { return done(err); }
-
-    done(null, user);
-  });
+function saveUser(credentials) {
+  return new User(credentials).save();
 }
 
 /**
  * Remove all Users from the database
  *
- * @param {Function} done
+ * @returns {Promise}
  */
-function removeUsers(done) {
-  User.remove({}, (err) => {
-    if (err) { return done(err); }
-
-    done();
-  });
+function removeUsers() {
+  return User.remove({});
 }
 
 /**
  * Get a token for testing the API
  * Connects to the database and saves a testing User
  *
- * @param {Function} done
+ * @returns {Promise}
  */
-function getApiToken(done) {
-  dbConnect((err) => {
-    if (err) { return done(err); }
+function getApiToken() {
+  return new Promise((resolve, reject) => {
+    dbConnect()
+      .then(() => saveUser(credentials))
+      .then(() => {
+        return request(app)
+          .post('/auth/login')
+          .send(`email=${credentials.email}`)
+          .send(`password=${credentials.password}`)
+          .then(res => {
+            if (!res.body.token) {
+              return reject(new Error('Failed getting accessing token'));
+            }
 
-    saveUser(credentials, (err) => {
-      if (err) { return done(err); }
-
-      request(app)
-        .post('/auth/login')
-        .send(`email=${credentials.email}`)
-        .send(`password=${credentials.password}`)
-        .end((err, res) => {
-          if (err) { return done(err); }
-
-          if (!res.body.token) {
-            return done(new Error('Failed getting accessing token'));
-          }
-
-          done(null, res.body.token);
-        });
-    });
+            resolve(res.body.token);
+          })
+          .catch(err => reject(err));
+      })
+      .catch(err => reject(err));
   });
 }
 

@@ -1,6 +1,8 @@
 var _ = require('lodash'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    uniqueValidator = require('mongoose-unique-validator');
 
 var NewsSchema = new mongoose.Schema({
   author: { type: ObjectId, ref: 'User', required: true },
@@ -13,12 +15,15 @@ var NewsSchema = new mongoose.Schema({
   modified: Date
 });
 
-NewsSchema.pre('validate', function(next) {
+NewsSchema.plugin(modelUtils.findOneOrThrow);
+NewsSchema.plugin(uniqueValidator, { message: 'Title is already taken' });
+
+NewsSchema.pre('validate', function (next) {
   this.urlTitle = _.kebabCase(this.title);
   next();
 });
 
-NewsSchema.statics.getFilter = function() {
+NewsSchema.statics.getFilter = function () {
   return ['author', 'title', 'content', 'videoUrl', 'coverImage'];
 };
 

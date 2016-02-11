@@ -1,5 +1,5 @@
 var _ = require('lodash'),
-    utils = require('../utils/models'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -13,7 +13,7 @@ var LikeSchema = new mongoose.Schema({
     },
     required: true,
     validate: [
-      _.partialRight(utils.oneOf, ['deed', 'act', 'news']),
+      _.partialRight(modelUtils.oneOf, ['deed', 'act', 'news']),
       'One target should be set',
       'onetarget'
     ]
@@ -21,7 +21,9 @@ var LikeSchema = new mongoose.Schema({
   created: { type: Date, default: Date.now, required: true }
 });
 
-LikeSchema.statics.getFilter = function() {
+LikeSchema.plugin(modelUtils.findOneOrThrow);
+
+LikeSchema.statics.getFilter = function () {
   return ['user'];
 };
 
@@ -34,7 +36,7 @@ module.exports = mongoose.model('Like', LikeSchema);
  * @apiSuccess {string} likes._id         Like ObjectId
  * @apiSuccess {string} likes.user        User ObjectId
  * @apiSuccess {Date}   likes.created     Created timestamp
- * @apiSuccess {Object} likes.target      Target object. Only one of deed, act or news will be set
+ * @apiSuccess {object} likes.target      Target object. Only one of deed, act or news will be set
  * @apiSuccess {string} likes.target.deed Deed ObjectId
  * @apiSuccess {string} likes.target.act  Act ObjectId
  * @apiSuccess {string} likes.target.news News ObjectId
@@ -58,7 +60,7 @@ module.exports = mongoose.model('Like', LikeSchema);
  * @apiSuccess (201) {string} like._id         Like ObjectId
  * @apiSuccess (201) {string} like.user        User ObjectId
  * @apiSuccess (201) {Date}   like.created     Created timestamp
- * @apiSuccess (201) {Object} like.target      Target object. Only one of deed, act or news will be set
+ * @apiSuccess (201) {object} like.target      Target object. Only one of deed, act or news will be set
  * @apiSuccess (201) {string} like.target.deed Deed ObjectId
  * @apiSuccess (201) {string} like.target.act  Act ObjectId
  * @apiSuccess (201) {string} like.target.news News ObjectId

@@ -30,13 +30,13 @@ module.exports = {
       return next(new Error(`Invalid ${name}`));
     }
 
-    model.findById(id, (err, document) => {
-      if (err) { return next(err); }
-      if (!document) { return next(new Error(`${model.modelName} ${id} not found`)); }
-
-      req[name] = document;
-      next();
-    });
+    model.findById(id)
+      .exec()
+      .then(document => {
+        req[name] = document;
+        next();
+      })
+      .catch(err => next(err));
   },
 
   /**
@@ -51,33 +51,32 @@ module.exports = {
     var conditions = {};
     if (req.query.query && _.isFunction(model.getSearchable)) {
       // Search if search query included
-      conditions.$or = _.map(model.getSearchable(), (field) => {
+      conditions.$or = _.map(model.getSearchable(), field => {
         return { [field]: new RegExp(_.escapeRegExp(req.query.query), 'i') };
       });
     } else {
       // Match schema fields
-      var fields = _.filter(_.keys(req.query), (field) => _.has(model.schema.paths, field));
+      var fields = _.filter(_.keys(req.query), field => _.has(model.schema.paths, field));
       if (fields.length) {
-        conditions.$and = _.map(fields, (field) => {
+        conditions.$and = _.map(fields, field => {
           return { [field]: req.query[field] };
         });
       }
     }
 
-    model
-      .find(conditions)
+    model.find(conditions)
       .populate(_.isString(populate) ? populate : '')
       .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
-      .exec((err, documents) => {
-        if (err) { return next(err); }
-
+      .exec()
+      .then(documents => {
         // Limit returned fields
         if (req.query.fields && _.isString(req.query.fields)) {
           documents = _.map(documents, _.partialRight(_.pick, req.query.fields.split(',')));
         }
 
         res.status(200).json(documents);
-      });
+      })
+      .catch(err => next(err));
   },
 
   /**
@@ -108,11 +107,10 @@ module.exports = {
       return next(new Error(`Invalid target ${target}`));
     }
 
-    model.find({ [`target.${target}`]: req[target]._id }, (err, documents) => {
-      if (err) { return next(err); }
-
-      res.status(200).json(documents);
-    });
+    model.find({ [`target.${target}`]: req[target]._id })
+      .exec()
+      .then(documents => res.status(200).json(documents))
+      .catch(err => next(err));
   },
 
   /**
@@ -131,6 +129,7 @@ module.exports = {
     req.body.modified = new Date();
 
     model.findById(req[param]._id)
+      .exec()
       .then(document => _.merge(document, req.body).save())
       .then(document => res.status(200).json(document))
       .catch(err => next(err));
@@ -145,11 +144,9 @@ module.exports = {
       return next(new Error(`Invalid param ${param}`));
     }
 
-    req[param].remove((err) => {
-      if (err) { return next(err); }
-
-      res.status(204).send();
-    });
+    req[param].remove()
+      .then(() => res.status(204).send())
+      .catch(err => next(err));
   },
 
   /**
@@ -165,6 +162,7 @@ module.exports = {
       if (err) { return next(err); }
 
       User.findById(userId)
+        .exec()
         .then(user => {
           req.user = user;
           next();

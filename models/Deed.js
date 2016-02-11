@@ -1,5 +1,7 @@
 var _ = require('lodash'),
-    mongoose = require('mongoose');
+    modelUtils = require('../utils/models'),
+    mongoose = require('mongoose'),
+    uniqueValidator = require('mongoose-unique-validator');
 
 var DeedSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -12,12 +14,15 @@ var DeedSchema = new mongoose.Schema({
   modified: Date
 });
 
-DeedSchema.pre('validate', function(next) {
+DeedSchema.plugin(modelUtils.findOneOrThrow);
+DeedSchema.plugin(uniqueValidator, { message: 'Title is already taken' });
+
+DeedSchema.pre('validate', function (next) {
   this.urlTitle = _.kebabCase(this.title);
   next();
 });
 
-DeedSchema.statics.getFilter = function() {
+DeedSchema.statics.getFilter = function () {
   return ['title', 'content', 'videoUrl', 'coverImage'];
 };
 

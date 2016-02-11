@@ -1,5 +1,5 @@
 var _ = require('lodash'),
-    utils = require('../utils/models'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId,
     uniqueValidator = require('mongoose-unique-validator');
@@ -23,7 +23,7 @@ var GroupSchema = new mongoose.Schema({
     type: [{ type: ObjectId, ref: 'User' }],
     required: true,
     validate: [
-      { validator: utils.hasOne, msg: 'An admin user is required', type: 'hasadmin' },
+      { validator: modelUtils.hasOne, msg: 'An admin user is required', type: 'hasadmin' },
       { validator: validateOwnerIsAdmin, msg: 'The owner needs to be an admin', type: 'ownerisadmin' }
     ]
   },
@@ -35,19 +35,19 @@ var GroupSchema = new mongoose.Schema({
   modified: Date
 });
 
-GroupSchema.plugin(utils.findOneOrThrow);
+GroupSchema.plugin(modelUtils.findOneOrThrow);
 GroupSchema.plugin(uniqueValidator, { message: 'Name is already taken' });
 
-GroupSchema.pre('validate', function(next) {
+GroupSchema.pre('validate', function (next) {
   this.urlName = _.kebabCase(this.name);
   next();
 });
 
-GroupSchema.statics.getFilter = function() {
+GroupSchema.statics.getFilter = function () {
   return ['name', 'logo', 'coverImage', 'welcomeMessage'];
 };
 
-GroupSchema.statics.getSearchable = function() {
+GroupSchema.statics.getSearchable = function () {
   return ['name'];
 };
 

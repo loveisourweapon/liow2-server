@@ -1,83 +1,56 @@
-var utils = require('../../utils/tests'),
-    expect = require('chai').expect,
-    _ = require('lodash');
+var _ = require('lodash'),
+    testUtils = require('../../utils/tests'),
+    expect = require('chai').expect;
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Comment = require('../../models/Comment');
 
 var validComment = {
   user: ObjectId(),
-  target: {
-    deed: ObjectId()
-  },
-  content: {
-    text: 'Comment text'
-  }
+  target: { deed: ObjectId() },
+  content: { text: 'Comment text' }
 };
 
 describe('Comment', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#save()', () => {
-    afterEach((done) => {
-      Comment.remove({}, (err) => {
-        if (err) { return done(err); }
+    afterEach(() => Comment.remove({}));
 
-        done();
-      });
-    }); // afterEach()
-
-    it('should require user, target and content', (done) => {
-      new Comment().save((err, comment) => {
-        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.user.kind', 'required');
-        expect(err).to.have.deep.property('errors.target.kind', 'required');
-        expect(err).to.have.deep.property('errors.content.kind', 'required');
-        expect(comment).to.not.exist;
-
-        done();
-      });
+    it('should require user, target and content', () => {
+      return new Comment().save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.user.kind', 'required');
+          expect(err).to.have.deep.property('errors.target.kind', 'required');
+          expect(err).to.have.deep.property('errors.content.kind', 'required');
+        });
     }); // it()
 
-    it('should require a single target', (done) => {
-      new Comment(_.defaults({ target: {} }, validComment)).save((err, comment) => {
-        expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
-        expect(comment).to.not.exist;
+    it('should require a single target', () => {
+      return new Comment(_.defaults({ target: {} }, validComment)).save()
+        .catch(err => {
+          expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
 
-        new Comment(
-          _.defaults({
+          return new Comment(_.defaults({
             target: {
               user: ObjectId(),
               deed: ObjectId()
             }
-          }, validComment)
-        ).save((err, comment) => {
-          expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
-          expect(comment).to.not.exist;
-
-          done();
-        });
-      });
+          }, validComment)).save();
+        })
+        .catch(err => expect(err).to.have.deep.property('errors.target.kind', 'onetarget'));
     }); // it()
 
-    it('should require content text or image', (done) => {
-      new Comment(_.defaults({ content: {} }, validComment)).save((err, comment) => {
-        expect(err).to.have.deep.property('errors.content.kind', 'hascontent');
-        expect(comment).to.not.exist;
-
-        done();
-      });
-
+    it('should require content text or image', () => {
+      return new Comment(_.defaults({ content: {} }, validComment)).save()
+        .catch(err => expect(err).to.have.deep.property('errors.content.kind', 'hascontent'));
     }); // it()
 
-    it('should save a valid Comment', (done) => {
-      new Comment(validComment).save((err, comment) => {
-        expect(err).to.not.exist;
-        expect(comment).to.be.an('object').and.an.instanceof(Comment);
-
-        done();
-      });
+    it('should save a valid Comment', () => {
+      return new Comment(validComment).save()
+        .then(comment => expect(comment).to.be.an('object').and.an.instanceof(Comment));
     }); // it()
   }); // describe()
 

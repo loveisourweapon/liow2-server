@@ -1,5 +1,5 @@
-var utils = require('../../utils/tests'),
-    request = require('supertest'),
+var testUtils = require('../../utils/tests'),
+    request = require('supertest-as-promised'),
     expect = require('chai').expect,
     app = require('../../app');
 
@@ -15,113 +15,91 @@ var validDeed = {
 };
 
 describe('/deeds', () => {
-  before(utils.dbConnect);
-  beforeEach(utils.removeUsers);
-  after(utils.dbDisconnect);
-
-  afterEach((done) => {
-    Deed.remove({}, err => {
-      if (err) { return done(err); }
-
-      done();
-    });
-  }); // afterEach()
+  before(testUtils.dbConnect);
+  beforeEach(testUtils.removeUsers);
+  after(testUtils.dbDisconnect);
+  afterEach(() => Deed.remove({}));
 
   describe('/', () => {
-    it('GET should return status 200 and an empty array', done => {
-      request(app)
+    it('GET should return status 200 and an empty array', () => {
+      return request(app)
         .get('/deeds')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(res => expect(res.body).to.be.an('array').and.to.have.length(0))
-        .end(done);
+        .expect(res => expect(res.body).to.be.an('array').and.to.have.length(0));
     }); // it()
 
-    it('GET should return status 200 and a non-empty array', done => {
-      new Deed(validDeed).save((err) => {
-        if (err) { return done(err); }
-
-        request(app)
-          .get('/deeds')
-          .expect(200)
-          .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
-          .end(done);
-      });
+    it('GET should return status 200 and a non-empty array', () => {
+      return new Deed(validDeed).save()
+        .then(() => {
+          return request(app)
+            .get('/deeds')
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0));
+        });
     }); // it()
 
-    it('POST invalid data should return status 400 and an error message', done => {
-      utils.getApiToken((err, token) => {
-        expect(err).to.not.exist;
-
-        request(app)
-          .post('/deeds')
-          .set('Authorization', `Bearer ${token}`)
-          .send({})
-          .expect(400)
-          .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).property('message', 'Deed validation failed'))
-          .end(done);
-      });
+    it('POST invalid data should return status 400 and an error message', () => {
+      return testUtils.getApiToken()
+        .then(token => {
+          return request(app)
+            .post('/deeds')
+            .set('Authorization', `Bearer ${token}`)
+            .send({})
+            .expect(400)
+            .expect('Content-Type', /json/)
+            .expect(res => expect(res.body).property('message', 'Deed validation failed'));
+        });
     }); // it()
 
-    it('POST valid data should return status 201 and the created Deed', done => {
-      utils.getApiToken((err, token) => {
-        expect(err).to.not.exist;
-
-        request(app)
-          .post('/deeds')
-          .set('Authorization', `Bearer ${token}`)
-          .send(validDeed)
-          .expect(201)
-          .expect('Content-Type', /json/)
-          .expect('Location', /deeds/)
-          .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id'))
-          .end(done);
-      });
+    it('POST valid data should return status 201 and the created Deed', () => {
+      return testUtils.getApiToken()
+        .then(token => {
+          return request(app)
+            .post('/deeds')
+            .set('Authorization', `Bearer ${token}`)
+            .send(validDeed)
+            .expect(201)
+            .expect('Content-Type', /json/)
+            .expect('Location', /deeds/)
+            .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id'));
+        });
     }); // it()
   }); // describe()
 
   describe('/:deed', () => {
-    beforeEach((done) => {
-      new Deed(validDeed).save((err, deed) => {
-        if (err) { return done(err); }
+    beforeEach(() => {
+      return new Deed(validDeed).save()
+        .then(deed => deedId = deed._id);
+    });
 
-        deedId = deed._id;
-
-        done();
-      });
-    }); // beforeEach()
-
-    it('GET invalid ID should return status 400 and an error message', done => {
-      request(app)
+    it('GET invalid ID should return status 400 and an error message', () => {
+      return request(app)
         .get('/deeds/invalid')
         .expect(400)
         .expect('Content-Type', /json/)
-        .expect(res => expect(res.body).to.have.property('message', 'Invalid deed'))
-        .end(done);
+        .expect(res => expect(res.body).to.have.property('message', 'Invalid deed'));
     }); // it()
 
-    it('GET non-existent ID should return status 400 and an error message', done => {
-      request(app)
+    it('GET non-existent ID should return status 404 and an error message', () => {
+      return request(app)
         .get(`/deeds/${ObjectId()}`)
-        .expect(400)
+        .expect(404)
         .expect('Content-Type', /json/)
-        .expect(res => expect(res.body).to.have.property('message'))
-        .end(done);
+        .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
     }); // it()
 
-    it('GET valid ID should return status 200 and the Deed', done => {
-      request(app)
+    it('GET valid ID should return status 200 and the Deed', () => {
+      return request(app)
         .get(`/deeds/${deedId}`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(res => expect(res.body).to.have.property('_id', deedId.toString()))
-        .end(done);
+        .expect(res => expect(res.body).to.have.property('_id', deedId.toString()));
     }); // it()
 
-    it('PUT extra data should be ignored', done => {
-      request(app)
+    it('PUT extra data should be ignored', () => {
+      return request(app)
         .put(`/deeds/${deedId}`)
         .send({ extra: 'Extra data' })
         .expect(200)
@@ -129,14 +107,13 @@ describe('/deeds', () => {
         .expect(res => {
           expect(res.body).to.have.property('_id', deedId.toString());
           expect(res.body).to.not.have.property('extra');
-        })
-        .end(done);
+        });
     }); // it()
 
-    it('PUT valid data should return status 200 and update the Deed', done => {
+    it('PUT valid data should return status 200 and update the Deed', () => {
       var update = { content: 'Updated content' };
 
-      request(app)
+      return request(app)
         .put(`/deeds/${deedId}`)
         .send(update)
         .expect(200)
@@ -145,23 +122,16 @@ describe('/deeds', () => {
           expect(res.body).to.have.property('_id', deedId.toString());
           expect(res.body).to.have.property('modified');
           expect(res.body).to.have.property('content', update.content);
-        })
-        .end(done);
+        });
     }); // it()
 
-    it('DELETE should return status 204 and delete the Deed', done => {
-      request(app)
+    it('DELETE should return status 204 and delete the Deed', () => {
+      return request(app)
         .delete(`/deeds/${deedId}`)
         .expect(204)
         .expect(res => expect(res.body).to.be.empty)
-        .end(() => {
-          Deed.findById(deedId, (err, deed) => {
-            expect(err).to.not.exist;
-            expect(deed).to.not.exist;
-
-            done();
-          });
-        });
+        .then(() => Deed.findById(deedId).exec())
+        .catch(err => expect(err).to.have.property('message', 'Not Found'));
     }); // it()
 
     describe('/likes', () => {
@@ -170,47 +140,33 @@ describe('/deeds', () => {
         user: ObjectId()
       };
 
-      beforeEach(done => {
+      beforeEach(() => {
         validLike.target = { deed: deedId };
 
-        new Like(validLike).save((err, like) => {
-          if (err) { return done(err); }
+        return new Like(validLike).save()
+          .then(like => likeId = like._id);
+      });
+      afterEach(() => Like.remove({}));
 
-          likeId = like._id;
-
-          done();
-        });
-      }); // beforeEach()
-
-      afterEach(done => {
-        Like.remove({}, err => {
-          if (err) { return done(err); }
-
-          done();
-        });
-      }); // afterEach()
-
-      it('GET should return status 200 and a non-empty array', done => {
-        request(app)
+      it('GET should return status 200 and a non-empty array', () => {
+        return request(app)
           .get(`/deeds/${deedId}/likes`)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
-          .end(done);
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0));
       }); // it()
 
-      it('POST invalid data should return status 400 and an error message', done => {
-        request(app)
+      it('POST invalid data should return status 400 and an error message', () => {
+        return request(app)
           .post(`/deeds/${deedId}/likes`)
           .send({})
           .expect(400)
           .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.have.property('message', 'Like validation failed'))
-          .end(done);
+          .expect(res => expect(res.body).to.have.property('message', 'Like validation failed'));
       }); // it()
 
-      it('POST valid data should return status 201 and the created Like', done => {
-        request(app)
+      it('POST valid data should return status 201 and the created Like', () => {
+        return request(app)
           .post(`/deeds/${deedId}/likes`)
           .send({ user: ObjectId() })
           .expect(201)
@@ -219,44 +175,33 @@ describe('/deeds', () => {
           .expect(res => {
             expect(res.body).be.be.an('object').and.to.have.property('_id');
             expect(res.body).to.have.deep.property('target.deed', deedId.toString());
-          })
-          .end(done);
+          });
       }); // it()
 
       describe('/:like', () => {
-        it('DELETE invalid ID should return status 400 and an error message', done => {
-          request(app)
+        it('DELETE invalid ID should return status 400 and an error message', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/likes/invalid`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect(res => expect(res.body).to.have.property('message', 'Invalid like'))
-            .end(done);
+            .expect(res => expect(res.body).to.have.property('message', 'Invalid like'));
         }); // it()
 
-        it('DELETE non-existent ID should return status 400 and an error message', done => {
-          request(app)
+        it('DELETE non-existent ID should return status 404 and an error message', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/likes/${ObjectId()}`)
-            .expect(400)
+            .expect(404)
             .expect('Content-Type', /json/)
-            .expect((res) => {
-              expect(res.body).to.have.property('message');
-            })
-            .end(done);
+            .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
         }); // it()
 
-        it('DELETE valid ID should return status 204 and delete the Like', done => {
-          request(app)
+        it('DELETE valid ID should return status 204 and delete the Like', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/likes/${likeId}`)
             .expect(204)
             .expect(res => expect(res.body).to.be.empty)
-            .end(() => {
-              Like.findById(likeId, (err, like) => {
-                expect(err).to.not.exist;
-                expect(like).to.not.exist;
-
-                done();
-              });
-            });
+            .then(() => Like.findById(likeId).exec())
+            .catch(err => expect(err).to.have.property('message', 'Not Found'));
         }); // it()
       }); // describe()
     }); // describe()
@@ -268,47 +213,33 @@ describe('/deeds', () => {
         content: { text: 'Comment text' }
       };
 
-      beforeEach(done => {
+      beforeEach(() => {
         validComment.target = { deed: deedId };
 
-        new Comment(validComment).save((err, comment) => {
-          if (err) { return done(err); }
+        return new Comment(validComment).save()
+          .then(comment => commentId = comment._id);
+      });
+      afterEach(() => Comment.remove({}));
 
-          commentId = comment._id;
-
-          done();
-        });
-      }); // beforeEach()
-
-      afterEach(done => {
-        Comment.remove({}, err => {
-          if (err) { return done(err); }
-
-          done();
-        });
-      }); // afterEach()
-
-      it('GET should return status 200 and a non-empty array', done => {
-        request(app)
+      it('GET should return status 200 and a non-empty array', () => {
+        return request(app)
           .get(`/deeds/${deedId}/comments`)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0))
-          .end(done);
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.length.above(0));
       }); // it()
 
-      it('POST invalid data should return status 400 and an error message', done => {
-        request(app)
+      it('POST invalid data should return status 400 and an error message', () => {
+        return request(app)
           .post(`/deeds/${deedId}/comments`)
           .send({})
           .expect(400)
           .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.have.property('message', 'Comment validation failed'))
-          .end(done);
+          .expect(res => expect(res.body).to.have.property('message', 'Comment validation failed'));
       }); // it()
 
-      it('POST valid data should return status 201 and the created Comment', done => {
-        request(app)
+      it('POST valid data should return status 201 and the created Comment', () => {
+        return request(app)
           .post(`/deeds/${deedId}/comments`)
           .send(validComment)
           .expect(201)
@@ -317,46 +248,37 @@ describe('/deeds', () => {
           .expect(res => {
             expect(res.body).be.be.an('object').and.to.have.property('_id');
             expect(res.body).to.have.deep.property('target.deed', deedId.toString());
-          })
-          .end(done);
+          });
       }); // it()
 
       describe('/:comment', () => {
-        it('DELETE invalid ID should return status 400 and an error message', done => {
-          request(app)
+        it('DELETE invalid ID should return status 400 and an error message', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/comments/invalid`)
             .expect(400)
             .expect('Content-Type', /json/)
-            .expect(res => expect(res.body).to.have.property('message', 'Invalid comment'))
-            .end(done);
+            .expect(res => expect(res.body).to.have.property('message', 'Invalid comment'));
         }); // it()
 
-        it('DELETE non-existent ID should return status 400 and an error message', done => {
-          request(app)
+        it('DELETE non-existent ID should return status 404 and an error message', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/comments/${ObjectId()}`)
-            .expect(400)
+            .expect(404)
             .expect('Content-Type', /json/)
-            .expect(res => expect(res.body).to.have.property('message'))
-            .end(done);
+            .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
         }); // it()
 
-        it('DELETE valid ID should return status 204 and delete the Comment', done => {
-          request(app)
+        it('DELETE valid ID should return status 204 and delete the Comment', () => {
+          return request(app)
             .delete(`/deeds/${deedId}/comments/${commentId}`)
             .expect(204)
             .expect(res => expect(res.body).to.be.empty)
-            .end(() => {
-              Comment.findById(commentId, (err, comment) => {
-                expect(err).to.not.exist;
-                expect(comment).to.not.exist;
-
-                done();
-              });
-            });
+            .then(() => Comment.findById(commentId).exec())
+            .catch(err => expect(err).to.have.property('message', 'Not Found'));
         }); // it()
 
-        it('PUT extra data should be ignored', done => {
-          request(app)
+        it('PUT extra data should be ignored', () => {
+          return request(app)
             .put(`/deeds/${deedId}/comments/${commentId}`)
             .send({ extra: 'Extra data' })
             .expect(200)
@@ -364,14 +286,13 @@ describe('/deeds', () => {
             .expect(res => {
               expect(res.body).to.have.property('_id', commentId.toString());
               expect(res.body).to.not.have.property('extra');
-            })
-            .end(done);
+            });
         }); // it()
 
-        it('PUT valid data should return status 200 and update the Comment', done => {
+        it('PUT valid data should return status 200 and update the Comment', () => {
           var update = { content: { text: 'Updated text' } };
 
-          request(app)
+          return request(app)
             .put(`/deeds/${deedId}/comments/${commentId}`)
             .send(update)
             .expect(200)
@@ -380,8 +301,7 @@ describe('/deeds', () => {
               expect(res.body).to.have.property('_id', commentId.toString());
               expect(res.body).to.have.property('modified');
               expect(res.body).to.have.deep.property('content.text', update.content.text);
-            })
-            .end(done);
+            });
         }); // it()
       }); // describe()
     }); // describe()

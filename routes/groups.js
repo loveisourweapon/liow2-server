@@ -1,6 +1,6 @@
 var _ = require('lodash'),
-    router = require('express').Router(),
     routeUtils = require('../utils/route'),
+    router = require('express').Router(),
     Group = require('../models/Group');
 
 router.param('group', _.partialRight(routeUtils.paramHandler, Group));
@@ -27,8 +27,7 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body.admins = [req.user._id];
   req.body.country = req.user.country;
 
-  new Group(req.body)
-    .save()
+  new Group(req.body).save()
     .then(group => res.status(201).location(`/groups/${group._id}`).json(group))
     .catch(err => next(err));
 });

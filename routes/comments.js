@@ -1,25 +1,25 @@
 var _ = require('lodash'),
+    routeUtils = require('../utils/route'),
     express = require('express'),
-    router = express.Router(),
-    route = require('../utils/route');
+    router = express.Router();
 
 var Comment = require('../models/Comment');
 
-router.param('comment', _.partialRight(route.paramHandler, Comment));
+router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * GET /comments
  */
-router.get('/', _.partialRight(route.getAll, Comment));
+router.get('/', _.partialRight(routeUtils.getAll, Comment));
 
 /**
  * PUT /comments/:comment
  */
-router.put('/:comment', _.partialRight(route.putByParam, Comment, 'comment'));
+router.put('/:comment', _.partialRight(routeUtils.putByParam, Comment, 'comment'));
 
 /**
  * DELETE /comments/:comment
  */
-router.delete('/:comment', _.partialRight(route.deleteByParam, 'comment'));
+router.delete('/:comment', _.partialRight(routeUtils.deleteByParam, 'comment'));
 
 module.exports = router;

@@ -1,12 +1,12 @@
 var _ = require('lodash'),
+    routeUtils = require('../utils/route'),
     express = require('express'),
-    router = express.Router(),
-    route = require('../utils/route');
+    router = express.Router();
 
 var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country', _.partialRight(route.paramHandler, Country));
+router.param('country', _.partialRight(routeUtils.paramHandler, Country));
 
 /**
  * @api {get} /countries List countries
@@ -15,7 +15,7 @@ router.param('country', _.partialRight(route.paramHandler, Country));
  *
  * @apiUse GetCountriesSuccess
  */
-router.get('/', _.partialRight(route.getAll, Country));
+router.get('/', _.partialRight(routeUtils.getAll, Country));
 
 /**
  * @api {get} /countries/:country Get country
@@ -26,7 +26,7 @@ router.get('/', _.partialRight(route.getAll, Country));
  *
  * @apiUse GetCountrySuccess
  */
-router.get('/:country', _.partialRight(route.getByParam, 'country'));
+router.get('/:country', _.partialRight(routeUtils.getByParam, 'country'));
 
 /**
  * @api {get} /countries/:country/groups Get country groups
@@ -38,11 +38,10 @@ router.get('/:country', _.partialRight(route.getByParam, 'country'));
  * @apiSuccess {Group[]} groups Collection of groups belonging to a country
  */
 router.get('/:country/groups', (req, res, next) => {
-  Group.find({ country: req.country._id }, (err, groups) => {
-    if (err) { return next(err); }
-
-    res.status(200).json(groups);
-  });
+  Group.find({ country: req.country._id })
+    .exec()
+    .then(groups => res.status(200).json(groups))
+    .catch(err => next(err));
 });
 
 module.exports = router;

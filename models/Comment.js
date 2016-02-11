@@ -1,12 +1,12 @@
 var _ = require('lodash'),
-    utils = require('../utils/models'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
 /**
  * Ensure text or image field is included
  *
- * @param {Object} content
+ * @param {object} content
  *
  * @returns {boolean}
  */
@@ -26,7 +26,7 @@ var CommentSchema = new mongoose.Schema({
     },
     required: true,
     validate: [
-      _.partialRight(utils.oneOf, ['user', 'group', 'deed', 'act', 'news']),
+      _.partialRight(modelUtils.oneOf, ['user', 'group', 'deed', 'act', 'news']),
       'One target should be set',
       'onetarget'
     ]
@@ -43,7 +43,9 @@ var CommentSchema = new mongoose.Schema({
   modified: Date
 });
 
-CommentSchema.statics.getFilter = function() {
+CommentSchema.plugin(modelUtils.findOneOrThrow);
+
+CommentSchema.statics.getFilter = function () {
   return ['user', 'content'];
 };
 
@@ -56,10 +58,10 @@ module.exports = mongoose.model('Comment', CommentSchema);
  * @apiSuccess {string}    comments._id           Comment ObjectId
  * @apiSuccess {string}    comments.user          User ObjectId
  * @apiSuccess {Date}      comments.created       Created timestamp
- * @apiSuccess {Object}    comments.content       Content object
+ * @apiSuccess {object}    comments.content       Content object
  * @apiSuccess {string}    comments.content.text  Text content
  * @apiSuccess {string}    comments.content.image Image content
- * @apiSuccess {Object}    comments.target        Target object. Only one of user, group, deed, act or news will be set
+ * @apiSuccess {object}    comments.target        Target object. Only one of user, group, deed, act or news will be set
  * @apiSuccess {string}    comments.target.user   User ObjectId
  * @apiSuccess {string}    comments.target.group  Group ObjectId
  * @apiSuccess {string}    comments.target.deed   Deed ObjectId
@@ -88,10 +90,10 @@ module.exports = mongoose.model('Comment', CommentSchema);
  * @apiSuccess {string}  comment._id           Comment ObjectId
  * @apiSuccess {string}  comment.user          User ObjectId
  * @apiSuccess {Date}    comment.created       Created timestamp
- * @apiSuccess {Object}  comment.content       Content object
+ * @apiSuccess {object}  comment.content       Content object
  * @apiSuccess {string}  comment.content.text  Text content
  * @apiSuccess {string}  comment.content.image Image content
- * @apiSuccess {Object}  comment.target        Target object. Only one of user, group, deed, act or news will be set
+ * @apiSuccess {object}  comment.target        Target object. Only one of user, group, deed, act or news will be set
  * @apiSuccess {string}  comment.target.user   User ObjectId
  * @apiSuccess {string}  comment.target.group  Group ObjectId
  * @apiSuccess {string}  comment.target.deed   Deed ObjectId
@@ -120,10 +122,10 @@ module.exports = mongoose.model('Comment', CommentSchema);
  * @apiSuccess (201) {string}  comment._id           Comment ObjectId
  * @apiSuccess (201) {string}  comment.user          User ObjectId
  * @apiSuccess (201) {Date}    comment.created       Created timestamp
- * @apiSuccess (201) {Object}  comment.content       Content object
+ * @apiSuccess (201) {object}  comment.content       Content object
  * @apiSuccess (201) {string}  comment.content.text  Text content
  * @apiSuccess (201) {string}  comment.content.image Image content
- * @apiSuccess (201) {Object}  comment.target        Target object. Only one of user, group, deed, act or news will be set
+ * @apiSuccess (201) {object}  comment.target        Target object. Only one of user, group, deed, act or news will be set
  * @apiSuccess (201) {string}  comment.target.user   User ObjectId
  * @apiSuccess (201) {string}  comment.target.group  Group ObjectId
  * @apiSuccess (201) {string}  comment.target.deed   Deed ObjectId

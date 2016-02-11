@@ -6,7 +6,7 @@ module.exports = {
   /**
    * Check that exactly one of a set of properties is set on an object
    *
-   * @param {Object} object
+   * @param {object} object
    * @param {string[]} properties
    *
    * @returns {boolean|Error}
@@ -15,7 +15,7 @@ module.exports = {
     if (!_.isObject(object)) { return new Error('Object should be type Object'); }
     if (!_.isArray(properties)) { return new Error('Properties should be an Array of Strings'); }
 
-    return _.some(properties, (property) => {
+    return _.some(properties, property => {
       return (
         _.has(object, property) &&
         _.isEmpty(_.omit(object, property))
@@ -26,7 +26,7 @@ module.exports = {
   /**
    * Check that an array has at least one element
    *
-   * @param {Array} property
+   * @param {array} property
    *
    * @returns {boolean|Error}
    */
@@ -39,7 +39,7 @@ module.exports = {
   /**
    * Mongoose plugin to throw an error when findOne and findById queries return no result
    *
-   * @param {Object} schema
+   * @param {object} schema
    */
   findOneOrThrow(schema) {
     schema.post('findOne', (res, next) => {

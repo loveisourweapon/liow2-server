@@ -1,4 +1,4 @@
-var utils = require('../../utils/tests'),
+var testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
 
 var ObjectId = require('mongoose').Types.ObjectId,
@@ -6,41 +6,28 @@ var ObjectId = require('mongoose').Types.ObjectId,
 
 var validAct = {
   user: ObjectId(),
-  deed: ObjectId(),
-  group: ObjectId()
+  deed: ObjectId()
 };
 
 describe('Act', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#save()', () => {
-    afterEach(done => {
-      Act.remove({}, err => {
-        if (err) { return done(err); }
+    afterEach(() => Act.remove({}));
 
-        done();
-      });
-    }); // afterEach()
-
-    it('should require user and deed', done => {
-      new Act().save((err, act) => {
-        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.user.kind', 'required');
-        expect(err).to.have.deep.property('errors.deed.kind', 'required');
-        expect(act).to.not.exist;
-
-        done();
-      });
+    it('should require user and deed', () => {
+      return new Act().save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.user.kind', 'required');
+          expect(err).to.have.deep.property('errors.deed.kind', 'required');
+        });
     }); // it()
 
-    it('should save a valid Act', done => {
-      new Act(validAct).save((err, act) => {
-        expect(err).to.not.exist;
-        expect(act).to.be.an('object').and.an.instanceof(Act);
-
-        done();
-      });
+    it('should save a valid Act', () => {
+      return new Act(validAct).save()
+        .then(act => expect(act).to.be.an('object').and.an.instanceof(Act));
     }); // it()
   }); // describe()
 

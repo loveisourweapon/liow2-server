@@ -40,8 +40,7 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body.group = ObjectId.isValid(req.body.group) ? ObjectId(req.body.group) : null;
   req.body.deed = ObjectId.isValid(req.body.deed) ? ObjectId(req.body.deed) : null;
 
-  new Act(req.body)
-    .save()
+  new Act(req.body).save()
     .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
     .catch(err => next(err));
 });
@@ -85,8 +84,7 @@ router.post('/:act/likes', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body.user = req.user._id;
   req.body.target = { act: req.act._id };
 
-  new Like(req.body)
-    .save()
+  new Like(req.body).save()
     .then(like => res.status(201).location(`/acts/${req.act._id}/likes/${like._id}`).json(like))
     .catch(err => next(err));
 });
@@ -121,8 +119,7 @@ router.post('/:act/comments', routeUtils.ensureAuthenticated, (req, res, next) =
   req.body.user = req.user._id;
   req.body.target = { act: req.act._id };
 
-  new Comment(req.body)
-    .save()
+  new Comment(req.body).save()
     .then(comment => res.status(201).location(`/acts/${req.act._id}/comments/${comment._id}`).json(comment))
     .catch(err => next(err));
 });

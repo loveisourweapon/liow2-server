@@ -1,6 +1,6 @@
-var utils = require('../../utils/tests'),
-    expect = require('chai').expect,
-    _ = require('lodash');
+var _ = require('lodash'),
+    testUtils = require('../../utils/tests'),
+    expect = require('chai').expect;
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../../models/Like');
@@ -13,57 +13,39 @@ var validLike = {
 };
 
 describe('Like', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#save()', () => {
-    afterEach((done) => {
-      Like.remove({}, (err) => {
-        if (err) { return done(err); }
+    afterEach(() => Like.remove({}));
 
-        done();
-      });
-    }); // afterEach()
-
-    it('should require user and target', (done) => {
-      new Like().save((err, like) => {
-        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.user.kind', 'required');
-        expect(err).to.have.deep.property('errors.target.kind', 'required');
-        expect(like).to.not.exist;
-
-        done();
-      });
+    it('should require user and target', () => {
+      return new Like().save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.user.kind', 'required');
+          expect(err).to.have.deep.property('errors.target.kind', 'required');
+        });
     }); // it()
 
-    it('should require a single target', (done) => {
-      new Like(_.defaults({ target: {} }, validLike)).save((err, like) => {
-        expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
-        expect(like).to.not.exist;
+    it('should require a single target', () => {
+      return new Like(_.defaults({ target: {} }, validLike)).save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
 
-        new Like(
-          _.defaults({
+          new Like(_.defaults({
             target: {
               deed: ObjectId(),
               act: ObjectId()
             }
-          }, validLike)
-        ).save((err, like) => {
-          expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
-          expect(like).to.not.exist;
-
-          done();
+          }, validLike)).save()
+            .catch(err => expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget'));
         });
-      });
     }); // it()
 
-    it('should save a valid Like', (done) => {
-      new Like(validLike).save((err, like) => {
-        expect(err).to.not.exist;
-        expect(like).to.be.an('object').and.an.instanceof(Like);
-
-        done();
-      });
+    it('should save a valid Like', () => {
+      return new Like(validLike).save()
+        .then(like => expect(like).to.be.an('object').and.an.instanceof(Like));
     }); // it()
   }); // describe()
 

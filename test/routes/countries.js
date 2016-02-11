@@ -1,86 +1,62 @@
-var utils = require('../../utils/tests'),
-    request = require('supertest'),
+var testUtils = require('../../utils/tests'),
+    request = require('supertest-as-promised'),
     expect = require('chai').expect,
     app = require('../../app');
 
 var ObjectId = require('mongoose').Types.ObjectId,
-    Country = require('../../models/Country'),
-    countryId = null;
+    Country = require('../../models/Country');
 
+var countryId = null;
 var validCountry = {
   name: 'Australia',
   code: 'AU'
 };
 
 describe('/countries', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
-  beforeEach((done) => {
-    new Country(validCountry).save((err, country) => {
-      if (err) { return done(err); }
-
-      countryId = country._id;
-
-      done();
-    });
-  }); // beforeEach()
-
-  afterEach((done) => {
-    Country.remove({}, (err) => {
-      if (err) { return done(err); }
-
-      done();
-    });
-  }); // afterEach()
+  beforeEach(() => {
+    return new Country(validCountry).save()
+      .then(country => countryId = country._id);
+  });
+  afterEach(() => Country.remove({}));
 
   describe('/', () => {
-    it('GET should return status 200 and an array', (done) => {
-      request(app)
+    it('GET should return status 200 and an array', () => {
+      return request(app)
         .get('/countries')
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.be.an('array');
-        })
-        .end(done);
+        .expect(res => expect(res.body).to.be.an('array'));
     }); // it()
   }); // describe()
 
   describe('/:country', () => {
-    it('GET non-existent ID should return status 400 and an error message', (done) => {
-      request(app)
+    it('GET non-existent ID should return status 404 and an error message', () => {
+      return request(app)
         .get(`/countries/${ObjectId()}`)
-        .expect(400)
+        .expect(404)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.have.property('message');
-        })
-        .end(done);
+        .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
     }); // it()
 
-    it('GET valid ID should return status 200 and a Country', (done) => {
-      request(app)
+    it('GET valid ID should return status 200 and a Country', () => {
+      return request(app)
         .get(`/countries/${countryId}`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.have.property('_id', countryId.toString());
-        })
-        .end(done);
+        .expect(res => expect(res.body).to.have.property('_id', countryId.toString()));
     }); // it()
   }); // describe()
 
   describe('/:country/groups', () => {
-    it('GET should return status 200 and an array', (done) => {
-      request(app)
+    it('GET should return status 200 and an array', () => {
+      return request(app)
         .get(`/countries/${countryId}/groups`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect((res) => {
-          expect(res.body).to.be.an('array');
-        })
-        .end(done);
+        .expect(res => expect(res.body).to.be.an('array'));
     }); // it()
   }); // describe()
 }); // describe()

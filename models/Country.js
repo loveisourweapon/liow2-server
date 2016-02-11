@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var modelUtils = require('../utils/models'),
+    mongoose = require('mongoose');
 
 var CountrySchema = new mongoose.Schema({
   name: { type: String, required: true, index: { unique: true } },
@@ -8,7 +9,9 @@ var CountrySchema = new mongoose.Schema({
   }
 });
 
-CountrySchema.statics.getSearchable = function() {
+CountrySchema.plugin(modelUtils.findOneOrThrow);
+
+CountrySchema.statics.getSearchable = function () {
   return ['code', 'name'];
 };
 

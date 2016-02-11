@@ -1,54 +1,52 @@
 var _ = require('lodash'),
+    routeUtils = require('../utils/route'),
     express = require('express'),
-    router = express.Router(),
-    route = require('../utils/route');
+    router = express.Router();
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Deed = require('../models/Deed'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment');
 
-router.param('deed', _.partialRight(route.paramHandler, Deed));
-router.param('like', _.partialRight(route.paramHandler, Like));
-router.param('comment', _.partialRight(route.paramHandler, Comment));
+router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
+router.param('like', _.partialRight(routeUtils.paramHandler, Like));
+router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * GET /deeds
  */
-router.get('/', _.partialRight(route.getAll, Deed));
+router.get('/', _.partialRight(routeUtils.getAll, Deed));
 
 /**
  * POST /deeds
  */
-router.post('/', route.ensureAuthenticated, (req, res, next) => {
+router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Deed.getFilter());
 
-  new Deed(req.body).save((err, deed) => {
-    if (err) { return next(err); }
-
-    res.status(201).location(`/deeds/${deed._id}`).json(deed);
-  });
+  new Deed(req.body).save()
+    .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
+    .catch(err => next(err));
 });
 
 /**
  * GET /deeds/:deed
  */
-router.get('/:deed', _.partialRight(route.getByParam, 'deed'));
+router.get('/:deed', _.partialRight(routeUtils.getByParam, 'deed'));
 
 /**
  * PUT /deeds/:deed
  */
-router.put('/:deed', _.partialRight(route.putByParam, Deed, 'deed'));
+router.put('/:deed', _.partialRight(routeUtils.putByParam, Deed, 'deed'));
 
 /**
  * DELETE /deeds/:deed
  */
-router.delete('/:deed', _.partialRight(route.deleteByParam, 'deed'));
+router.delete('/:deed', _.partialRight(routeUtils.deleteByParam, 'deed'));
 
 /**
  * GET /deeds/:deed/likes
  */
-router.get('/:deed/likes', _.partialRight(route.getByTarget, Like, 'deed'));
+router.get('/:deed/likes', _.partialRight(routeUtils.getByTarget, Like, 'deed'));
 
 /**
  * POST /deeds/:deed/likes
@@ -58,22 +56,20 @@ router.post('/:deed/likes', (req, res, next) => {
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
   req.body.target = { deed: req.deed._id };
 
-  new Like(req.body).save((err, like) => {
-    if (err) { return next(err); }
-
-    res.status(201).location(`/deeds/${req.deed._id}/likes/${like._id}`).json(like);
-  });
+  new Like(req.body).save()
+    .then(like => res.status(201).location(`/deeds/${req.deed._id}/likes/${like._id}`).json(like))
+    .catch(err => next(err));
 });
 
 /**
  * DELETE /deeds/:deed/likes/:like
  */
-router.delete('/:deed/likes/:like', _.partialRight(route.deleteByParam, 'like'));
+router.delete('/:deed/likes/:like', _.partialRight(routeUtils.deleteByParam, 'like'));
 
 /**
  * GET /deeds/:deed/comments
  */
-router.get('/:deed/comments', _.partialRight(route.getByTarget, Comment, 'deed'));
+router.get('/:deed/comments', _.partialRight(routeUtils.getByTarget, Comment, 'deed'));
 
 /**
  * POST /deeds/:deed/comments
@@ -83,21 +79,19 @@ router.post('/:deed/comments', (req, res, next) => {
   req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
   req.body.target = { deed: req.deed._id };
 
-  new Comment(req.body).save((err, comment) => {
-    if (err) { return next(err); }
-
-    res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment);
-  });
+  new Comment(req.body).save()
+    .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
+    .catch(err => next(err));
 });
 
 /**
  * PUT /deeds/:deed/comments/:comment
  */
-router.put('/:deed/comments/:comment', _.partialRight(route.putByParam, Comment, 'comment'));
+router.put('/:deed/comments/:comment', _.partialRight(routeUtils.putByParam, Comment, 'comment'));
 
 /**
  * DELETE /deeds/:deed/comments/:comment
  */
-router.delete('/:deed/comments/:comment', _.partialRight(route.deleteByParam, 'comment'));
+router.delete('/:deed/comments/:comment', _.partialRight(routeUtils.deleteByParam, 'comment'));
 
 module.exports = router;

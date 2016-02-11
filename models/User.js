@@ -1,16 +1,17 @@
 var _ = require('lodash'),
-    utils = require('../utils/models'),
     bcrypt = require('bcrypt'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+    ObjectId = mongoose.Schema.Types.ObjectId,
+    uniqueValidator = require('mongoose-unique-validator');
 
 const SALT_ROUNDS = 10;
 
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
-  username: { type: String, index: { unique: true }, required: true },
-  password: String, // validate password or facebook.id set
-  name: String,
+  password: String, // validate password or facebookId set
+  first_name: String,
+  last_name: String,
   picture: String,
   coverImage: String,
   facebook: {
@@ -20,20 +21,22 @@ var UserSchema = new mongoose.Schema({
   },
   country: { type: ObjectId, ref: 'Country' },
   groups: {
-    type: [{ type: ObjectId, ref: 'Group' }],
-    //required: true,
-    //validate: [utils.hasOne, 'At least one group is required', 'hasgroup']
+    type: [{ type: ObjectId, ref: 'Group' }]
   },
   superAdmin: { type: Boolean, default: false, required: true },
-  accessToken: String,
   created: { type: Date, default: Date.now, required: true },
   modified: Date,
   lastSeen: Date
 });
 
-UserSchema.plugin(utils.findOneOrThrow);
+UserSchema.virtual('name').get(function () {
+  return `${this.first_name} ${this.last_name}`;
+});
 
-UserSchema.pre('save', function(next) {
+UserSchema.plugin(modelUtils.findOneOrThrow);
+UserSchema.plugin(uniqueValidator, { message: 'Email is already taken' });
+
+UserSchema.pre('save', function (next) {
   // Only hash the password if it has been modified (or is new)
   if (!this.password || !this.isModified('password')) { return next(); }
 
@@ -47,39 +50,36 @@ UserSchema.pre('save', function(next) {
   });
 });
 
-UserSchema.methods.validatePassword = function(password, done) {
-  // Return false if no password set
-  if (!this.password) { return done(null, false); }
+UserSchema.methods.validatePassword = function (password) {
+  return new Promise((resolve, reject) => {
+    // Return false if no password set
+    if (!this.password) { return resolve(false); }
 
-  // Compare the input password with the hashed password
-  bcrypt.compare(password, this.password, (err, res) => {
-    if (err) { return done(err); }
+    // Compare the input password with the hashed password
+    bcrypt.compare(password, this.password, (err, result) => {
+      if (err) { return reject(result); }
 
-    done(null, res);
+      resolve(result);
+    });
   });
 };
 
-UserSchema.methods.toJSON = function() {
-  return _.omit(this.toObject(), ['password', 'facebook', 'superAdmin']);
+UserSchema.methods.toJSON = function () {
+  return _.omit(this.toObject({ virtuals: true }), ['password', 'facebook', 'superAdmin']);
 };
 
-UserSchema.statics.findOrCreate = function(newUser, done) {
-  this.findOne({ email: newUser.email }, (err, user) => {
-    if (user) {
-      return done(null, user);
-    } else if (err.message === 'Not Found') {
-      user = new this(newUser);
-      user.save()
-        .then(user => done(null, user))
-        .catch(err => done(err));
-    } else {
-      done(err);
-    }
-  });
+UserSchema.statics.findOrCreate = function (newUser) {
+  return this.findOne({ email: newUser.email })
+    .exec()
+    .catch(err => {
+      if (err.message !== 'Not Found') { return Promise.reject(err); }
+
+      return new this(newUser).save();
+    });
 };
 
-UserSchema.statics.getFilter = function() {
-  return ['email', 'username', 'password', 'name', 'picture', 'coverImage', 'country', 'groups'];
+UserSchema.statics.getFilter = function () {
+  return ['email', 'password', 'name', 'picture', 'coverImage', 'country', 'groups'];
 };
 
 module.exports = mongoose.model('User', UserSchema);

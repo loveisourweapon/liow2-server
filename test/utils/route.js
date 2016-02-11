@@ -1,5 +1,5 @@
-var utils = require('../../utils/tests'),
-    route = require('../../utils/route'),
+var testUtils = require('../../utils/tests'),
+    routeUtils = require('../../utils/route'),
     expect = require('chai').expect,
     ObjectId = require('mongoose').Types.ObjectId,
     Country = require('../../models/Country');
@@ -11,30 +11,16 @@ var validCountry = {
 };
 
 describe('utils/routes', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#paramHandler()', () => {
-    beforeEach((done) => {
-      new Country(validCountry).save((err, country) => {
-        if (err) { return done(err); }
+    beforeEach(() => new Country(validCountry).save().then((country) => countryId = country.id));
+    afterEach(() => Country.remove({}));
 
-        countryId = country.id;
-        done();
-      });
-    }); // beforeEach()
-
-    afterEach((done) => {
-      Country.remove({}, (err) => {
-        if (err) { return done(err); }
-
-        done();
-      });
-    }); // afterEach()
-
-    it('should return an error when not called with a mongoose Model', (done) => {
+    it('should return an error when not called with a mongoose Model', done => {
       var req = {}, res = {};
-      route.paramHandler(req, res, (err) => {
+      routeUtils.paramHandler(req, res, err => {
         expect(err).to.be.an.instanceof(Error);
         expect(err.message).to.match(/mongoose\smodel/);
 
@@ -42,27 +28,27 @@ describe('utils/routes', () => {
       }, countryId, 'country');
     }); // it()
 
-    it('should return an error when called with an invalid ID', (done) => {
+    it('should return an error when called with an invalid ID', done => {
       var req = {}, res = {};
-      route.paramHandler(req, res, (err) => {
+      routeUtils.paramHandler(req, res, err => {
         expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid country');
 
         done();
       }, 'invalid', 'country', Country);
     }); // it()
 
-    it('should return an error when called with a non-existent ID', (done) => {
+    it('should return an error when called with a non-existent ID', done => {
       var req = {}, res = {}, id = ObjectId().toString();
-      route.paramHandler(req, res, (err) => {
-        expect(err).to.be.an.instanceof(Error).and.have.property('message', 'Country ' + id + ' not found');
+      routeUtils.paramHandler(req, res, err => {
+        expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Not Found');
 
         done();
       }, id, 'country', Country);
     }); // it()
 
-    it('should attach a document when given a valid ID and called with a Model', (done) => {
+    it('should attach a document when given a valid ID and called with a Model', done => {
       var req = {}, res = {};
-      route.paramHandler(req, res, (err) => {
+      routeUtils.paramHandler(req, res, err => {
         expect(err).to.not.exist;
         expect(req.country).to.be.an.instanceof(Country).and.to.have.property('id', countryId);
 

@@ -1,140 +1,91 @@
-var utils = require('../../utils/tests'),
-    credentials = utils.credentials,
+var _ = require('lodash'),
+    testUtils = require('../../utils/tests'),
+    credentials = testUtils.credentials,
     expect = require('chai').expect,
-    _ = require('lodash');
-
-var User = require('../../models/User');
+    User = require('../../models/User');
 
 describe('User', () => {
-  before(utils.dbConnect);
-  after(utils.dbDisconnect);
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
 
   describe('#save()', () => {
-    afterEach(utils.removeUsers);
+    afterEach(testUtils.removeUsers);
 
-    it('should require an email address, username and groups', (done) => {
-      new User().save((err, user) => {
-        expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-        expect(err).to.have.deep.property('errors.email.kind', 'required');
-        expect(err).to.have.deep.property('errors.username.kind', 'required');
-        //expect(err).to.have.deep.property('errors.groups.kind', 'required');
-        expect(user).to.not.exist;
-
-        done();
-      });
+    it('should require an email address', () => {
+      return new User().save()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.email.kind', 'required');
+        });
     }); // it()
 
-    it('should hash password on save', (done) => {
-      new User(credentials).save((err, user) => {
-        expect(err).to.not.exist;
-        expect(user.password).to.exist.and.not.to.equal(credentials.password);
-
-        done();
-      });
+    it('should hash password on save', () => {
+      return new User(credentials).save()
+        .then(user => expect(user.password).to.exist.and.not.to.equal(credentials.password));
     }); // it()
 
-    it('should not hash if no password is set', (done) => {
-      new User(_.omit(credentials, 'password')).save((err, user) => {
-        expect(err).to.not.exist;
-        expect(user.password).to.not.exist;
-
-        done();
-      });
+    it('should not hash if no password is set', () => {
+      return new User(_.omit(credentials, 'password')).save()
+        .then(user => expect(user.password).to.not.exist);
     }); // it()
-
-    /*it('should require at least one group', (done) => {
-      new User(_.defaults({ groups: [] }, credentials)).save((err, user) => {
-        expect(err).to.have.deep.property('errors.groups.kind', 'required');
-        expect(user).to.not.exist;
-
-        done();
-      });
-    });*/ // it()
   }); // describe()
 
   describe('#validatePassword()', () => {
-    afterEach(utils.removeUsers);
+    beforeEach(() => testUtils.saveUser(credentials));
+    afterEach(testUtils.removeUsers);
 
-    beforeEach((done) => {
-      utils.saveUser(credentials, done);
-    }); // beforeEach()
-
-    it('should return true when password is correct', (done) => {
-      User.findOne({ email: credentials.email }, (err, user) => {
-        expect(err).to.not.exist;
-
-        user.validatePassword(credentials.password, (err, res) => {
-          expect(err).to.not.exist;
-          expect(res).to.be.true;
-
-          done();
-        });
-      });
+    it('should return true when password is correct', () => {
+      return User.findOne({ email: credentials.email })
+        .then(user => user.validatePassword(credentials.password))
+        .then(result => expect(result).to.be.true);
     }); // it()
 
-    it('should return false when password is incorrect', (done) => {
-      User.findOne({ email: credentials.email }, (err, user) => {
-        expect(err).to.not.exist;
-
-        user.validatePassword('wrongpassword', (err, res) => {
-          expect(err).to.not.exist;
-          expect(res).to.be.false;
-
-          done();
-        });
-      });
+    it('should return false when password is incorrect', () => {
+      return User.findOne({ email: credentials.email })
+        .then(user => user.validatePassword('wrongpassword'))
+        .then(result => expect(result).to.be.false);
     }); // it()
 
-    it('should return false when user has no password', (done) => {
-      User.findOne({ email: credentials.email }, (err, user) => {
-        expect(err).to.not.exist;
-
-        user.password = void 0;
-        user.save((err, user) => {
-          expect(err).to.not.exist;
-
-          user.validatePassword(credentials.password, (err, res) => {
-            expect(err).to.not.exist;
-            expect(res).to.be.false;
-
-            done();
-          });
-        });
-      });
+    it('should return false when user has no password', () => {
+      return User.findOne({ email: credentials.email })
+        .then(user => {
+          user.password = void 0;
+          return user.save();
+        })
+        .then(user => user.validatePassword(credentials.password))
+        .then(result => expect(result).to.be.false);
     }); // it()
   }); // describe()
 
   describe('#findOrCreate()', () => {
-    afterEach(utils.removeUsers);
+    afterEach(testUtils.removeUsers);
 
-    it('should return an existing user', (done) => {
-      new User(credentials).save((err, user) => {
-        expect(err).to.not.exist;
-
-        User.findOrCreate(credentials, (err, foundUser) => {
-          expect(err).to.not.exist;
+    it('should return an existing user', () => {
+      var user = null;
+      return new User(credentials).save()
+        .then(newUser => {
+          user = newUser;
+          return User.findOrCreate(credentials);
+        })
+        .then(foundUser => {
           expect(foundUser).to.exist.and.to.be.an.instanceof(User);
           expect(foundUser.id).to.equal(user.id);
           expect(foundUser.email).to.equal(credentials.email);
-
-          done();
         });
-      });
     }); // it()
 
-    it('should create a new user', (done) => {
-      User.findOne({ email: credentials.email }, (err, user) => {
-        expect(err).to.exist.and.to.have.property('message', 'Not Found');
-        expect(user).to.not.exist;
+    it('should create a new user', () => {
+      return User.findOne({ email: credentials.email })
+        .exec()
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('message', 'Not Found');
 
-        User.findOrCreate(credentials, (err, user) => {
-          expect(err).to.not.exist;
-          expect(user).to.exist.and.to.be.an.instanceof(User);
-          expect(user.email).to.equal(credentials.email);
-
-          done();
+          return User.findOrCreate(credentials)
+            .then(user => {
+              expect(user).to.exist.and.to.be.an.instanceof(User);
+              expect(user.email).to.equal(credentials.email);
+            });
         });
-      });
     }); // it()
   }); // describe()
 

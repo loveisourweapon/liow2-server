@@ -24,8 +24,9 @@ var db = mongoose.connection,
     dbUrl = process.env.LIOW_DB_URL || config.db.url,
     debug = require('debug')('liow2:mongo');
 mongoose.connect(dbUrl);
+mongoose.Promise = Promise;
 
-db.on('error', (err) => {
+db.on('error', err => {
   debug(`Connection error: ${err.message}`);
 });
 db.once('open', () => {
