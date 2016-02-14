@@ -7,7 +7,7 @@ var ObjectId = require('mongoose').Types.ObjectId,
 
 var validCampaign = {
   group: ObjectId(),
-  deeds: [ObjectId()]
+  deeds: [{ deed: ObjectId() }]
 };
 
 describe('Campaign', () => {

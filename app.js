@@ -16,6 +16,7 @@ var auth = require('./routes/auth'),
     acts = require('./routes/acts'),
     countries = require('./routes/countries'),
     groups = require('./routes/groups'),
+    campaigns = require('./routes/campaigns'),
     likes = require('./routes/likes'),
     comments = require('./routes/comments');
 
@@ -48,21 +49,17 @@ if (app.get('env') !== 'testing') {
 app.use(cors());
 app.options('*', cors()); // CORS OPTIONS pre-flight request
 
-// Add non-authenticated routes
+// Add routes
+app.use('/auth', auth);
 app.use('/users', users);
 app.use('/deeds', deeds);
 app.use('/news', news);
 app.use('/acts', acts);
 app.use('/countries', countries);
 app.use('/groups', groups);
+app.use('/campaigns', campaigns);
 app.use('/likes', likes);
 app.use('/comments', comments);
-
-// Add auth routes then use bearer auth for remaining routes
-app.use('/auth', auth);
-
-// Add authenticated routes
-// TODO: add authentication to individual routes instead of whole routers?
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {

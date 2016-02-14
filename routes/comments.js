@@ -1,9 +1,8 @@
 var _ = require('lodash'),
     routeUtils = require('../utils/route'),
     express = require('express'),
-    router = express.Router();
-
-var Comment = require('../models/Comment');
+    router = express.Router(),
+    Comment = require('../models/Comment');
 
 router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 
