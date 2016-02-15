@@ -28,7 +28,11 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body.country = req.authUser.country;
 
   new Group(req.body).save()
-    .then(group => res.status(201).location(`/groups/${group._id}`).json(group))
+    .then(group => {
+      req.authUser.groups.push(group._id);
+      return req.authUser.save()
+        .then(() => res.status(201).location(`/groups/${group._id}`).json(group));
+    })
     .catch(err => next(err));
 });
 
