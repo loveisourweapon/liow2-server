@@ -36,7 +36,7 @@ router.get('/', _.partialRight(routeUtils.getAll, Act));
  */
 router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Act.getFilter());
-  req.body.user = req.user._id;
+  req.body.user = req.authUser._id;
   req.body.group = ObjectId.isValid(req.body.group) ? ObjectId(req.body.group) : null;
   req.body.deed = ObjectId.isValid(req.body.deed) ? ObjectId(req.body.deed) : null;
 
@@ -81,7 +81,7 @@ router.get('/:act/likes', _.partialRight(routeUtils.getByTarget, Like, 'act'));
  */
 router.post('/:act/likes', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Like.getFilter());
-  req.body.user = req.user._id;
+  req.body.user = req.authUser._id;
   req.body.target = { act: req.act._id };
 
   new Like(req.body).save()
@@ -116,7 +116,7 @@ router.get('/:act/comments', _.partialRight(routeUtils.getByTarget, Comment, 'ac
  */
 router.post('/:act/comments', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Comment.getFilter());
-  req.body.user = req.user._id;
+  req.body.user = req.authUser._id;
   req.body.target = { act: req.act._id };
 
   new Comment(req.body).save()

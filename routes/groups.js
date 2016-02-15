@@ -23,9 +23,9 @@ router.get('/', _.partialRight(routeUtils.getAll, Group, 'country'));
  */
 router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Group.getFilter());
-  req.body.owner = req.user._id;
-  req.body.admins = [req.user._id];
-  req.body.country = req.user.country;
+  req.body.owner = req.authUser._id;
+  req.body.admins = [req.authUser._id];
+  req.body.country = req.authUser.country;
 
   new Group(req.body).save()
     .then(group => res.status(201).location(`/groups/${group._id}`).json(group))

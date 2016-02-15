@@ -203,11 +203,27 @@ function ensureAuthenticated(req, res, next) {
     User.findById(userId)
       .exec()
       .then(user => {
-        req.user = user;
+        req.authUser = user;
         next();
       })
       .catch(err => next(err));
   });
+}
+
+/**
+ * Middleware to ensure logged in user is the same as the same as the specified user
+ *
+ * @param {Request}  req
+ * @param {Response} res
+ * @param {function} next
+ * @param {string}   userPath
+ */
+function ensureSameUser(req, res, next, userPath) {
+  if (_.get(req, userPath)._id.equals(req.authUser._id)) {
+    next();
+  } else {
+    next(new HttpError('Must be logged in as this user', 403));
+  }
 }
 
 /**
@@ -223,7 +239,7 @@ function ensureAdminOf(req, res, next, groupPath) {
   Group.findById(_.get(req, groupPath))
     .exec()
     .then(group => {
-      if (_.hasIn(req, 'user._id') && _.some(group.admins, admin => admin.equals(req.user._id))) {
+      if (_.hasIn(req, 'authUser._id') && _.some(group.admins, admin => admin.equals(req.authUser._id))) {
         next();
       } else {
         next(new HttpError('Must be an admin of group', 403));
@@ -240,5 +256,6 @@ module.exports = {
   putByParam,
   deleteByParam,
   ensureAuthenticated,
+  ensureSameUser,
   ensureAdminOf
 };
