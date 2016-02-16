@@ -12,7 +12,6 @@ var config = require('./config'),
 var auth = require('./routes/auth'),
     users = require('./routes/users'),
     deeds = require('./routes/deeds'),
-    news = require('./routes/news'),
     acts = require('./routes/acts'),
     countries = require('./routes/countries'),
     groups = require('./routes/groups'),
@@ -53,7 +52,6 @@ app.options('*', cors()); // CORS OPTIONS pre-flight request
 app.use('/auth', auth);
 app.use('/users', users);
 app.use('/deeds', deeds);
-app.use('/news', news);
 app.use('/acts', acts);
 app.use('/countries', countries);
 app.use('/groups', groups);
