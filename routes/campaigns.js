@@ -11,7 +11,7 @@ router.param('campaign', _.partialRight(routeUtils.paramHandler, Campaign));
 /**
  * GET /campaigns
  */
-router.get('/', _.partialRight(routeUtils.getAll, Campaign, 'deeds'));
+router.get('/', _.partialRight(routeUtils.getAll, Campaign, 'deeds.deed'));
 
 /**
  * POST /campaigns
@@ -29,6 +29,6 @@ router.post('/', routeUtils.ensureAuthenticated, _.partialRight(routeUtils.ensur
 /**
  * GET /campaigns/:campaign
  */
-router.get('/:campaign', _.partialRight(routeUtils.getByParam, 'campaign', 'deeds'));
+router.get('/:campaign', _.partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed'));
 
 module.exports = router;
