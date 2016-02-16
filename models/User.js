@@ -10,8 +10,8 @@ const SALT_ROUNDS = 10;
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
   password: String, // validate password or facebookId set
-  first_name: String,
-  last_name: String,
+  firstName: String,
+  lastName: String,
   picture: String,
   coverImage: String,
   facebook: {
@@ -30,7 +30,10 @@ var UserSchema = new mongoose.Schema({
 });
 
 UserSchema.virtual('name').get(function () {
-  return `${this.first_name} ${this.last_name}`;
+  return (
+    (this.firstName ? `${this.firstName}${this.lastName ? ' ' : ''}` : '') +
+    (this.lastName ? this.lastName : '')
+  );
 });
 
 UserSchema.plugin(modelUtils.findOneOrThrow);
@@ -79,7 +82,7 @@ UserSchema.statics.findOrCreate = function (newUser) {
 };
 
 UserSchema.statics.getFilter = function () {
-  return ['email', 'password', 'name', 'picture', 'coverImage', 'country', 'groups'];
+  return ['email', 'password', 'firstName', 'lastName', 'picture', 'coverImage', 'country', 'groups'];
 };
 
 module.exports = mongoose.model('User', UserSchema);

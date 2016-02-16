@@ -46,13 +46,14 @@ router.post('/facebook', function (req, res, next) {
               User.findById(userId)
                 .exec()
                 .then(user => {
+                  user.lastSeen = new Date();
                   user.facebook = {
                     id: profile.id,
                     accessToken: accessToken.access_token
                   };
                   user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
-                  user.first_name = profile.first_name;
-                  user.last_name = profile.last_name;
+                  user.firstName = profile.first_name;
+                  user.lastName = profile.last_name;
                   if (_.has(req.body, 'group') && !_.some(user.groups, group => String(group) === String(req.body.group))) {
                     user.groups.push(req.body.group);
                   }
@@ -75,13 +76,14 @@ router.post('/facebook', function (req, res, next) {
             return Promise.resolve(user);
           })
           .then(user => {
+            user.lastSeen = new Date();
             user.facebook = {
               id: profile.id,
               accessToken: accessToken.access_token
             };
             user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
-            user.first_name = profile.first_name;
-            user.last_name = profile.last_name;
+            user.firstName = profile.first_name;
+            user.lastName = profile.last_name;
             if (_.has(req.body, 'group') && !_.some(user.groups, group => String(group) === String(req.body.group))) {
               user.groups.push(req.body.group);
             }
@@ -111,8 +113,11 @@ router.post('/login', function (req, res, next) {
           return next(new HttpError('Invalid email and/or password', 401));
         }
 
-        res.send({ token: jwt.sign(user.id, config.secret) });
-      });
+        user.lastSeen = new Date();
+        return user.save();
+      })
+      .then(user => res.send({ token: jwt.sign(user.id, config.secret) }))
+      .catch(err => next(err));
   });
 });
 

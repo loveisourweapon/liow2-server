@@ -4,5 +4,6 @@
   "disallowMultipleVarDecl": false,
   "requireCamelCaseOrUpperCaseIdentifiers": false,
   "requirePaddingNewLinesBeforeLineComments": false,
-  "requirePaddingNewLinesAfterBlocks": false
+  "requirePaddingNewLinesAfterBlocks": false,
+  "maximumLineLength": 120
 }
