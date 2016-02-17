@@ -9,6 +9,20 @@ var ObjectId = require('mongoose').Types.ObjectId,
 router.param('user', _.partialRight(routeUtils.paramHandler, User));
 
 /**
+ * GET /users
+ */
+router.get(
+  '/',
+  (req, res, next) => {
+    // TODO: sanitize public API data
+    // For now, only allow counting users
+    req.query.count = 'true';
+    next();
+  },
+  _.partialRight(routeUtils.getAll, User)
+);
+
+/**
  * Get the current logged in user
  * GET /users/me
  */
