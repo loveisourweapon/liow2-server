@@ -8,12 +8,11 @@ var LikeSchema = new mongoose.Schema({
   target: {
     type: {
       deed: { type: ObjectId, ref: 'Deed' },
-      act: { type: ObjectId, ref: 'Act' },
-      news: { type: ObjectId, ref: 'News' }
+      act: { type: ObjectId, ref: 'Act' }
     },
     required: true,
     validate: [
-      _.partialRight(modelUtils.oneOf, ['deed', 'act', 'news']),
+      _.partialRight(modelUtils.oneOf, ['deed', 'act']),
       'One target should be set',
       'onetarget'
     ]
@@ -36,10 +35,9 @@ module.exports = mongoose.model('Like', LikeSchema);
  * @apiSuccess {string} likes._id         Like ObjectId
  * @apiSuccess {string} likes.user        User ObjectId
  * @apiSuccess {Date}   likes.created     Created timestamp
- * @apiSuccess {object} likes.target      Target object. Only one of deed, act or news will be set
+ * @apiSuccess {object} likes.target      Target object. Only one of deed or act will be set
  * @apiSuccess {string} likes.target.deed Deed ObjectId
  * @apiSuccess {string} likes.target.act  Act ObjectId
- * @apiSuccess {string} likes.target.news News ObjectId
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
@@ -60,10 +58,9 @@ module.exports = mongoose.model('Like', LikeSchema);
  * @apiSuccess (201) {string} like._id         Like ObjectId
  * @apiSuccess (201) {string} like.user        User ObjectId
  * @apiSuccess (201) {Date}   like.created     Created timestamp
- * @apiSuccess (201) {object} like.target      Target object. Only one of deed, act or news will be set
+ * @apiSuccess (201) {object} like.target      Target object. Only one of deed or act will be set
  * @apiSuccess (201) {string} like.target.deed Deed ObjectId
  * @apiSuccess (201) {string} like.target.act  Act ObjectId
- * @apiSuccess (201) {string} like.target.news News ObjectId
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 201 Created
