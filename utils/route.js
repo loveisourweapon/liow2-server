@@ -76,19 +76,29 @@ function getAll(req, res, next, model, populate) {
     }
   }
 
-  model.find(conditions)
-    .populate(_.isString(populate) ? populate : '')
-    .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
-    .exec()
-    .then(documents => {
-      // Limit returned fields
-      if (req.query.fields && _.isString(req.query.fields)) {
-        documents = _.map(documents, _.partialRight(_.pick, req.query.fields.split(',')));
-      }
+  if (req.query.count === 'true') {
+    // Count documents
+    model.find(conditions)
+      .count()
+      .exec()
+      .then(count => res.status(200).send(String(count)))
+      .catch(err => next(err));
+  } else {
+    // Retrieve documents
+    model.find(conditions)
+      .populate(_.isString(populate) ? populate : '')
+      .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
+      .exec()
+      .then(documents => {
+        // Limit returned fields
+        if (req.query.fields && _.isString(req.query.fields)) {
+          documents = _.map(documents, _.partialRight(_.pick, req.query.fields.split(',')));
+        }
 
-      res.status(200).json(documents);
-    })
-    .catch(err => next(err));
+        res.status(200).json(documents);
+      })
+      .catch(err => next(err));
+  }
 }
 
 /**
