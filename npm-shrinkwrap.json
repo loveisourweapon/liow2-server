@@ -547,9 +547,9 @@
       }
     },
     "lodash": {
-      "version": "4.4.0",
-      "from": "lodash@>=4.4.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.4.0.tgz"
+      "version": "4.5.0",
+      "from": "lodash@latest",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.5.0.tgz"
     },
     "moment": {
       "version": "2.11.2",
@@ -557,9 +557,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.11.2.tgz"
     },
     "mongoose": {
-      "version": "4.4.3",
-      "from": "mongoose@>=4.4.3 <5.0.0",
-      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.4.3.tgz",
+      "version": "4.4.4",
+      "from": "mongoose@latest",
+      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.4.4.tgz",
       "dependencies": {
         "async": {
           "version": "1.5.2",

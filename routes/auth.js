@@ -24,14 +24,14 @@ router.post('/facebook', function (req, res, next) {
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params, json: true }, function (err, response, accessToken) {
-    if (response.statusCode !== 200) {
-      return next(new HttpError(accessToken.error.message, 500));
+    if (err || response.statusCode !== 200) {
+      return next(new HttpError(err.message || accessToken.error.message, 500));
     }
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function (err, response, profile) {
-      if (response.statusCode !== 200) {
-        return next(new HttpError(profile.error.message, 500));
+      if (err || response.statusCode !== 200) {
+        return next(new HttpError(err.message || profile.error.message, 500));
       }
 
       if (req.headers.authorization) {
