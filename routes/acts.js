@@ -5,7 +5,8 @@ var _ = require('lodash'),
 var ObjectId = require('mongoose').Types.ObjectId,
     Act = require('../models/Act'),
     Like = require('../models/Like'),
-    Comment = require('../models/Comment');
+    Comment = require('../models/Comment'),
+    Campaign = require('../models/Campaign');
 
 /**
  * @apiDefine NoContentSuccess
@@ -37,12 +38,25 @@ router.get('/', _.partialRight(routeUtils.getAll, Act));
 router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.body = _.pick(req.body, Act.getFilter());
   req.body.user = req.authUser._id;
-  req.body.group = ObjectId.isValid(req.body.group) ? ObjectId(req.body.group) : null;
   req.body.deed = ObjectId.isValid(req.body.deed) ? ObjectId(req.body.deed) : null;
+  req.body.group = ObjectId.isValid(req.body.group) ? ObjectId(req.body.group) : null;
+  req.body.campaign = ObjectId.isValid(req.body.campaign) ? ObjectId(req.body.campaign) : null;
 
-  new Act(req.body).save()
-    .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
-    .catch(err => next(err));
+  if (!req.body.campaign && req.body.group) {
+    // Get the active campaign of the current group
+    Campaign.findOne({ group: req.body.group, active: true }, '_id')
+      .then(campaign => req.body.campaign = campaign._id)
+      .catch(() => null)
+      .then(() => saveAct(req.body));
+  } else {
+    saveAct(req.body);
+  }
+
+  function saveAct(reqBody) {
+    return new Act(reqBody).save()
+      .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
+      .catch(err => next(err));
+  }
 });
 
 /**
