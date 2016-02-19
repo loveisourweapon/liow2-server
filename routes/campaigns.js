@@ -3,10 +3,12 @@ var _ = require('lodash'),
     routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router(),
-    HttpError = require('../utils/general').HttpError,
-    Campaign = require('../models/Campaign');
+    Campaign = require('../models/Campaign'),
+    Deed = require('../models/Deed'),
+    HttpError = require('../utils/general').HttpError;
 
 router.param('campaign', _.partialRight(routeUtils.paramHandler, Campaign));
+router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
 
 /**
  * GET /campaigns
@@ -30,5 +32,35 @@ router.post('/', routeUtils.ensureAuthenticated, _.partialRight(routeUtils.ensur
  * GET /campaigns/:campaign
  */
 router.get('/:campaign', _.partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed'));
+
+/**
+ * POST /campaigns/:campaign/deeds/:deed/published
+ */
+router.post('/:campaign/deeds/:deed/published', (req, res, next) => {
+  var deed = _.find(req.campaign.deeds, { deed: req.deed._id });
+  if (!deed) {
+    return next(new HttpError('Not Found', 404));
+  }
+
+  deed.published = true;
+  req.campaign.save()
+    .then(() => res.status(204).send())
+    .catch(err => next(err));
+});
+
+/**
+ * DELETE /campaigns/:campaign/deeds/:deed/published
+ */
+router.delete('/:campaign/deeds/:deed/published', (req, res, next) => {
+  var deed = _.find(req.campaign.deeds, { deed: req.deed._id });
+  if (!deed) {
+    return next(new HttpError('Not Found', 404));
+  }
+
+  deed.published = false;
+  req.campaign.save()
+    .then(() => res.status(204).send())
+    .catch(err => next(err));
+});
 
 module.exports = router;
