@@ -1,9 +1,8 @@
 var _ = require('lodash'),
+    jsonpatch = require('fast-json-patch'),
     routeUtils = require('../utils/route'),
     express = require('express'),
-    router = express.Router();
-
-var ObjectId = require('mongoose').Types.ObjectId,
+    router = express.Router(),
     User = require('../models/User');
 
 router.param('user', _.partialRight(routeUtils.paramHandler, User));
@@ -42,21 +41,7 @@ router.patch(
   routeUtils.ensureAuthenticated,
   _.partialRight(routeUtils.ensureSameUser, 'user'),
   (req, res, next) => {
-    req.body = _.pick(req.body, User.getFilter());
-
-    _.each(req.body, (value, field) => {
-      // Convert valid ObjectId's to actual ObjectId's
-      if (ObjectId.isValid(value)) {
-        value = ObjectId(value);
-      }
-
-      // If the field is an array, push the new value
-      if (User.schema.path(field).instance === 'Array') {
-        req.user[field].push(value);
-      } else {
-        req.user[field] = value;
-      }
-    });
+    jsonpatch.apply(req.user, req.body);
 
     req.user.save()
       .then(user => res.status(200).json(user))
