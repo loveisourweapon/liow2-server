@@ -26,4 +26,8 @@ DeedSchema.statics.getFilter = function () {
   return ['title', 'content', 'videoUrl', 'coverImage'];
 };
 
+DeedSchema.statics.getSearchable = function () {
+  return ['title'];
+};
+
 module.exports = mongoose.model('Deed', DeedSchema);

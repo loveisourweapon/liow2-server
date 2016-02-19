@@ -41,4 +41,10 @@ describe('Deed', () => {
       expect(Deed.getFilter()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()
+
+  describe('#getSearchable()', () => {
+    it('should return an array of strings', () => {
+      expect(Deed.getSearchable()).to.be.an('array').and.have.length.above(0);
+    }); // it()
+  }); // describe()
 }); // describe()
