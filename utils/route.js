@@ -258,6 +258,20 @@ function ensureAdminOf(req, res, next, groupPath) {
     .catch(() => next(new HttpError('Not Found', 404)));
 }
 
+/**
+ * Filter JSON-Patch operations
+ *
+ * @param {array} operations
+ * @param {string[]} properties
+ *
+ * @returns {array}
+ */
+function filterJsonPatch(operations, properties) {
+  return _.filter(operations, operation => {
+    return _.some(properties, property => operation.path.indexOf(`/${property}`) !== -1);
+  });
+}
+
 module.exports = {
   paramHandler,
   getAll,
@@ -267,5 +281,6 @@ module.exports = {
   deleteByParam,
   ensureAuthenticated,
   ensureSameUser,
-  ensureAdminOf
+  ensureAdminOf,
+  filterJsonPatch
 };

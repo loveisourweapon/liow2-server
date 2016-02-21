@@ -41,7 +41,7 @@ router.patch(
   routeUtils.ensureAuthenticated,
   _.partialRight(routeUtils.ensureSameUser, 'user'),
   (req, res, next) => {
-    jsonpatch.apply(req.user, req.body);
+    jsonpatch.apply(req.user, routeUtils.filterJsonPatch(req.body, User.getFilter()));
 
     req.user.save()
       .then(user => res.status(200).json(user))
