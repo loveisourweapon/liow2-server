@@ -15,7 +15,10 @@ router.param('country', _.partialRight(routeUtils.paramHandler, Country));
  *
  * @apiUse GetCountriesSuccess
  */
-router.get('/', _.partialRight(routeUtils.getAll, Country));
+router.get(
+  '/',
+  _.partialRight(routeUtils.getAll, Country)
+);
 
 /**
  * @api {get} /countries/:country Get country
@@ -26,7 +29,10 @@ router.get('/', _.partialRight(routeUtils.getAll, Country));
  *
  * @apiUse GetCountrySuccess
  */
-router.get('/:country', _.partialRight(routeUtils.getByParam, 'country'));
+router.get(
+  '/:country',
+  _.partialRight(routeUtils.getByParam, 'country')
+);
 
 /**
  * @api {get} /countries/:country/groups Get country groups
@@ -37,11 +43,14 @@ router.get('/:country', _.partialRight(routeUtils.getByParam, 'country'));
  *
  * @apiSuccess {Group[]} groups Collection of groups belonging to a country
  */
-router.get('/:country/groups', (req, res, next) => {
-  Group.find({ country: req.country._id })
-    .exec()
-    .then(groups => res.status(200).json(groups))
-    .catch(err => next(err));
-});
+router.get(
+  '/:country/groups',
+  (req, res, next) => {
+    Group.find({ country: req.country._id })
+      .exec()
+      .then(groups => res.status(200).json(groups))
+      .catch(err => next(err));
+  }
+);
 
 module.exports = router;

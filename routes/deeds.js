@@ -15,83 +15,133 @@ router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 /**
  * GET /deeds
  */
-router.get('/', _.partialRight(routeUtils.getAll, Deed));
+router.get(
+  '/',
+  _.partialRight(routeUtils.getAll, Deed)
+);
 
 /**
  * POST /deeds
  */
-router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
-  req.body = _.pick(req.body, Deed.getFilter());
+router.post(
+  '/',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  (req, res, next) => {
+    req.body = _.pick(req.body, Deed.getFilter());
 
-  new Deed(req.body).save()
-    .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
-    .catch(err => next(err));
-});
+    new Deed(req.body).save()
+      .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
+      .catch(err => next(err));
+  }
+);
 
 /**
  * GET /deeds/:deed
  */
-router.get('/:deed', _.partialRight(routeUtils.getByParam, 'deed'));
+router.get(
+  '/:deed',
+  _.partialRight(routeUtils.getByParam, 'deed')
+);
 
 /**
  * PUT /deeds/:deed
  */
-router.put('/:deed', _.partialRight(routeUtils.putByParam, Deed, 'deed'));
+router.put(
+  '/:deed',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  _.partialRight(routeUtils.putByParam, Deed, 'deed')
+);
 
 /**
  * DELETE /deeds/:deed
  */
-router.delete('/:deed', _.partialRight(routeUtils.deleteByParam, 'deed'));
+router.delete(
+  '/:deed',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  _.partialRight(routeUtils.deleteByParam, 'deed')
+);
 
 /**
  * GET /deeds/:deed/likes
  */
-router.get('/:deed/likes', _.partialRight(routeUtils.getByTarget, Like, 'deed'));
+router.get(
+  '/:deed/likes',
+  _.partialRight(routeUtils.getByTarget, Like, 'deed')
+);
 
 /**
  * POST /deeds/:deed/likes
  */
-router.post('/:deed/likes', (req, res, next) => {
-  req.body = _.pick(req.body, Like.getFilter());
-  req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { deed: req.deed._id };
+router.post(
+  '/:deed/likes',
+  routeUtils.ensureAuthenticated,
+  (req, res, next) => {
+    req.body = _.pick(req.body, Like.getFilter());
+    req.body.user = req.authUser._id;
+    req.body.target = { deed: req.deed._id };
 
-  new Like(req.body).save()
-    .then(like => res.status(201).location(`/deeds/${req.deed._id}/likes/${like._id}`).json(like))
-    .catch(err => next(err));
-});
+    new Like(req.body).save()
+      .then(like => res.status(201).location(`/deeds/${req.deed._id}/likes/${like._id}`).json(like))
+      .catch(err => next(err));
+  }
+);
 
 /**
  * DELETE /deeds/:deed/likes/:like
  */
-router.delete('/:deed/likes/:like', _.partialRight(routeUtils.deleteByParam, 'like'));
+router.delete(
+  '/:deed/likes/:like',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'like.user'),
+  _.partialRight(routeUtils.deleteByParam, 'like')
+);
 
 /**
  * GET /deeds/:deed/comments
  */
-router.get('/:deed/comments', _.partialRight(routeUtils.getByTarget, Comment, 'deed'));
+router.get(
+  '/:deed/comments',
+  _.partialRight(routeUtils.getByTarget, Comment, 'deed')
+);
 
 /**
  * POST /deeds/:deed/comments
  */
-router.post('/:deed/comments', (req, res, next) => {
-  req.body = _.pick(req.body, Comment.getFilter());
-  req.body.user = ObjectId.isValid(req.body.user) ? ObjectId(req.body.user) : null;
-  req.body.target = { deed: req.deed._id };
+router.post(
+  '/:deed/comments',
+  routeUtils.ensureAuthenticated,
+  (req, res, next) => {
+    req.body = _.pick(req.body, Comment.getFilter());
+    req.body.user = req.authUser._id;
+    req.body.target = { deed: req.deed._id };
 
-  new Comment(req.body).save()
-    .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
-    .catch(err => next(err));
-});
+    new Comment(req.body).save()
+      .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
+      .catch(err => next(err));
+  }
+);
 
 /**
  * PUT /deeds/:deed/comments/:comment
  */
-router.put('/:deed/comments/:comment', _.partialRight(routeUtils.putByParam, Comment, 'comment'));
+router.put(
+  '/:deed/comments/:comment',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  _.partialRight(routeUtils.putByParam, Comment, 'comment')
+);
 
 /**
  * DELETE /deeds/:deed/comments/:comment
  */
-router.delete('/:deed/comments/:comment', _.partialRight(routeUtils.deleteByParam, 'comment'));
+router.delete(
+  '/:deed/comments/:comment',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  _.partialRight(routeUtils.deleteByParam, 'comment')
+);
 
 module.exports = router;

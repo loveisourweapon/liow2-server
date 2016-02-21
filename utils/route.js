@@ -221,15 +221,30 @@ function ensureAuthenticated(req, res, next) {
 }
 
 /**
+ * Middleware to ensure the logged in user is a super admin
+ *
+ * @param {Request}  req
+ * @param {Response} res
+ * @param {function} next
+ */
+function ensureSuperAdmin(req, res, next) {
+  if (req.authUser.superAdmin) {
+    next();
+  } else {
+    next(new HttpError('Must be logged in as an admin', 403));
+  }
+}
+
+/**
  * Middleware to ensure logged in user is the same as the same as the specified user
  *
  * @param {Request}  req
  * @param {Response} res
  * @param {function} next
- * @param {string}   userPath
+ * @param {string}   userIdPath
  */
-function ensureSameUser(req, res, next, userPath) {
-  if (_.get(req, userPath)._id.equals(req.authUser._id)) {
+function ensureSameUser(req, res, next, userIdPath) {
+  if (_.get(req, userIdPath).equals(req.authUser._id)) {
     next();
   } else {
     next(new HttpError('Must be logged in as this user', 403));
@@ -243,10 +258,10 @@ function ensureSameUser(req, res, next, userPath) {
  * @param {Request}  req
  * @param {Response} res
  * @param {function} next
- * @param {string}   groupPath
+ * @param {string}   groupIdPath
  */
-function ensureAdminOf(req, res, next, groupPath) {
-  Group.findById(_.get(req, groupPath))
+function ensureAdminOf(req, res, next, groupIdPath) {
+  Group.findById(_.get(req, groupIdPath))
     .exec()
     .then(group => {
       if (_.hasIn(req, 'authUser._id') && _.some(group.admins, admin => admin.equals(req.authUser._id))) {
@@ -280,6 +295,7 @@ module.exports = {
   putByParam,
   deleteByParam,
   ensureAuthenticated,
+  ensureSuperAdmin,
   ensureSameUser,
   ensureAdminOf,
   filterJsonPatch

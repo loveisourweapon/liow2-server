@@ -25,13 +25,17 @@ router.get(
  * Get the current logged in user
  * GET /users/me
  */
-router.get('/me', routeUtils.ensureAuthenticated, (req, res, next) => {
-  req.authUser
-    .populate('country groups', '_id name urlName admins')
-    .execPopulate()
-    .then(user => res.status(200).json(user))
-    .catch(err => next(err));
-});
+router.get(
+  '/me',
+  routeUtils.ensureAuthenticated,
+  (req, res, next) => {
+    req.authUser
+      .populate('country groups', '_id name urlName admins')
+      .execPopulate()
+      .then(user => res.status(200).json(user))
+      .catch(err => next(err));
+  }
+);
 
 /**
  * PATCH /users/:user
@@ -39,7 +43,7 @@ router.get('/me', routeUtils.ensureAuthenticated, (req, res, next) => {
 router.patch(
   '/:user',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'user'),
+  _.partialRight(routeUtils.ensureSameUser, 'user._id'),
   (req, res, next) => {
     jsonpatch.apply(req.user, routeUtils.filterJsonPatch(req.body, User.getFilter()));
 

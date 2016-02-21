@@ -12,7 +12,10 @@ router.param('group', _.partialRight(routeUtils.paramHandler, Group));
  *
  * @apiUse GetGroupsSuccess
  */
-router.get('/', _.partialRight(routeUtils.getAll, Group, 'country'));
+router.get(
+  '/',
+  _.partialRight(routeUtils.getAll, Group, 'country')
+);
 
 /**
  * @api {post} /groups Create group
@@ -21,20 +24,24 @@ router.get('/', _.partialRight(routeUtils.getAll, Group, 'country'));
  *
  * @apiUse CreateGroupSuccess
  */
-router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
-  req.body = _.pick(req.body, Group.getFilter());
-  req.body.owner = req.authUser._id;
-  req.body.admins = [req.authUser._id];
-  req.body.country = req.authUser.country;
+router.post(
+  '/',
+  routeUtils.ensureAuthenticated,
+  (req, res, next) => {
+    req.body = _.pick(req.body, Group.getFilter());
+    req.body.owner = req.authUser._id;
+    req.body.admins = [req.authUser._id];
+    req.body.country = req.authUser.country;
 
-  new Group(req.body).save()
-    .then(group => {
-      req.authUser.groups.push(group._id);
-      return req.authUser.save()
-        .then(() => res.status(201).location(`/groups/${group._id}`).json(group));
-    })
-    .catch(err => next(err));
-});
+    new Group(req.body).save()
+      .then(group => {
+        req.authUser.groups.push(group._id);
+        return req.authUser.save()
+          .then(() => res.status(201).location(`/groups/${group._id}`).json(group));
+      })
+      .catch(err => next(err));
+  }
+);
 
 /**
  * @api {get} /groups/:group Get group
@@ -43,7 +50,10 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
  *
  * @apiUse GetGroupSuccess
  */
-router.get('/:group', _.partialRight(routeUtils.getByParam, 'group', 'country'));
+router.get(
+  '/:group',
+  _.partialRight(routeUtils.getByParam, 'group', 'country')
+);
 
 /**
  * @api {put} /groups/:group Update group
@@ -52,7 +62,12 @@ router.get('/:group', _.partialRight(routeUtils.getByParam, 'group', 'country'))
  *
  * @apiUse GetGroupSuccess
  */
-router.put('/:group', _.partialRight(routeUtils.putByParam, Group, 'group'));
+router.put(
+  '/:group',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureAdminOf, 'group._id'),
+  _.partialRight(routeUtils.putByParam, Group, 'group')
+);
 
 /**
  * @api {delete} /groups/:group Remove group
@@ -61,6 +76,11 @@ router.put('/:group', _.partialRight(routeUtils.putByParam, Group, 'group'));
  *
  * @apiUse NoContentSuccess
  */
-router.delete('/:group', _.partialRight(routeUtils.deleteByParam, 'group'));
+router.delete(
+  '/:group',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'group.owner'),
+  _.partialRight(routeUtils.deleteByParam, 'group')
+);
 
 module.exports = router;

@@ -23,7 +23,7 @@ var LikeSchema = new mongoose.Schema({
 LikeSchema.plugin(modelUtils.findOneOrThrow);
 
 LikeSchema.statics.getFilter = function () {
-  return ['user'];
+  return [];
 };
 
 module.exports = mongoose.model('Like', LikeSchema);

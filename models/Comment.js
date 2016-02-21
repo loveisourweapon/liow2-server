@@ -45,7 +45,7 @@ var CommentSchema = new mongoose.Schema({
 CommentSchema.plugin(modelUtils.findOneOrThrow);
 
 CommentSchema.statics.getFilter = function () {
-  return ['user', 'content'];
+  return ['content'];
 };
 
 module.exports = mongoose.model('Comment', CommentSchema);

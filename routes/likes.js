@@ -9,11 +9,19 @@ router.param('like', _.partialRight(routeUtils.paramHandler, Like));
 /**
  * GET /likes
  */
-router.get('/', _.partialRight(routeUtils.getAll, Like));
+router.get(
+  '/',
+  _.partialRight(routeUtils.getAll, Like)
+);
 
 /**
  * DELETE /likes/:like
  */
-router.delete('/:like', _.partialRight(routeUtils.deleteByParam, 'like'));
+router.delete(
+  '/:like',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'like.user'),
+  _.partialRight(routeUtils.deleteByParam, 'like')
+);
 
 module.exports = router;

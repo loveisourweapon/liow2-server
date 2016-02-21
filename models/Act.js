@@ -13,7 +13,7 @@ var ActSchema = new mongoose.Schema({
 ActSchema.plugin(modelUtils.findOneOrThrow);
 
 ActSchema.statics.getFilter = function () {
-  return ['deed', 'group'];
+  return ['deed', 'group', 'campaign'];
 };
 
 module.exports = mongoose.model('Act', ActSchema);

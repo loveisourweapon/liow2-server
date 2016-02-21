@@ -14,7 +14,10 @@ router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
 /**
  * GET /campaigns
  */
-router.get('/', _.partialRight(routeUtils.getAll, Campaign, 'deeds.deed'));
+router.get(
+  '/',
+  _.partialRight(routeUtils.getAll, Campaign, 'deeds.deed')
+);
 
 /**
  * POST /campaigns
@@ -37,7 +40,10 @@ router.post(
 /**
  * GET /campaigns/:campaign
  */
-router.get('/:campaign', _.partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed'));
+router.get(
+  '/:campaign',
+  _.partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed')
+);
 
 /**
  * PATCH /campaigns/:campaign
