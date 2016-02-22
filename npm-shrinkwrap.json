@@ -567,9 +567,9 @@
       }
     },
     "lodash": {
-      "version": "4.5.0",
+      "version": "4.5.1",
       "from": "lodash@latest",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.5.0.tgz"
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.5.1.tgz"
     },
     "moment": {
       "version": "2.11.2",
