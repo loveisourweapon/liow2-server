@@ -35,6 +35,17 @@ describe('Group', () => {
         .catch(err => expect(err).to.have.deep.property('errors.admins.kind', 'ownerisadmin'));
     }); // it()
 
+    it('should return a validation error for duplicate urlName', () => {
+      return new Group(validGroup).save()
+        .then(() => {
+          return new Group(validGroup).save()
+            .catch(err => {
+              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+              expect(err).to.have.deep.property('errors.urlName.message', 'Name is already taken');
+            });
+        });
+    }); // it()
+
     it('should save a valid Group', () => {
       return new Group(validGroup).save()
         .then(group => expect(group).to.be.an('object').and.an.instanceof(Group));

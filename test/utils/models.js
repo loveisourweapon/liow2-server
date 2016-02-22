@@ -1,5 +1,12 @@
 var modelUtils = require('../../utils/models'),
-    expect = require('chai').expect;
+    testUtils = require('../../utils/tests'),
+    HttpError = require('../../utils/general').HttpError,
+    Country = require('../../models/Country');
+
+var chai = require('chai'),
+    chaiAsPromised = require('chai-as-promised'),
+    expect = chai.expect;
+chai.use(chaiAsPromised);
 
 describe('utils/models', () => {
   describe('#oneOf()', () => {
@@ -58,6 +65,30 @@ describe('utils/models', () => {
       var result = modelUtils.hasOne([1]);
 
       expect(result).to.be.a('boolean').and.to.equal(true);
+    }); // it()
+  }); // describe()
+
+  describe('#findOneOrThrow()', () => {
+    var validCountry = {
+      name: 'Australia',
+      code: 'AU'
+    };
+
+    before(testUtils.dbConnect);
+    beforeEach(() => new Country(validCountry).save());
+    after(testUtils.dbDisconnect);
+    afterEach(() => Country.remove({}));
+
+    it('should throw an HttpError when document not found', () => {
+      var result = Country.findOne({ name: 'invalid' }).exec();
+
+      return expect(result).to.be.rejectedWith(HttpError);
+    }); // it()
+
+    it('should return a document when found', () => {
+      var result = Country.findOne({ name: validCountry.name }).exec();
+
+      return expect(result).to.eventually.have.property('code', validCountry.code);
     }); // it()
   }); // describe()
 }); // describe()

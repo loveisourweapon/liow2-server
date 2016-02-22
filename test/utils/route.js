@@ -1,7 +1,11 @@
-var testUtils = require('../../utils/tests'),
+var _ = require('lodash'),
+    testUtils = require('../../utils/tests'),
     routeUtils = require('../../utils/route'),
-    expect = require('chai').expect,
-    ObjectId = require('mongoose').Types.ObjectId,
+    HttpError = require('../../utils/general').HttpError,
+    expect = require('chai').expect;
+
+var ObjectId = require('mongoose').Types.ObjectId,
+    User = require('../../models/User'),
     Country = require('../../models/Country');
 
 var countryId = null;
@@ -55,5 +59,93 @@ describe('utils/routes', () => {
         done();
       }, countryId, 'country', Country);
     }); // it()
+  }); // describe()
+
+  describe('#getAll', () => {
+    // TODO
+  }); // describe()
+
+  describe('#getByParam', () => {
+    // TODO
+  }); // describe()
+
+  describe('#getByTarget', () => {
+    // TODO
+  }); // describe()
+
+  describe('#putByParam', () => {
+    // TODO
+  }); // describe()
+
+  describe('#deleteByParam', () => {
+    // TODO
+  }); // describe()
+
+  describe('#ensureAuthenticated', () => {
+    beforeEach(() => testUtils.saveUser(testUtils.credentials));
+    afterEach(testUtils.removeUsers);
+
+    it('should return an error if no Authorization header included', done => {
+      var req = { headers: {} }, res = {};
+      routeUtils.ensureAuthenticated(req, res, err => {
+        expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 401);
+
+        done();
+      });
+    }); // it()
+
+    it('should attach the logged in user to the request', done => {
+      testUtils.getApiToken()
+        .then(token => {
+          var req = { headers: { authorization: `Bearer ${token}` } }, res = {};
+          routeUtils.ensureAuthenticated(req, res, err => {
+            expect(err).to.not.exist;
+            expect(req.authUser).to.be.an.instanceof(User).and.to.have.property('email', testUtils.credentials.email);
+
+            done();
+          });
+        });
+    }); // it()
+  }); // describe()
+
+  describe('#ensureSuperAdmin', () => {
+    var authUser = null;
+
+    beforeEach(() => testUtils.saveUser(testUtils.credentials));
+    beforeEach(() => {
+      return User.findOne({ email: testUtils.credentials.email }).exec()
+        .then(user => authUser = user);
+    });
+    afterEach(testUtils.removeUsers);
+
+    it('should return an error if authorized user is not a superAdmin', done => {
+      var req = { authUser }, res = {};
+      routeUtils.ensureSuperAdmin(req, res, err => {
+        expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 403);
+
+        done();
+      });
+    });
+
+    it('should continue if authorized user is a superAdmin', done => {
+      var req = { authUser: _.defaults({ superAdmin: true }, authUser) }, res = {};
+      routeUtils.ensureSuperAdmin(req, res, err => {
+        expect(err).to.not.exist;
+
+        done();
+      });
+    });
+  }); // describe()
+
+  describe('#ensureSameUser', () => {
+    // TODO
+  }); // describe()
+
+  describe('#ensureAdminOf', () => {
+    // TODO
+  }); // describe()
+
+  describe('#filterJsonPatch', () => {
+    // TODO
   }); // describe()
 }); // describe()

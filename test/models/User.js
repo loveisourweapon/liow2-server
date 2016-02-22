@@ -7,15 +7,25 @@ var _ = require('lodash'),
 describe('User', () => {
   before(testUtils.dbConnect);
   after(testUtils.dbDisconnect);
+  afterEach(testUtils.removeUsers);
 
   describe('#save()', () => {
-    afterEach(testUtils.removeUsers);
-
     it('should require an email address', () => {
       return new User().save()
         .catch(err => {
           expect(err).to.exist.and.to.have.property('name', 'ValidationError');
           expect(err).to.have.deep.property('errors.email.kind', 'required');
+        });
+    }); // it()
+
+    it('should return a validation error for duplicate email', () => {
+      return new User(credentials).save()
+        .then(() => {
+          return new User(credentials).save()
+            .catch(err => {
+              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+              expect(err).to.have.deep.property('errors.email.message', 'Email is already registered');
+            });
         });
     }); // it()
 
@@ -30,9 +40,27 @@ describe('User', () => {
     }); // it()
   }); // describe()
 
+  describe('.name', () => {
+    it('virtual property should concatenate firstName and lastName if both set', () => {
+      return new User(credentials).save()
+        .then(user => expect(user).to.have.property('name', `${credentials.firstName} ${credentials.lastName}`));
+    }); // it()
+
+    it('virtual property should return just firstName or lastName if only one set', () => {
+      return new User(_.omit(credentials, 'lastName')).save()
+        .then(user => {
+          expect(user).to.have.property('name', credentials.firstName);
+
+          user.firstName = void 0;
+          user.lastName = credentials.lastName;
+          return user.save()
+            .then(user => expect(user).to.have.property('name', credentials.lastName));
+        });
+    }); // it()
+  }); // describe()
+
   describe('#validatePassword()', () => {
     beforeEach(() => testUtils.saveUser(credentials));
-    afterEach(testUtils.removeUsers);
 
     it('should return true when password is correct', () => {
       return User.findOne({ email: credentials.email })
@@ -57,9 +85,19 @@ describe('User', () => {
     }); // it()
   }); // describe()
 
-  describe('#findOrCreate()', () => {
-    afterEach(testUtils.removeUsers);
+  describe('#toJSON()', () => {
+    it('should not disclose password or superAdmin', () => {
+      return new User(credentials).save()
+        .then(user => {
+          expect(user).to.have.property('password');
+          expect(user).to.have.property('superAdmin');
+          expect(user.toJSON()).to.not.have.property('password');
+          expect(user.toJSON()).to.not.have.property('superAdmin');
+        });
+    }); // it()
+  }); // describe()
 
+  describe('#findOrCreate()', () => {
     it('should return an existing user', () => {
       var user = null;
       return new User(credentials).save()

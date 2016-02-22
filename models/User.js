@@ -37,7 +37,7 @@ UserSchema.virtual('name').get(function () {
 });
 
 UserSchema.plugin(modelUtils.findOneOrThrow);
-UserSchema.plugin(uniqueValidator, { message: 'Email is already taken' });
+UserSchema.plugin(uniqueValidator, { message: 'Email is already registered' });
 
 UserSchema.pre('save', function (next) {
   // Only hash the password if it has been modified (or is new)

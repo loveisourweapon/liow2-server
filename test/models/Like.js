@@ -51,7 +51,7 @@ describe('Like', () => {
 
   describe('#getFilter()', () => {
     it('should return an array of strings', () => {
-      expect(Like.getFilter()).to.be.an('array').and.have.length.above(0);
+      expect(Like.getFilter()).to.be.an('array');
     }); // it()
   }); // describe()
 }); // describe()

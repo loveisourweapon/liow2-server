@@ -1,4 +1,5 @@
-var config = require('../config'),
+var _ = require('lodash'),
+    config = require('../config'),
     request = require('supertest-as-promised'),
     mongoose = require('mongoose'),
     app = require('../app'),
@@ -7,7 +8,8 @@ var config = require('../config'),
 // Default login credentials
 var credentials = {
   email: 'test@example.com',
-  username: 'username',
+  firstName: 'Test',
+  lastName: 'User',
   password: 'password'
 };
 
@@ -41,7 +43,7 @@ function dbDisconnect() {
  * @returns {Promise}
  */
 function saveUser(credentials) {
-  return new User(credentials).save();
+  return User.findOrCreate(credentials);
 }
 
 /**
@@ -59,10 +61,10 @@ function removeUsers() {
  *
  * @returns {Promise}
  */
-function getApiToken() {
+function getApiToken(extraCredentials) {
   return new Promise((resolve, reject) => {
     dbConnect()
-      .then(() => saveUser(credentials))
+      .then(() => saveUser(_.merge({}, extraCredentials || {}, credentials)))
       .then(() => {
         return request(app)
           .post('/auth/login')

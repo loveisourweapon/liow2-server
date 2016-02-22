@@ -54,6 +54,7 @@ router.patch(
   _.partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
   (req, res, next) => {
     jsonpatch.apply(req.campaign, routeUtils.filterJsonPatch(req.body, Campaign.getFilter()));
+    req.campaign.modified = new Date();
 
     req.campaign.save()
       .then(() => res.status(204).send())

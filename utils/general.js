@@ -1,3 +1,11 @@
+/**
+ * New Error class that adds a HTTP status code
+ *
+ * @param {string} message
+ * @param {number} status
+ *
+ * @constructor
+ */
 function HttpError(message, status) {
   this.name = 'HttpError';
   this.message = message || 'Error';
@@ -7,6 +15,18 @@ function HttpError(message, status) {
 HttpError.prototype = Object.create(Error.prototype);
 HttpError.prototype.constructor = HttpError;
 
+/**
+ * Check if n is numeric
+ *
+ * @param {*} n
+ *
+ * @returns {boolean}
+ */
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 module.exports = {
-  HttpError: HttpError
+  HttpError,
+  isNumeric
 };

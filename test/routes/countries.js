@@ -14,12 +14,11 @@ var validCountry = {
 
 describe('/countries', () => {
   before(testUtils.dbConnect);
-  after(testUtils.dbDisconnect);
-
   beforeEach(() => {
     return new Country(validCountry).save()
       .then(country => countryId = country._id);
-  });
+  }); // beforeEach()
+  after(testUtils.dbDisconnect);
   afterEach(() => Country.remove({}));
 
   describe('/', () => {
@@ -46,7 +45,7 @@ describe('/countries', () => {
         .get(`/countries/${countryId}`)
         .expect(200)
         .expect('Content-Type', /json/)
-        .expect(res => expect(res.body).to.have.property('_id', countryId.toString()));
+        .expect(res => expect(res.body).to.have.property('_id', String(countryId)));
     }); // it()
   }); // describe()
 

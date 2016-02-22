@@ -25,6 +25,17 @@ describe('Deed', () => {
         });
     }); // it()
 
+    it('should return a validation error for duplicate urlTitle', () => {
+      return new Deed(validDeed).save()
+        .then(() => {
+          return new Deed(validDeed).save()
+            .catch(err => {
+              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+              expect(err).to.have.deep.property('errors.urlTitle.message', 'Title is already taken');
+            });
+        });
+    }); // it()
+
     it('should save a valid Deed', () => {
       return new Deed(validDeed).save()
         .then(deed => expect(deed).to.be.an('object').and.an.instanceof(Deed));

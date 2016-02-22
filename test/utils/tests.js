@@ -62,8 +62,8 @@ describe('utils/tests', () => {
 
   describe('#getApiToken()', () => {
     before(testUtils.dbConnect);
-    afterEach(testUtils.removeUsers);
     after(testUtils.dbDisconnect);
+    afterEach(testUtils.removeUsers);
 
     it('should return a valid API token for testing', () => {
       return testUtils.getApiToken()

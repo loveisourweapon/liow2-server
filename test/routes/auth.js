@@ -1,16 +1,16 @@
 var testUtils = require('../../utils/tests'),
-  credentials = testUtils.credentials,
-  request = require('supertest-as-promised'),
-  expect = require('chai').expect,
-  app = require('../../app');
+    credentials = testUtils.credentials,
+    request = require('supertest-as-promised'),
+    expect = require('chai').expect,
+    app = require('../../app');
 
 describe('/auth', () => {
   before(testUtils.dbConnect);
   after(testUtils.dbDisconnect);
 
   describe('/login', () => {
-    after(testUtils.removeUsers);
     before(() => testUtils.saveUser(credentials));
+    after(testUtils.removeUsers);
 
     it('POST valid credentials should return status 200 with API token', () => {
       return request(app)

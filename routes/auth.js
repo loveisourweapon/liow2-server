@@ -102,23 +102,21 @@ router.post('/facebook', function (req, res, next) {
  * POST /auth/login
  */
 router.post('/login', function (req, res, next) {
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (!user) {
-      return next(new HttpError('Invalid email and/or password', 401));
-    }
+  User.findOne({ email: req.body.email }).exec()
+    .then(user => {
+      return user.validatePassword(req.body.password)
+        .then(isMatch => {
+          if (!isMatch) {
+            throw new HttpError('Invalid email and/or password', 401);
+          }
 
-    user.validatePassword(req.body.password)
-      .then(isMatch => {
-        if (!isMatch) {
-          return next(new HttpError('Invalid email and/or password', 401));
-        }
-
-        user.lastSeen = new Date();
-        return user.save();
-      })
-      .then(user => res.send({ token: jwt.sign(user.id, config.secret) }))
-      .catch(err => next(err));
-  });
+          user.lastSeen = new Date();
+          return user.save();
+        })
+        .then(user => res.send({ token: jwt.sign(user.id, config.secret) }))
+        .catch(err => next(err));
+    })
+    .catch(() => next(new HttpError('Invalid email and/or password', 401)));
 });
 
 module.exports = router;

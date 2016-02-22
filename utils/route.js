@@ -1,22 +1,12 @@
 var _ = require('lodash'),
     jwt = require('jsonwebtoken'),
     config = require('../config'),
+    utils = require('../utils/general'),
+    HttpError = utils.HttpError,
     mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
-    HttpError = require('../utils/general').HttpError,
     User = require('../models/User'),
     Group = require('../models/Group');
-
-/**
- * Check if n is numeric
- *
- * @param {*} n
- *
- * @returns {boolean}
- */
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
 /**
  * Find a document from a mongoose model and attach it to the request
@@ -87,7 +77,7 @@ function getAll(req, res, next, model, populate) {
     // Retrieve documents
     model.find(conditions)
       .populate(_.isString(populate) ? populate : '')
-      .limit(req.query.limit && isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
+      .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
       .exec()
       .then(documents => {
         // Limit returned fields
