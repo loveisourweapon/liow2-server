@@ -19,7 +19,7 @@ describe('Campaign', () => {
 
     it('should require group and deeds', () => {
       return new Campaign().save()
-        .catch((err) => {
+        .catch(err => {
           expect(err).to.exist.and.to.have.property('name', 'ValidationError');
           expect(err).to.have.deep.property('errors.group.kind', 'required');
           expect(err).to.have.deep.property('errors.deeds.kind', 'required');
@@ -28,7 +28,7 @@ describe('Campaign', () => {
 
     it('should require at least one deed', () => {
       return new Campaign(_.defaults({ deeds: [] }, validCampaign)).save()
-        .catch((err) => expect(err).to.have.deep.property('errors.deeds.kind', 'required'));
+        .catch(err => expect(err).to.have.deep.property('errors.deeds.kind', 'required'));
     }); // it()
 
     it('should save a valid Campaign', () => {

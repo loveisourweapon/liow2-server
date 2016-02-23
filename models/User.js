@@ -72,8 +72,7 @@ UserSchema.methods.toJSON = function () {
 };
 
 UserSchema.statics.findOrCreate = function (newUser) {
-  return this.findOne({ email: newUser.email })
-    .exec()
+  return this.findOne({ email: newUser.email }).exec()
     .catch(err => {
       if (err.message !== 'Not Found') { return Promise.reject(err); }
 

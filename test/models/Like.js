@@ -33,14 +33,14 @@ describe('Like', () => {
         .catch(err => {
           expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
 
-          new Like(_.defaults({
+          return new Like(_.defaults({
             target: {
               deed: ObjectId(),
               act: ObjectId()
             }
-          }, validLike)).save()
-            .catch(err => expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget'));
-        });
+          }, validLike)).save();
+        })
+        .catch(err => expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget'));
     }); // it()
 
     it('should save a valid Like', () => {

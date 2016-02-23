@@ -27,12 +27,10 @@ describe('Deed', () => {
 
     it('should return a validation error for duplicate urlTitle', () => {
       return new Deed(validDeed).save()
-        .then(() => {
-          return new Deed(validDeed).save()
-            .catch(err => {
-              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-              expect(err).to.have.deep.property('errors.urlTitle.message', 'Title is already taken');
-            });
+        .then(() => new Deed(validDeed).save())
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.urlTitle.message', 'Title is already taken');
         });
     }); // it()
 

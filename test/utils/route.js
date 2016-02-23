@@ -19,7 +19,10 @@ describe('utils/routes', () => {
   after(testUtils.dbDisconnect);
 
   describe('#paramHandler()', () => {
-    beforeEach(() => new Country(validCountry).save().then((country) => countryId = country.id));
+    beforeEach(() => {
+      return new Country(validCountry).save()
+        .then(country => countryId = country.id);
+    }); // beforeEach()
     afterEach(() => Country.remove({}));
 
     it('should return an error when not called with a mongoose Model', done => {
@@ -42,7 +45,7 @@ describe('utils/routes', () => {
     }); // it()
 
     it('should return an error when called with a non-existent ID', done => {
-      var req = {}, res = {}, id = ObjectId().toString();
+      var req = {}, res = {}, id = String(ObjectId());
       routeUtils.paramHandler(req, res, err => {
         expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Not Found');
 
@@ -111,11 +114,10 @@ describe('utils/routes', () => {
   describe('#ensureSuperAdmin', () => {
     var authUser = null;
 
-    beforeEach(() => testUtils.saveUser(testUtils.credentials));
     beforeEach(() => {
-      return User.findOne({ email: testUtils.credentials.email }).exec()
+      return testUtils.saveUser(testUtils.credentials)
         .then(user => authUser = user);
-    });
+    }); // beforeEach()
     afterEach(testUtils.removeUsers);
 
     it('should return an error if authorized user is not a superAdmin', done => {

@@ -4,15 +4,11 @@ var expect = require('chai').expect,
 describe('utils/general', () => {
   describe('#HttpError()', () => {
     it('should report it\'s name as HttpError', () => {
-      var error = new utils.HttpError();
-
-      expect(error).to.have.property('name', 'HttpError');
+      expect(new utils.HttpError()).to.have.property('name', 'HttpError');
     }); // it()
 
     it('should include a stack trace', () => {
-      var error = new utils.HttpError();
-
-      expect(error).to.have.property('stack');
+      expect(new utils.HttpError()).to.have.property('stack');
     }); // it()
 
     it('should have a defaults of message \'Error\' and status 400', () => {

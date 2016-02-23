@@ -20,12 +20,10 @@ describe('User', () => {
 
     it('should return a validation error for duplicate email', () => {
       return new User(credentials).save()
-        .then(() => {
-          return new User(credentials).save()
-            .catch(err => {
-              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-              expect(err).to.have.deep.property('errors.email.message', 'Email is already registered');
-            });
+        .then(() => new User(credentials).save())
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.email.message', 'Email is already registered');
         });
     }); // it()
 
@@ -41,21 +39,21 @@ describe('User', () => {
   }); // describe()
 
   describe('.name', () => {
-    it('virtual property should concatenate firstName and lastName if both set', () => {
+    it('should concatenate firstName and lastName if both set', () => {
       return new User(credentials).save()
         .then(user => expect(user).to.have.property('name', `${credentials.firstName} ${credentials.lastName}`));
     }); // it()
 
-    it('virtual property should return just firstName or lastName if only one set', () => {
+    it('should return just firstName or lastName if only one set', () => {
       return new User(_.omit(credentials, 'lastName')).save()
         .then(user => {
           expect(user).to.have.property('name', credentials.firstName);
 
           user.firstName = void 0;
           user.lastName = credentials.lastName;
-          return user.save()
-            .then(user => expect(user).to.have.property('name', credentials.lastName));
-        });
+          return user.save();
+        })
+        .then(user => expect(user).to.have.property('name', credentials.lastName));
     }); // it()
   }); // describe()
 
@@ -118,11 +116,11 @@ describe('User', () => {
         .catch(err => {
           expect(err).to.exist.and.to.have.property('message', 'Not Found');
 
-          return User.findOrCreate(credentials)
-            .then(user => {
-              expect(user).to.exist.and.to.be.an.instanceof(User);
-              expect(user.email).to.equal(credentials.email);
-            });
+          return User.findOrCreate(credentials);
+        })
+        .then(user => {
+          expect(user).to.exist.and.to.be.an.instanceof(User);
+          expect(user.email).to.equal(credentials.email);
         });
     }); // it()
   }); // describe()

@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+    jwt = require('jsonwebtoken'),
     config = require('../config'),
     request = require('supertest-as-promised'),
     mongoose = require('mongoose'),
@@ -62,25 +63,9 @@ function removeUsers() {
  * @returns {Promise}
  */
 function getApiToken(extraCredentials) {
-  return new Promise((resolve, reject) => {
-    dbConnect()
-      .then(() => saveUser(_.merge({}, extraCredentials || {}, credentials)))
-      .then(() => {
-        return request(app)
-          .post('/auth/login')
-          .send(`email=${credentials.email}`)
-          .send(`password=${credentials.password}`)
-          .then(res => {
-            if (!res.body.token) {
-              return reject(new Error('Failed getting accessing token'));
-            }
-
-            resolve(res.body.token);
-          })
-          .catch(err => reject(err));
-      })
-      .catch(err => reject(err));
-  });
+  return dbConnect()
+    .then(() => saveUser(_.merge({}, extraCredentials || {}, credentials)))
+    .then(user => jwt.sign(user.id, config.secret));
 }
 
 module.exports = {

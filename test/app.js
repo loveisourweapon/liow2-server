@@ -8,7 +8,7 @@ describe('Error handler', () => {
       .get('/noroute')
       .expect(404)
       .expect('Content-Type', /json/)
-      .expect(res => expect(res.body.message).to.exist.and.to.equal('Not Found'));
+      .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
   }); // it()
 
   describe('development', () => {
@@ -20,7 +20,7 @@ describe('Error handler', () => {
       return request(app)
         .get('/noroute')
         .expect(404)
-        .expect(res => expect(res.body.error).to.exist.and.to.not.be.empty);
+        .expect(res => expect(res.body.error).to.exist.and.to.be.not.empty);
     }); // it()
   }); // describe()
 

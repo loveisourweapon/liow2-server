@@ -54,9 +54,11 @@ describe('utils/tests', () => {
     after(testUtils.dbDisconnect);
 
     it('should remove all users', () => {
-      return testUtils.removeUsers()
+      return User.find({}).exec()
+        .then(users => expect(users).to.exist.and.to.have.lengthOf(1))
+        .then(testUtils.removeUsers)
         .then(() => User.find({}).exec())
-        .then(users => expect(users).to.exist.and.to.be.empty);
+        .then(users => expect(users).to.exist.and.to.have.lengthOf(0));
     }); // it()
   }); // describe()
 
@@ -67,16 +69,15 @@ describe('utils/tests', () => {
 
     it('should return a valid API token for testing', () => {
       return testUtils.getApiToken()
-        .then((token) => {
+        .then(token => {
           expect(token).to.exist.and.to.be.a('string');
 
           jwt.verify(token, config.secret, (err, userId) => {
             expect(err).to.not.exist;
             expect(userId).to.exist.and.to.be.a('string');
 
-            return User.findById(userId)
-              .exec()
-              .then((user) => expect(user).to.exist.and.to.be.an.instanceof(User));
+            return User.findById(userId).exec()
+              .then(user => expect(user).to.exist.and.to.be.an.instanceof(User));
           });
         });
     }); // it()

@@ -37,12 +37,10 @@ describe('Group', () => {
 
     it('should return a validation error for duplicate urlName', () => {
       return new Group(validGroup).save()
-        .then(() => {
-          return new Group(validGroup).save()
-            .catch(err => {
-              expect(err).to.exist.and.to.have.property('name', 'ValidationError');
-              expect(err).to.have.deep.property('errors.urlName.message', 'Name is already taken');
-            });
+        .then(() => new Group(validGroup).save())
+        .catch(err => {
+          expect(err).to.exist.and.to.have.property('name', 'ValidationError');
+          expect(err).to.have.deep.property('errors.urlName.message', 'Name is already taken');
         });
     }); // it()
 

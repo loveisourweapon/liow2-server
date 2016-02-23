@@ -6,7 +6,6 @@ var testUtils = require('../../utils/tests'),
 var ObjectId = require('mongoose').Types.ObjectId,
     Group = require('../../models/Group');
 
-var groupId = null;
 var groupOwner = ObjectId();
 var validGroup = {
   name: 'Group Name',
@@ -30,53 +29,47 @@ describe('/groups', () => {
 
     it('GET should return status 200 and an array', () => {
       return new Group(validGroup).save()
-        .then(() => {
-          return request(app)
-            .get('/groups')
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .expect(res => expect(res.body).to.be.an('array').and.to.have.lengthOf(1));
-        });
+        .then(() => request(app)
+          .get('/groups')
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.lengthOf(1)));
     }); // it()
 
     it('POST invalid data should return status 400 and an error message', () => {
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .post('/groups')
-            .set('Authorization', `Bearer ${token}`)
-            .send({})
-            .expect(400)
-            .expect('Content-Type', /json/)
-            .expect(res => expect(res.body).to.have.property('message', 'Group validation failed'));
-        });
+        .then(token => request(app)
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send({})
+          .expect(400)
+          .expect('Content-Type', /json/)
+          .expect(res => expect(res.body).to.have.property('message', 'Group validation failed')));
     }); // it()
 
     it('POST valid data should return status 201 and the created Group', () => {
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .post('/groups')
-            .set('Authorization', `Bearer ${token}`)
-            .send(validGroup)
-            .expect(201)
-            .expect('Content-Type', /json/)
-            .expect('Location', /groups/)
-            .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id'));
-        });
+        .then(token => request(app)
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send(validGroup)
+          .expect(201)
+          .expect('Content-Type', /json/)
+          .expect('Location', /groups/)
+          .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id')));
     }); // it()
   }); // describe()
 
   describe('/:group', () => {
+    var groupId = null;
+
     beforeEach(() => {
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .post('/groups')
-            .set('Authorization', `Bearer ${token}`)
-            .send(validGroup)
-            .then(res => groupId = res.body._id);
-        });
+        .then(token => request(app)
+          .post('/groups')
+          .set('Authorization', `Bearer ${token}`)
+          .send(validGroup)
+          .then(res => groupId = res.body._id));
     }); // beforeEach()
 
     it('GET invalid ID should return status 400 and an error message', () => {
@@ -105,50 +98,44 @@ describe('/groups', () => {
 
     it('DELETE valid ID should return status 204 and delete the Group', () => {
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .delete(`/groups/${groupId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(204)
-            .expect(res => expect(res.body).to.be.empty)
-            .then(() => Group.findById(groupId).exec())
-            .catch(err => expect(err).to.have.property('message', 'Not Found'));
-        });
+        .then(token => request(app)
+          .delete(`/groups/${groupId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .expect(204)
+          .expect(res => expect(res.body).to.be.empty)
+          .then(() => Group.findById(groupId).exec())
+          .catch(err => expect(err).to.have.property('message', 'Not Found')));
     }); // it()
 
     it('PUT extra data should be ignored', () => {
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .put(`/groups/${groupId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .send({ extra: 'Extra data' })
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .expect(res => {
-              expect(res.body).to.have.property('_id', String(groupId));
-              expect(res.body).to.not.have.property('extra');
-            });
-        });
+        .then(token => request(app)
+          .put(`/groups/${groupId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ extra: 'Extra data' })
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', String(groupId));
+            expect(res.body).to.not.have.property('extra');
+          }));
     }); // it()
 
     it('PUT valid data should return status 200 and update the Group', () => {
       var update = { welcomeMessage: 'Updated text' };
 
       return testUtils.getApiToken()
-        .then(token => {
-          return request(app)
-            .put(`/groups/${groupId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .send(update)
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .expect(res => {
-              expect(res.body).to.have.property('_id', String(groupId));
-              expect(res.body).to.have.property('modified');
-              expect(res.body).to.have.property('welcomeMessage', update.welcomeMessage);
-            });
-        });
+        .then(token => request(app)
+          .put(`/groups/${groupId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send(update)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', String(groupId));
+            expect(res.body).to.have.property('modified');
+            expect(res.body).to.have.property('welcomeMessage', update.welcomeMessage);
+          }));
     }); // it()
   }); // describe()
 }); // describe()
