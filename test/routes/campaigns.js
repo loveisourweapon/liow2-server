@@ -131,7 +131,7 @@ describe('/campaigns', () => {
         });
     }); // it()
 
-    it('PATCH valid data should be ignored', () => {
+    it('PATCH valid data should return status 204 and update the Campaign', () => {
       return Campaign.findById(campaignId).exec()
         .then(campaign => {
           expect(campaign).to.have.property('active', true);
