@@ -28,7 +28,7 @@ router.post(
   '/',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Group.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Group);
     req.body.owner = req.authUser._id;
     req.body.admins = [req.authUser._id];
     req.body.country = req.authUser.country;

@@ -1,9 +1,7 @@
 var _ = require('lodash'),
     jwt = require('jsonwebtoken'),
     config = require('../config'),
-    request = require('supertest-as-promised'),
     mongoose = require('mongoose'),
-    app = require('../app'),
     User = require('../models/User');
 
 // Default login credentials

@@ -27,7 +27,7 @@ router.post(
   routeUtils.ensureAuthenticated,
   routeUtils.ensureSuperAdmin,
   (req, res, next) => {
-    req.body = _.pick(req.body, Deed.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Deed);
 
     new Deed(req.body).save()
       .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
@@ -78,7 +78,7 @@ router.post(
   '/:deed/likes',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Like.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Like);
     req.body.user = req.authUser._id;
     req.body.target = { deed: req.deed._id };
 
@@ -113,7 +113,7 @@ router.post(
   '/:deed/comments',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Comment.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Comment);
     req.body.user = req.authUser._id;
     req.body.target = { deed: req.deed._id };
 

@@ -27,7 +27,7 @@ router.post(
   routeUtils.ensureAuthenticated,
   _.partialRight(routeUtils.ensureAdminOf, 'body.group'),
   (req, res, next) => {
-    req.body = _.pick(req.body, Campaign.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Campaign);
     req.body.dateStart = _.has(req.body.dateStart) ? moment(req.body.dateStart).toDate() : moment().toDate();
     req.body.dateEnd = _.has(req.body.dateEnd) ? moment(req.body.dateEnd).toDate() : null;
 
@@ -53,7 +53,7 @@ router.patch(
   routeUtils.ensureAuthenticated,
   _.partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
   (req, res, next) => {
-    jsonpatch.apply(req.campaign, routeUtils.filterJsonPatch(req.body, Campaign.getFilter()));
+    jsonpatch.apply(req.campaign, routeUtils.filterJsonPatch(req.body, Campaign));
     req.campaign.modified = new Date();
 
     req.campaign.save()

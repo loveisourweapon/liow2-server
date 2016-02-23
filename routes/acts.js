@@ -41,7 +41,7 @@ router.post(
   '/',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Act.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Act);
     req.body.user = req.authUser._id;
 
     if (!req.body.campaign && req.body.group) {
@@ -100,7 +100,7 @@ router.post(
   '/:act/likes',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Like.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Like);
     req.body.user = req.authUser._id;
     req.body.target = { act: req.act._id };
 
@@ -147,7 +147,7 @@ router.post(
   '/:act/comments',
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
-    req.body = _.pick(req.body, Comment.getFilter());
+    req.body = routeUtils.filterProperties(req.body, Comment);
     req.body.user = req.authUser._id;
     req.body.target = { act: req.act._id };
 

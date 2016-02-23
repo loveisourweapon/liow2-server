@@ -26,13 +26,55 @@ function paramHandler(req, res, next, id, name, model) {
     return next(new Error(`Invalid ${name}`));
   }
 
-  model.findById(id)
-    .exec()
+  model.findById(id).exec()
     .then(document => {
       req[name] = document;
       next();
     })
     .catch(err => next(err));
+}
+
+/**
+ * Extract query conditions
+ *
+ * @param {object} query
+ * @param {Model}  model
+ *
+ * @returns {object}
+ */
+function buildQueryConditions(query, model) {
+  var conditions = {};
+  if (query.query && _.isFunction(model.getSearchable)) {
+    // Search if search query included
+    conditions.$or = _.map(model.getSearchable(), field => {
+      return { [field]: new RegExp(_.escapeRegExp(query.query), 'i') };
+    });
+  } else {
+    // Match schema fields
+    var fields = _.filter(_.keys(query), field => _.has(model.schema.paths, field));
+    if (fields.length) {
+      conditions.$and = _.map(fields, field => {
+        return { [field]: query[field] };
+      });
+    }
+  }
+
+  return conditions;
+}
+
+/**
+ * Filter fields from document
+ *
+ * @param {object[]} documents
+ * @param {object}   query
+ *
+ * @returns {object[]}
+ */
+function filterDocumentFields(documents, query) {
+  return _.isString(query.fields) ? _.map(
+    documents,
+    _.partialRight(_.pick, query.fields.split(','))
+  ) : documents;
 }
 
 /**
@@ -46,31 +88,14 @@ function paramHandler(req, res, next, id, name, model) {
  */
 function getAll(req, res, next, model, populate) {
   if (!_.has(model, 'base') || model.base !== mongoose) {
-    return next(new Error('Must be called with to a mongoose model'));
+    return next(new Error('Must be called with a mongoose model'));
   }
 
-  // Extract query conditions
-  var conditions = {};
-  if (req.query.query && _.isFunction(model.getSearchable)) {
-    // Search if search query included
-    conditions.$or = _.map(model.getSearchable(), field => {
-      return { [field]: new RegExp(_.escapeRegExp(req.query.query), 'i') };
-    });
-  } else {
-    // Match schema fields
-    var fields = _.filter(_.keys(req.query), field => _.has(model.schema.paths, field));
-    if (fields.length) {
-      conditions.$and = _.map(fields, field => {
-        return { [field]: req.query[field] };
-      });
-    }
-  }
+  var conditions = buildQueryConditions(req.query, model);
 
   if (req.query.count === 'true') {
     // Count documents
-    model.find(conditions)
-      .count()
-      .exec()
+    model.find(conditions).count().exec()
       .then(count => res.status(200).send(String(count)))
       .catch(err => next(err));
   } else {
@@ -79,14 +104,7 @@ function getAll(req, res, next, model, populate) {
       .populate(_.isString(populate) ? populate : '')
       .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
       .exec()
-      .then(documents => {
-        // Limit returned fields
-        if (req.query.fields && _.isString(req.query.fields)) {
-          documents = _.map(documents, _.partialRight(_.pick, req.query.fields.split(',')));
-        }
-
-        res.status(200).json(documents);
-      })
+      .then(documents => res.status(200).json(filterDocumentFields(documents, req.query)))
       .catch(err => next(err));
   }
 }
@@ -131,8 +149,7 @@ function getByTarget(req, res, next, model, target) {
     return next(new Error(`Invalid target ${target}`));
   }
 
-  model.find({ [`target.${target}`]: req[target]._id })
-    .exec()
+  model.find({ [`target.${target}`]: req[target]._id }).exec()
     .then(documents => res.status(200).json(documents))
     .catch(err => next(err));
 }
@@ -155,12 +172,9 @@ function putByParam(req, res, next, model, param) {
     return next(new Error(`Invalid param ${param}`));
   }
 
-  req.body = _.pick(req.body, model.getFilter());
+  req.body = filterProperties(req.body, model);
   req.body.modified = new Date();
-
-  model.findById(req[param]._id)
-    .exec()
-    .then(document => _.merge(document, req.body).save())
+  _.merge(req[param], req.body).save()
     .then(document => res.status(200).json(document))
     .catch(err => next(err));
 }
@@ -200,8 +214,7 @@ function ensureAuthenticated(req, res, next) {
   jwt.verify(token, config.secret, (err, userId) => {
     if (err) { return next(err); }
 
-    User.findById(userId)
-      .exec()
+    User.findById(userId).exec()
       .then(user => {
         req.authUser = user;
         next();
@@ -251,8 +264,7 @@ function ensureSameUser(req, res, next, userIdPath) {
  * @param {string}   groupIdPath
  */
 function ensureAdminOf(req, res, next, groupIdPath) {
-  Group.findById(_.get(req, groupIdPath))
-    .exec()
+  Group.findById(_.get(req, groupIdPath)).exec()
     .then(group => {
       if (_.hasIn(req, 'authUser._id') && _.some(group.admins, admin => admin.equals(req.authUser._id))) {
         next();
@@ -264,17 +276,30 @@ function ensureAdminOf(req, res, next, groupIdPath) {
 }
 
 /**
+ * Filter the properties of a body
+ *
+ * @param {object} body
+ * @param {Model}  model
+ *
+ * @returns {object}
+ */
+function filterProperties(body, model) {
+  return _.isFunction(model.getFilter) ? _.pick(body, model.getFilter()) : body;
+}
+
+/**
  * Filter JSON-Patch operations
  *
  * @param {array} operations
- * @param {string[]} properties
+ * @param {Model} model
  *
  * @returns {array}
  */
-function filterJsonPatch(operations, properties) {
-  return _.filter(operations, operation => {
-    return _.some(properties, property => operation.path.indexOf(`/${property}`) !== -1);
-  });
+function filterJsonPatch(operations, model) {
+  return _.isFunction(model.getFilter) ? _.filter(
+    operations,
+    operation => _.some(model.getFilter(), property => operation.path.indexOf(`/${property}`) !== -1)
+  ) : operations;
 }
 
 module.exports = {
@@ -288,5 +313,6 @@ module.exports = {
   ensureSuperAdmin,
   ensureSameUser,
   ensureAdminOf,
+  filterProperties,
   filterJsonPatch
 };
