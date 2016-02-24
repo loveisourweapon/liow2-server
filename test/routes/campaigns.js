@@ -103,6 +103,37 @@ describe('/campaigns', () => {
         .expect(res => expect(res.body).to.have.property('_id', String(campaignId)));
     }); // it()
 
+    it('PUT extra data should be ignored', () => {
+      return testUtils.getApiToken()
+        .then(token => request(app)
+          .put(`/campaigns/${campaignId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ extra: 'Extra data' })
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', String(campaignId));
+            expect(res.body).to.not.have.property('extra');
+          }));
+    }); // it()
+
+    it('PUT valid data should return status 200 and update the Campaign', () => {
+      return Campaign.findById(campaignId).exec()
+        .then(campaign => expect(campaign).to.have.property('active', true))
+        .then(testUtils.getApiToken)
+        .then(token => request(app)
+          .put(`/campaigns/${campaignId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ active: false })
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', String(campaignId));
+            expect(res.body).to.have.property('modified');
+            expect(res.body).to.have.property('active', false);
+          }));
+    }); // it()
+
     it('PATCH extra data should be ignored', () => {
       return testUtils.getApiToken()
         .then(token => request(app)

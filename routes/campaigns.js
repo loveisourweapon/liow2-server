@@ -46,6 +46,16 @@ router.get(
 );
 
 /**
+ * PUT /campaigns/:campaign
+ */
+router.put(
+  '/:campaign',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
+  _.partialRight(routeUtils.putByParam, Campaign, 'campaign')
+);
+
+/**
  * PATCH /campaigns/:campaign
  */
 router.patch(

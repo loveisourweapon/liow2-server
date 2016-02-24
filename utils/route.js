@@ -174,7 +174,7 @@ function putByParam(req, res, next, model, param) {
 
   req.body = filterProperties(req.body, model);
   req.body.modified = new Date();
-  _.merge(req[param], req.body).save()
+  _.assign(req[param], req.body).save()
     .then(document => res.status(200).json(document))
     .catch(err => next(err));
 }
@@ -298,7 +298,7 @@ function filterProperties(body, model) {
 function filterJsonPatch(operations, model) {
   return _.isFunction(model.getFilter) ? _.filter(
     operations,
-    operation => _.some(model.getFilter(), property => operation.path.indexOf(`/${property}`) !== -1)
+    operation => _.some(model.getFilter(), property => ~operation.path.indexOf(`/${property}`))
   ) : operations;
 }
 
