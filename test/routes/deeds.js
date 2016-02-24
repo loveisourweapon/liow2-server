@@ -72,7 +72,7 @@ describe('/deeds', () => {
 
     beforeEach(() => {
       return new Deed(validDeed).save()
-        .then(deed => deedId = deed._id);
+        .then(deed => (deedId = deed._id));
     }); // beforeEach()
 
     it('GET invalid ID should return status 400 and an error message', () => {
@@ -153,7 +153,7 @@ describe('/deeds', () => {
             .post(`/deeds/${deedId}/likes`)
             .set('Authorization', `Bearer ${token}`)
             .send(validLike)
-            .then(res => likeId = res.body._id));
+            .then(res => (likeId = res.body._id)));
       }); // beforeEach()
       afterEach(() => Like.remove({}));
 
@@ -228,7 +228,7 @@ describe('/deeds', () => {
             .post(`/deeds/${deedId}/comments`)
             .set('Authorization', `Bearer ${token}`)
             .send(validComment)
-            .then(res => commentId = res.body._id));
+            .then(res => (commentId = res.body._id)));
       }); // beforeEach()
       afterEach(() => Comment.remove({}));
 

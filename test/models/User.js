@@ -49,7 +49,7 @@ describe('User', () => {
         .then(user => {
           expect(user).to.have.property('name', credentials.firstName);
 
-          user.firstName = void 0;
+          user.firstName = undefined;
           user.lastName = credentials.lastName;
           return user.save();
         })
@@ -75,7 +75,7 @@ describe('User', () => {
     it('should return false when user has no password', () => {
       return User.findOne({ email: credentials.email })
         .then(user => {
-          user.password = void 0;
+          user.password = undefined;
           return user.save();
         })
         .then(user => user.validatePassword(credentials.password))

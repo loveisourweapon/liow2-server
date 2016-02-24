@@ -232,9 +232,9 @@ function ensureAuthenticated(req, res, next) {
  */
 function ensureSuperAdmin(req, res, next) {
   if (req.authUser.superAdmin) {
-    next();
+    return next(null);
   } else {
-    next(new HttpError('Must be logged in as an admin', 403));
+    return next(new HttpError('Must be logged in as an admin', 403));
   }
 }
 
@@ -248,9 +248,9 @@ function ensureSuperAdmin(req, res, next) {
  */
 function ensureSameUser(req, res, next, userIdPath) {
   if (_.get(req, userIdPath).equals(req.authUser._id)) {
-    next();
+    return next();
   } else {
-    next(new HttpError('Must be logged in as this user', 403));
+    return next(new HttpError('Must be logged in as this user', 403));
   }
 }
 
@@ -267,9 +267,9 @@ function ensureAdminOf(req, res, next, groupIdPath) {
   Group.findById(_.get(req, groupIdPath)).exec()
     .then(group => {
       if (_.hasIn(req, 'authUser._id') && _.some(group.admins, admin => admin.equals(req.authUser._id))) {
-        next();
+        return next();
       } else {
-        next(new HttpError('Must be an admin of group', 403));
+        return next(new HttpError('Must be an admin of group', 403));
       }
     })
     .catch(() => next(new HttpError('Not Found', 404)));

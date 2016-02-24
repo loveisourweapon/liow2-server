@@ -15,7 +15,7 @@ describe('/likes', () => {
   before(() => {
     return testUtils.dbConnect()
       .then(() => new Deed({ title: 'Title', content: 'Content' }).save())
-      .then(deed => validLike.target = { deed: deed._id });
+      .then(deed => (validLike.target = { deed: deed._id }));
   }); // before()
   after(() => {
     return Deed.remove({})
@@ -52,7 +52,7 @@ describe('/likes', () => {
           .post(`/deeds/${validLike.target.deed}/likes`)
           .set('Authorization', `Bearer ${token}`)
           .send(validLike)
-          .then(res => likeId = res.body._id));
+          .then(res => (likeId = res.body._id)));
     }); // beforeEach()
     after(testUtils.removeUsers);
 

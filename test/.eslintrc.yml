@@ -1,0 +1,3 @@
+rules:
+  # Used in chai assertions
+  no-unused-expressions: 0

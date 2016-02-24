@@ -69,7 +69,7 @@ describe('/groups', () => {
           .post('/groups')
           .set('Authorization', `Bearer ${token}`)
           .send(validGroup)
-          .then(res => groupId = res.body._id));
+          .then(res => (groupId = res.body._id)));
     }); // beforeEach()
 
     it('GET invalid ID should return status 400 and an error message', () => {

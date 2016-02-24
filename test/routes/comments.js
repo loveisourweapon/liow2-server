@@ -16,7 +16,7 @@ describe('/comments', () => {
   before(() => {
     return testUtils.dbConnect()
       .then(() => new Deed({ title: 'Title', content: 'Content' }).save())
-      .then(deed => validComment.target = { deed: deed._id });
+      .then(deed => (validComment.target = { deed: deed._id }));
   }); // before()
   after(() => {
     return Deed.remove({})
@@ -53,7 +53,7 @@ describe('/comments', () => {
           .post(`/deeds/${validComment.target.deed}/comments`)
           .set('Authorization', `Bearer ${token}`)
           .send(validComment)
-          .then(res => commentId = res.body._id));
+          .then(res => (commentId = res.body._id)));
     }); // beforeEach()
     after(testUtils.removeUsers);
 

@@ -20,7 +20,7 @@ describe('/campaigns', () => {
         .post('/groups')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Group' })
-        .then(res => validCampaign.group = res.body._id));
+        .then(res => (validCampaign.group = res.body._id)));
   }); // before()
   after(() => {
     return Group.remove({})
@@ -76,7 +76,7 @@ describe('/campaigns', () => {
 
     beforeEach(() => {
       return new Campaign(validCampaign).save()
-        .then(campaign => campaignId = campaign._id);
+        .then(campaign => (campaignId = campaign._id));
     }); // beforeEach()
 
     it('GET invalid ID should return status 400 and an error message', () => {

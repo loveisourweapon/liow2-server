@@ -21,7 +21,7 @@ describe('utils/routes', () => {
   describe('#paramHandler()', () => {
     beforeEach(() => {
       return new Country(validCountry).save()
-        .then(country => countryId = country.id);
+        .then(country => (countryId = country.id));
     }); // beforeEach()
     afterEach(() => Country.remove({}));
 
@@ -116,7 +116,7 @@ describe('utils/routes', () => {
 
     beforeEach(() => {
       return testUtils.saveUser(testUtils.credentials)
-        .then(user => authUser = user);
+        .then(user => (authUser = user));
     }); // beforeEach()
     afterEach(testUtils.removeUsers);
 

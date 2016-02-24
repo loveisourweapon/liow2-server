@@ -79,7 +79,7 @@ describe('/users', () => {
 
     beforeEach(() => {
       return User.findOne({ email: testUtils.credentials.email }).exec()
-        .then(user => userId = user._id);
+        .then(user => (userId = user._id));
     }); // beforeEach()
 
     it('PATCH extra data should be ignored', () => {

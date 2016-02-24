@@ -31,7 +31,7 @@ describe('/countries', () => {
 
     beforeEach(() => {
       return new Country(validCountry).save()
-        .then(country => countryId = country._id);
+        .then(country => (countryId = country._id));
     }); // beforeEach()
 
     it('GET non-existent ID should return status 404 and an error message', () => {

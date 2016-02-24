@@ -48,7 +48,7 @@ router.post(
       // Get the active campaign of the current group
       Campaign.findOne({ group: req.body.group, active: true }, '_id')
         .exec()
-        .then(campaign => req.body.campaign = campaign._id)
+        .then(campaign => (req.body.campaign = campaign._id))
         .catch(() => null)
         .then(() => saveAct(req.body));
     } else {

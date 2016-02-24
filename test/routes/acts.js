@@ -98,7 +98,7 @@ describe('/acts', () => {
           .post('/acts')
           .set('Authorization', `Bearer ${token}`)
           .send(validAct)
-          .then(res => actId = res.body._id));
+          .then(res => (actId = res.body._id)));
     }); // beforeEach()
     after(testUtils.removeUsers);
 
@@ -145,7 +145,7 @@ describe('/acts', () => {
             .post(`/acts/${actId}/likes`)
             .set('Authorization', `Bearer ${token}`)
             .send(validLike)
-            .then(res => likeId = res.body._id));
+            .then(res => (likeId = res.body._id)));
       }); // beforeEach()
       afterEach(() => Like.remove({}));
 
@@ -220,7 +220,7 @@ describe('/acts', () => {
             .post(`/acts/${actId}/comments`)
             .set('Authorization', `Bearer ${token}`)
             .send(validComment)
-            .then(res => commentId = res.body._id));
+            .then(res => (commentId = res.body._id)));
       }); // beforeEach()
       afterEach(() => Comment.remove({}));
 
