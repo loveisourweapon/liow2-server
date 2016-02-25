@@ -14,7 +14,7 @@ var _ = require('lodash'),
  * @param {Request}  req
  * @param {Response} res
  * @param {function} next
- * @param {ObjectId} id
+ * @param {string}   id
  * @param {string}   name
  * @param {Model}    model
  */
@@ -290,7 +290,7 @@ function filterProperties(body, model) {
 /**
  * Filter JSON-Patch operations
  *
- * @param {array} operations
+ * @param {object[]} operations
  * @param {Model} model
  *
  * @returns {array}

@@ -6,21 +6,19 @@ var _ = require('lodash'),
 
 var ObjectId = require('mongoose').Types.ObjectId,
     User = require('../../models/User'),
-    Country = require('../../models/Country');
-
-var countryId = null;
-var validCountry = {
-  name: 'Australia',
-  code: 'AU'
-};
+    Group = require('../../models/Group'),
+    Country = require('../../models/Country'),
+    Comment = require('../../models/Comment');
 
 describe('utils/routes', () => {
   before(testUtils.dbConnect);
   after(testUtils.dbDisconnect);
 
   describe('#paramHandler()', () => {
+    var countryId = null;
+
     beforeEach(() => {
-      return new Country(validCountry).save()
+      return new Country({ name: 'Australia', code: 'AU' }).save()
         .then(country => (countryId = country.id));
     }); // beforeEach()
     afterEach(() => Country.remove({}));
@@ -28,60 +26,388 @@ describe('utils/routes', () => {
     it('should return an error when not called with a mongoose Model', done => {
       var req = {}, res = {};
       routeUtils.paramHandler(req, res, err => {
-        expect(err).to.be.an.instanceof(Error);
-        expect(err.message).to.match(/mongoose\smodel/);
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.match(/mongoose\smodel/);
+        }, done);
       }, countryId, 'country');
     }); // it()
 
     it('should return an error when called with an invalid ID', done => {
       var req = {}, res = {};
       routeUtils.paramHandler(req, res, err => {
-        expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid country');
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid country');
+        }, done);
       }, 'invalid', 'country', Country);
     }); // it()
 
     it('should return an error when called with a non-existent ID', done => {
       var req = {}, res = {}, id = String(ObjectId());
       routeUtils.paramHandler(req, res, err => {
-        expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Not Found');
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Not Found');
+        }, done);
       }, id, 'country', Country);
     }); // it()
 
     it('should attach a document when given a valid ID and called with a Model', done => {
       var req = {}, res = {};
       routeUtils.paramHandler(req, res, err => {
-        expect(err).to.not.exist;
-        expect(req.country).to.be.an.instanceof(Country).and.to.have.property('id', countryId);
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.not.exist;
+          expect(req.country).to.be.an.instanceof(Country).and.to.have.property('id', countryId);
+        }, done);
       }, countryId, 'country', Country);
     }); // it()
   }); // describe()
 
   describe('#getAll', () => {
-    // TODO
+    var aus = null, uk = null;
+
+    beforeEach(() => {
+      return new Country({ name: 'Australia', code: 'AU' }).save()
+        .then(country => (aus = country))
+        .then(() => new Country({ name: 'United Kingdom', code: 'UK' }).save())
+        .then(country => (uk = country));
+    }); // beforeEach
+    afterEach(() => Country.remove({}));
+
+    it('should return an error when not called with a mongoose Model', done => {
+      var req = {}, res = {};
+      routeUtils.getAll(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.match(/mongoose\smodel/);
+        }, done);
+      }, null);
+    }); // it()
+
+    it('should return all documents from a collection', done => {
+      var req = { query: {} };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents).to.be.an('array').and.to.have.lengthOf(2);
+            expect(documents[0]).to.have.property('id', aus.id);
+            expect(documents[1]).to.have.property('id', uk.id);
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
+
+    it('should return a count of documents from a collection', done => {
+      var req = { query: { count: 'true' } };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        send: function (text) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(text).to.equal('2');
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
+
+    it('should limit the number of returned documents', done => {
+      var req = { query: { limit: '1' } };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents).to.be.an('array').and.to.have.lengthOf(1);
+            expect(documents[0]).to.have.property('id', aus.id);
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
+
+    it('should filter the returned fields', done => {
+      var req = { query: { fields: 'code' } };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents[0]).to.have.property('code', aus.code);
+            expect(documents[0]).to.not.have.property('name');
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
+
+    it('should search documents with a query string', done => {
+      var req = { query: { query: 'aus' } };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents).to.be.an('array').and.to.have.lengthOf(1);
+            expect(documents[0]).to.have.property('id', aus.id);
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
+
+    it('should search documents by query paremeters', done => {
+      var req = { query: { code: 'UK' } };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents).to.be.an('array').and.to.have.lengthOf(1);
+            expect(documents[0]).to.have.property('id', uk.id);
+          }, done);
+        }
+      };
+
+      routeUtils.getAll(req, res, err => done(err), Country);
+    }); // it()
   }); // describe()
 
   describe('#getByParam', () => {
-    // TODO
+    var user = null;
+    var country = null;
+
+    beforeEach(() => {
+      return new Country({ name: 'Australia', code: 'AU' }).save()
+        .then(newCountry => (country = newCountry))
+        .then(() => new User(_.merge({ country }, testUtils.credentials)).save())
+        .then(newUser => (user = newUser));
+    }); // beforeEach()
+    afterEach(() => User.remove({}).then(() => Country.remove({})));
+
+    it('should return an error when called with an invalid param', done => {
+      var req = {}, res = {};
+      routeUtils.getByParam(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid param user');
+        }, done);
+      }, 'user');
+    }); // it()
+
+    it('should return a document when given a valid param', done => {
+      var req = {
+        params: { user: user.id },
+        user
+      };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (document) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(document).to.have.property('_id', user._id);
+          }, done);
+        }
+      };
+
+      routeUtils.getByParam(req, res, err => done(err), 'user');
+    }); // it()
+
+    it('should populate a specified linked document', done => {
+      var req = {
+        params: { user: user.id },
+        user
+      };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (document) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(document).to.have.property('_id', user._id);
+            expect(document).to.have.deep.property('country._id', country._id);
+          }, done);
+        }
+      };
+
+      routeUtils.getByParam(req, res, err => done(err), 'user', 'country');
+    }); // it()
   }); // describe()
 
   describe('#getByTarget', () => {
-    // TODO
+    var group = null;
+
+    beforeEach(() => {
+      var user = ObjectId();
+      return new Group({ name: 'Group', owner: user, admins: [user] }).save()
+        .then(newGroup => (group = newGroup))
+        .then(() => new Comment({ user: ObjectId(), target: { group: group._id }, content: { text: 'Text' } }).save());
+    }); // beforeEach()
+    afterEach(() => Comment.remove({}).then(() => Group.remove({})));
+
+    it('should return an error when not called with a mongoose Model', done => {
+      var req = {}, res = {};
+      routeUtils.getByTarget(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.match(/mongoose\smodel/);
+        }, done);
+      }, null, 'group');
+    }); // it()
+
+    it('should return an error when called with an invalid target', done => {
+      var req = {}, res = {};
+      routeUtils.getByTarget(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid target group');
+        }, done);
+      }, Comment, 'group');
+    }); // it()
+
+    it('should return documents when given a valid target', done => {
+      var req = {
+        params: { group: group.id },
+        group
+      };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (documents) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(documents).to.be.an('array').and.to.have.lengthOf(1);
+          }, done);
+        }
+      };
+
+      routeUtils.getByTarget(req, res, err => done(err), Comment, 'group');
+    }); // it()
   }); // describe()
 
   describe('#putByParam', () => {
-    // TODO
+    var country = null;
+
+    beforeEach(() => {
+      return new Country({ name: 'Australia', code: 'AU' }).save()
+        .then(newCountry => (country = newCountry));
+    }); // beforeEach()
+    afterEach(() => Country.remove({}));
+
+    it('should return an error when not called with a mongoose Model', done => {
+      var req = {}, res = {};
+      routeUtils.putByParam(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.match(/mongoose\smodel/);
+        }, done);
+      }, null, 'country');
+    }); // it()
+
+    it('should return an error when called with an invalid param', done => {
+      var req = {}, res = {};
+      routeUtils.putByParam(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid param country');
+        }, done);
+      }, Country, 'country');
+    }); // it()
+
+    it('should update a document when given a valid param', done => {
+      var req = {
+        body: { name: 'Test' },
+        params: { country: country.id },
+        country
+      };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        json: function (document) {
+          testUtils.catchify(() => {
+            expect(this).to.have.property('statusCode', 200);
+            expect(document).to.have.property('name', req.body.name);
+          }, done);
+        }
+      };
+
+      routeUtils.putByParam(req, res, err => done(err), Country, 'country');
+    }); // it()
   }); // describe()
 
   describe('#deleteByParam', () => {
-    // TODO
+    var country = null;
+
+    beforeEach(() => {
+      return new Country({ name: 'Australia', code: 'AU' }).save()
+        .then(newCountry => (country = newCountry));
+    }); // beforeEach()
+    afterEach(() => Country.remove({}));
+
+    it('should return an error when called with an invalid param', done => {
+      var req = {}, res = {};
+      routeUtils.deleteByParam(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('message', 'Invalid param country');
+        }, done);
+      }, 'country');
+    }); // it()
+
+    it('should remove a document when given a valid param', done => {
+      var req = {
+        params: { country: country.id },
+        country
+      };
+      var res = {
+        status: function (statusCode) {
+          this.statusCode = statusCode;
+          return this;
+        },
+        send: function () {
+          expect(this).to.have.property('statusCode', 204);
+
+          Country.findById(country.id).exec()
+            .catch(err => {
+              testUtils.catchify(() => {
+                expect(err).to.be.an.instanceof(HttpError).and.to.have.property('message', 'Not Found');
+              }, done);
+            });
+        }
+      };
+
+      routeUtils.deleteByParam(req, res, err => done(err), 'country');
+    }); // it()
   }); // describe()
 
   describe('#ensureAuthenticated', () => {
@@ -91,9 +417,9 @@ describe('utils/routes', () => {
     it('should return an error if no Authorization header included', done => {
       var req = { headers: {} }, res = {};
       routeUtils.ensureAuthenticated(req, res, err => {
-        expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 401);
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error).and.to.have.property('status', 401);
+        }, done);
       });
     }); // it()
 
@@ -102,10 +428,10 @@ describe('utils/routes', () => {
         .then(token => {
           var req = { headers: { authorization: `Bearer ${token}` } }, res = {};
           routeUtils.ensureAuthenticated(req, res, err => {
-            expect(err).to.not.exist;
-            expect(req.authUser).to.be.an.instanceof(User).and.to.have.property('email', testUtils.credentials.email);
-
-            done();
+            testUtils.catchify(() => {
+              expect(err).to.not.exist;
+              expect(req.authUser).to.be.an.instanceof(User).and.to.have.property('email', testUtils.credentials.email);
+            }, done);
           });
         });
     }); // it()
@@ -123,31 +449,137 @@ describe('utils/routes', () => {
     it('should return an error if authorized user is not a superAdmin', done => {
       var req = { authUser }, res = {};
       routeUtils.ensureSuperAdmin(req, res, err => {
-        expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 403);
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 403);
+        }, done);
       });
-    });
+    }); // it()
 
     it('should continue if authorized user is a superAdmin', done => {
       var req = { authUser: _.defaults({ superAdmin: true }, authUser) }, res = {};
       routeUtils.ensureSuperAdmin(req, res, err => {
-        expect(err).to.not.exist;
-
-        done();
+        testUtils.catchify(() => {
+          expect(err).to.not.exist;
+        }, done);
       });
-    });
+    }); // it()
   }); // describe()
 
   describe('#ensureSameUser', () => {
-    // TODO
+    var authUser = null;
+
+    beforeEach(() => {
+      return testUtils.saveUser(testUtils.credentials)
+        .then(user => (authUser = user));
+    }); // beforeEach()
+    afterEach(testUtils.removeUsers);
+
+    it('should return an error if authorized user is not the same user', done => {
+      var req = { authUser, user: { _id: ObjectId() } }, res = {};
+      routeUtils.ensureSameUser(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 403);
+        }, done);
+      }, 'user._id');
+    }); // it()
+
+    it('should continue if authorized user is the same user', done => {
+      var req = { authUser, user: { _id: authUser._id } }, res = {};
+      routeUtils.ensureSameUser(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.not.exist;
+        }, done);
+      }, 'user._id');
+    }); // it()
   }); // describe()
 
   describe('#ensureAdminOf', () => {
-    // TODO
+    var authUser = null;
+    var group = null;
+
+    beforeEach(() => {
+      return testUtils.saveUser(testUtils.credentials)
+        .then(user => (authUser = user))
+        .then(() => {
+          var user = ObjectId();
+          return new Group({ name: 'Group', owner: user, admins: [user] }).save();
+        })
+        .then(newGroup => (group = newGroup));
+    }); // beforeEach()
+    afterEach(() => {
+      return Group.remove({})
+        .then(testUtils.removeUsers);
+    }); // afterEach()
+
+    it('should return an error if group not found', done => {
+      var req = {}, res = {};
+      routeUtils.ensureAdminOf(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 404);
+        }, done);
+      }, 'group._id');
+    }); // it()
+
+    it('should return an error if authorized user is not an admin of group', done => {
+      var req = { authUser, group }, res = {};
+      routeUtils.ensureAdminOf(req, res, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(HttpError).and.to.have.property('status', 403);
+        }, done);
+      }, 'group._id');
+    }); // it()
+
+    it('should continue if authorized user is an admin of group', done => {
+      group.admins.push(authUser._id);
+      group.save()
+        .then(group => {
+          var req = { authUser, group }, res = {};
+          routeUtils.ensureAdminOf(req, res, err => {
+            testUtils.catchify(() => {
+              expect(err).to.not.exist;
+            }, done);
+          }, 'group._id');
+        })
+        .catch(done);
+    }); // it()
+  }); // describe()
+
+  describe('#filterProperties', () => {
+    var properties = {
+      firstName: 'Foobar',
+      superAdmin: true
+    };
+
+    it('should return all properties if model has no filter', () => {
+      expect(routeUtils.filterProperties(properties, Country)).to.deep.equal(properties);
+    }); // it()
+
+    it('should filter properties by keys using model\'s filter', () => {
+      var filtered = routeUtils.filterProperties(properties, User);
+
+      expect(filtered).to.not.deep.equal(properties);
+      expect(filtered).to.have.keys('firstName');
+      expect(filtered).to.not.have.keys('superAdmin');
+    }); // it()
   }); // describe()
 
   describe('#filterJsonPatch', () => {
-    // TODO
+    var patches = [
+      { op: 'replace', path: '/firstName', value: 'Foobar' },
+      { op: 'replace', path: '/superAdmin', value: true }
+    ];
+
+    it('should return all patches if model has no filter', () => {
+      expect(routeUtils.filterJsonPatch(patches, Country)).to.deep.equal(patches);
+    }); // it()
+
+    it('should filter patches by paths using model\'s filter', () => {
+      var filtered = routeUtils.filterJsonPatch(patches, User);
+      var paths = _.map(filtered, 'path');
+
+      expect(filtered).to.not.deep.equal(patches);
+      expect(paths).to.include('/firstName');
+      expect(paths).to.not.include('/superAdmin');
+    }); // it()
   }); // describe()
 }); // describe()

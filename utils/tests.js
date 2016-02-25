@@ -66,11 +66,25 @@ function getApiToken(extraCredentials) {
     .then(user => jwt.sign(user.id, config.secret));
 }
 
+/**
+ * Catch errors thrown by .expect assertions in async tests
+ *
+ * @param {function} test
+ * @param {function} done
+ */
+function catchify(test, done) {
+  try {
+    test();
+    done();
+  } catch (e) { done(e); }
+}
+
 module.exports = {
   credentials,
   dbConnect,
   dbDisconnect,
   saveUser,
   removeUsers,
-  getApiToken
+  getApiToken,
+  catchify
 };

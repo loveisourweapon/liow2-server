@@ -4,9 +4,8 @@ var modelUtils = require('../../utils/models'),
     Country = require('../../models/Country');
 
 var chai = require('chai'),
-    chaiAsPromised = require('chai-as-promised'),
     expect = chai.expect;
-chai.use(chaiAsPromised);
+chai.use(require('chai-as-promised'));
 
 describe('utils/models', () => {
   describe('#oneOf()', () => {

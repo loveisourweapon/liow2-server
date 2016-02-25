@@ -82,4 +82,24 @@ describe('utils/tests', () => {
         });
     }); // it()
   }); // describe()
+
+  describe('#catchify()', () => {
+    it('should call done with an error if test throws an error', done => {
+      testUtils.catchify(() => {
+        throw new Error();
+      }, err => {
+        testUtils.catchify(() => {
+          expect(err).to.be.an.instanceof(Error);
+        }, done);
+      });
+    }); // it()
+
+    it('should call done without an error if no error thrown', done => {
+      testUtils.catchify(() => null, err => {
+        testUtils.catchify(() => {
+          expect(err).to.not.exist;
+        }, done);
+      });
+    }); // it()
+  }); // describe()
 }); //describe()
