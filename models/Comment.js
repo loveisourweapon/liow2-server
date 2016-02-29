@@ -16,16 +16,18 @@ function validateHasContent(content) {
 
 var CommentSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
+  group: { type: ObjectId, ref: 'Group' },
+  campaign: { type: ObjectId, ref: 'Campaign' },
   target: {
     type: {
-      user: { type: ObjectId, ref: 'User' },
       group: { type: ObjectId, ref: 'Group' },
       deed: { type: ObjectId, ref: 'Deed' },
-      act: { type: ObjectId, ref: 'Act' }
+      act: { type: ObjectId, ref: 'Act' },
+      comment: { type: ObjectId, ref: 'Comment' }
     },
     required: true,
     validate: [
-      _.partialRight(modelUtils.oneOf, ['user', 'group', 'deed', 'act']),
+      _.partialRight(modelUtils.oneOf, ['group', 'deed', 'act', 'comment']),
       'One target should be set',
       'onetarget'
     ]
@@ -38,14 +40,17 @@ var CommentSchema = new mongoose.Schema({
     required: true,
     validate: [validateHasContent, 'Text or image should be included', 'hascontent']
   },
+  likes: { type: [{ type: ObjectId, ref: 'Like' }] },
+  comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
 
 CommentSchema.plugin(modelUtils.findOneOrThrow);
+CommentSchema.plugin(modelUtils.addFeedItem, { type: 'Comment' });
 
 CommentSchema.statics.getFilter = function () {
-  return ['content'];
+  return ['content', 'group', 'campaign'];
 };
 
 module.exports = mongoose.model('Comment', CommentSchema);

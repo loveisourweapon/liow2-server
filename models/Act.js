@@ -7,10 +7,13 @@ var ActSchema = new mongoose.Schema({
   deed: { type: ObjectId, ref: 'Deed', required: true },
   group: { type: ObjectId, ref: 'Group' },
   campaign: { type: ObjectId, ref: 'Campaign' },
+  likes: { type: [{ type: ObjectId, ref: 'Like' }] },
+  comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
   created: { type: Date, default: Date.now, required: true }
 });
 
 ActSchema.plugin(modelUtils.findOneOrThrow);
+ActSchema.plugin(modelUtils.addFeedItem, { type: 'Act' });
 
 ActSchema.statics.getFilter = function () {
   return ['deed', 'group', 'campaign'];

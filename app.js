@@ -17,7 +17,8 @@ var auth = require('./routes/auth'),
     groups = require('./routes/groups'),
     campaigns = require('./routes/campaigns'),
     likes = require('./routes/likes'),
-    comments = require('./routes/comments');
+    comments = require('./routes/comments'),
+    feeds = require('./routes/feeds');
 
 // Connect to database
 var db = mongoose.connection,
@@ -58,6 +59,7 @@ app.use('/groups', groups);
 app.use('/campaigns', campaigns);
 app.use('/likes', likes);
 app.use('/comments', comments);
+app.use('/feeds', feeds);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {

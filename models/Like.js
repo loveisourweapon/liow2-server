@@ -5,14 +5,16 @@ var _ = require('lodash'),
 
 var LikeSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
+  group: { type: ObjectId, ref: 'Group' },
+  campaign: { type: ObjectId, ref: 'Campaign' },
   target: {
     type: {
-      deed: { type: ObjectId, ref: 'Deed' },
-      act: { type: ObjectId, ref: 'Act' }
+      act: { type: ObjectId, ref: 'Act' },
+      comment: { type: ObjectId, ref: 'Comment' }
     },
     required: true,
     validate: [
-      _.partialRight(modelUtils.oneOf, ['deed', 'act']),
+      _.partialRight(modelUtils.oneOf, ['act', 'comment']),
       'One target should be set',
       'onetarget'
     ]
@@ -23,7 +25,7 @@ var LikeSchema = new mongoose.Schema({
 LikeSchema.plugin(modelUtils.findOneOrThrow);
 
 LikeSchema.statics.getFilter = function () {
-  return [];
+  return ['group', 'campaign'];
 };
 
 module.exports = mongoose.model('Like', LikeSchema);

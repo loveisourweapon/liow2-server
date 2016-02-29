@@ -71,6 +71,13 @@ UserSchema.methods.toJSON = function () {
   return _.omit(this.toObject({ virtuals: true }), ['password', 'facebook', 'superAdmin']);
 };
 
+/**
+ * Find an existing User or create a new one
+ *
+ * @param {object} newUser
+ *
+ * @returns {Promise}
+ */
 UserSchema.statics.findOrCreate = function (newUser) {
   return this.findOne({ email: newUser.email }).exec()
     .catch(err => {

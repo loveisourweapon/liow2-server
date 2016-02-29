@@ -104,9 +104,12 @@ router.post(
     req.body.user = req.authUser._id;
     req.body.target = { act: req.act._id };
 
-    new Like(req.body).save()
-      .then(like => res.status(201).location(`/acts/${req.act._id}/likes/${like._id}`).json(like))
-      .catch(err => next(err));
+    routeUtils.getCurrentCampaign(req)
+      .then(req => {
+        new Like(req.body).save()
+          .then(like => res.status(201).location(`/acts/${req.act._id}/likes/${like._id}`).json(like))
+          .catch(err => next(err));
+      });
   }
 );
 
@@ -151,9 +154,12 @@ router.post(
     req.body.user = req.authUser._id;
     req.body.target = { act: req.act._id };
 
-    new Comment(req.body).save()
-      .then(comment => res.status(201).location(`/acts/${req.act._id}/comments/${comment._id}`).json(comment))
-      .catch(err => next(err));
+    routeUtils.getCurrentCampaign(req)
+      .then(req => {
+        new Comment(req.body).save()
+          .then(comment => res.status(201).location(`/acts/${req.act._id}/comments/${comment._id}`).json(comment))
+          .catch(err => next(err));
+      });
   }
 );
 

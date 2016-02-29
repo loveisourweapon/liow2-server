@@ -1,5 +1,6 @@
 var _ = require('lodash'),
-    HttpError = require('./general').HttpError;
+    HttpError = require('./general').HttpError,
+    FeedItem = require('../models/FeedItem');
 
 module.exports = {
 
@@ -39,7 +40,7 @@ module.exports = {
   /**
    * Mongoose plugin to throw an error when findOne and findById queries return no result
    *
-   * @param {object} schema
+   * @param {Schema} schema
    */
   findOneOrThrow(schema) {
     schema.post('findOne', (res, next) => {
@@ -48,6 +49,32 @@ module.exports = {
       }
 
       next();
+    });
+  },
+
+  /**
+   * Mongoose plugin to also save a linked FeedItem when saving a document
+   *
+   * @param {Schema} schema
+   * @param {object} opts
+   * @param {string} opts.type
+   */
+  addFeedItem(schema, opts) {
+    // Save a FeedItem after saving the document
+    schema.post('save', function (doc) {
+      if (doc.deed || _.has(doc, 'target.deed') || _.has(doc, 'target.group')) {
+        var feedItem = _.pick(doc.toObject(), ['user', 'group', 'campaign']);
+        feedItem.target = doc.deed ? { deed: doc.deed } : doc.target;
+        feedItem[opts.type.toLowerCase()] = doc._id;
+
+        FeedItem.findOrCreate(feedItem);
+      }
+    });
+
+    // Find and remove the FeedItem when removing the document
+    schema.post('remove', function (doc) {
+      FeedItem.findOne(_.pick(doc, ['act', 'comment'])).exec()
+        .then(feedItem => feedItem.remove());
     });
   }
 
