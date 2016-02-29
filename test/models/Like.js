@@ -8,7 +8,7 @@ var ObjectId = require('mongoose').Types.ObjectId,
 var validLike = {
   user: ObjectId(),
   target: {
-    deed: ObjectId()
+    act: ObjectId()
   }
 };
 
@@ -35,8 +35,8 @@ describe('Like', () => {
 
           return new Like(_.defaults({
             target: {
-              deed: ObjectId(),
-              act: ObjectId()
+              act: ObjectId(),
+              comment: ObjectId()
             }
           }, validLike)).save();
         })

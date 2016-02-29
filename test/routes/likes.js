@@ -5,7 +5,7 @@ var testUtils = require('../../utils/tests'),
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../../models/Like'),
-    Deed = require('../../models/Deed');
+    Act = require('../../models/Act');
 
 var validLike = {
   user: ObjectId()
@@ -14,11 +14,11 @@ var validLike = {
 describe('/likes', () => {
   before(() => {
     return testUtils.dbConnect()
-      .then(() => new Deed({ title: 'Title', content: 'Content' }).save())
-      .then(deed => (validLike.target = { deed: deed._id }));
+      .then(() => new Act({ user: ObjectId(), deed: ObjectId() }).save())
+      .then(act => (validLike.target = { act: act._id }));
   }); // before()
   after(() => {
-    return Deed.remove({})
+    return Act.remove({})
       .then(testUtils.dbDisconnect);
   }); // after()
   afterEach(() => Like.remove({}));
@@ -49,7 +49,7 @@ describe('/likes', () => {
     beforeEach(() => {
       return testUtils.getApiToken()
         .then(token => request(app)
-          .post(`/deeds/${validLike.target.deed}/likes`)
+          .post(`/acts/${validLike.target.act}/likes`)
           .set('Authorization', `Bearer ${token}`)
           .send(validLike)
           .then(res => (likeId = res.body._id)));

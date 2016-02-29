@@ -64,41 +64,6 @@ router.delete(
 );
 
 /**
- * GET /deeds/:deed/likes
- */
-router.get(
-  '/:deed/likes',
-  _.partialRight(routeUtils.getByTarget, Like, 'deed')
-);
-
-/**
- * POST /deeds/:deed/likes
- */
-router.post(
-  '/:deed/likes',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Like);
-    req.body.user = req.authUser._id;
-    req.body.target = { deed: req.deed._id };
-
-    new Like(req.body).save()
-      .then(like => res.status(201).location(`/deeds/${req.deed._id}/likes/${like._id}`).json(like))
-      .catch(err => next(err));
-  }
-);
-
-/**
- * DELETE /deeds/:deed/likes/:like
- */
-router.delete(
-  '/:deed/likes/:like',
-  routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'like.user'),
-  _.partialRight(routeUtils.deleteByParam, 'like')
-);
-
-/**
  * GET /deeds/:deed/comments
  */
 router.get(
