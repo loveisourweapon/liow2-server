@@ -567,9 +567,9 @@
       }
     },
     "lodash": {
-      "version": "4.5.1",
+      "version": "4.6.1",
       "from": "lodash@latest",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.5.1.tgz"
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.6.1.tgz"
     },
     "moment": {
       "version": "2.11.2",
@@ -577,9 +577,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.11.2.tgz"
     },
     "mongoose": {
-      "version": "4.4.4",
+      "version": "4.4.6",
       "from": "mongoose@latest",
-      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.4.4.tgz",
+      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.4.6.tgz",
       "dependencies": {
         "async": {
           "version": "1.5.2",
@@ -602,9 +602,9 @@
           "resolved": "https://registry.npmjs.org/kareem/-/kareem-1.0.1.tgz"
         },
         "mongodb": {
-          "version": "2.1.6",
-          "from": "mongodb@2.1.6",
-          "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.1.6.tgz",
+          "version": "2.1.7",
+          "from": "mongodb@2.1.7",
+          "resolved": "https://registry.npmjs.org/mongodb/-/mongodb-2.1.7.tgz",
           "dependencies": {
             "es6-promise": {
               "version": "3.0.2",
@@ -675,9 +675,9 @@
           "resolved": "https://registry.npmjs.org/mpromise/-/mpromise-0.5.5.tgz"
         },
         "mquery": {
-          "version": "1.6.3",
-          "from": "mquery@1.6.3",
-          "resolved": "https://registry.npmjs.org/mquery/-/mquery-1.6.3.tgz",
+          "version": "1.8.0",
+          "from": "mquery@1.8.0",
+          "resolved": "https://registry.npmjs.org/mquery/-/mquery-1.8.0.tgz",
           "dependencies": {
             "bluebird": {
               "version": "2.9.26",
@@ -714,19 +714,31 @@
       }
     },
     "mongoose-unique-validator": {
-      "version": "1.0.0",
-      "from": "mongoose-unique-validator@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/mongoose-unique-validator/-/mongoose-unique-validator-1.0.0.tgz",
+      "version": "1.0.2",
+      "from": "mongoose-unique-validator@latest",
+      "resolved": "https://registry.npmjs.org/mongoose-unique-validator/-/mongoose-unique-validator-1.0.2.tgz",
       "dependencies": {
+        "lodash.foreach": {
+          "version": "4.1.0",
+          "from": "lodash.foreach@>=4.1.0 <5.0.0",
+          "resolved": "https://registry.npmjs.org/lodash.foreach/-/lodash.foreach-4.1.0.tgz",
+          "dependencies": {
+            "lodash._baseeach": {
+              "version": "4.1.1",
+              "from": "lodash._baseeach@>=4.0.0 <5.0.0",
+              "resolved": "https://registry.npmjs.org/lodash._baseeach/-/lodash._baseeach-4.1.1.tgz"
+            }
+          }
+        },
         "lodash.get": {
           "version": "4.1.2",
           "from": "lodash.get@>=4.0.2 <5.0.0",
           "resolved": "https://registry.npmjs.org/lodash.get/-/lodash.get-4.1.2.tgz",
           "dependencies": {
             "lodash.tostring": {
-              "version": "4.1.1",
+              "version": "4.1.2",
               "from": "lodash.tostring@>=4.0.0 <5.0.0",
-              "resolved": "https://registry.npmjs.org/lodash.tostring/-/lodash.tostring-4.1.1.tgz"
+              "resolved": "https://registry.npmjs.org/lodash.tostring/-/lodash.tostring-4.1.2.tgz"
             }
           }
         }
