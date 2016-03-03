@@ -7,6 +7,7 @@ var _ = require('lodash'),
 var ObjectId = require('mongoose').Types.ObjectId,
     User = require('../../models/User'),
     Group = require('../../models/Group'),
+    Campaign = require('../../models/Campaign'),
     Country = require('../../models/Country'),
     Comment = require('../../models/Comment');
 
@@ -580,6 +581,50 @@ describe('utils/routes', () => {
       expect(filtered).to.not.deep.equal(patches);
       expect(paths).to.include('/firstName');
       expect(paths).to.not.include('/superAdmin');
+    }); // it()
+  }); // describe()
+
+  describe('#getCurrentCampaign', () => {
+    var group = null;
+    var campaign = null;
+
+    beforeEach(() => {
+      var user = ObjectId();
+      return new Group({ name: 'Group', owner: user, admins: [user] }).save()
+        .then(newGroup => (group = newGroup))
+        .then(() => new Campaign({ group: group._id, deeds: [{ deed: ObjectId() }] }).save())
+        .then(newCampaign => (campaign = newCampaign));
+    }); // beforeEach()
+    afterEach(() => {
+      return Campaign.remove({})
+        .then(() => Group.remove({}));
+    }); // afterEach()
+
+    it('should do nothing if request doesn\'t have group', () => {
+      var req = { body: { property: 'value' } };
+      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+        .then(newReq => expect(newReq).to.deep.equal(req));
+    }); // it()
+
+    it('should do nothing if request already has group and campaign', () => {
+      var req = { body: { group, campaign } };
+      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+        .then(newReq => expect(newReq).to.deep.equal(req));
+    }); // it()
+
+    it('should do nothing if group doesn\'t have an active campaign', () => {
+      var req = { body: { group } };
+
+      campaign.active = false;
+      return campaign.save()
+        .then(() => routeUtils.getCurrentCampaign(_.cloneDeep(req)))
+        .then(newReq => expect(newReq).to.deep.equal(req));
+    }); // it()
+
+    it('should add campaign to request if group has an active campaign', () => {
+      var req = { body: { group } };
+      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+        .then(newReq => expect(newReq.body.campaign).to.deep.equal(campaign._id));
     }); // it()
   }); // describe()
 }); // describe()
