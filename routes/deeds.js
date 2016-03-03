@@ -5,7 +5,8 @@ var _ = require('lodash'),
 
 var Deed = require('../models/Deed'),
     Like = require('../models/Like'),
-    Comment = require('../models/Comment');
+    Comment = require('../models/Comment'),
+    Campaign = require('../models/Campaign');
 
 router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
 router.param('like', _.partialRight(routeUtils.paramHandler, Like));
@@ -82,9 +83,12 @@ router.post(
     req.body.user = req.authUser._id;
     req.body.target = { deed: req.deed._id };
 
-    new Comment(req.body).save()
-      .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
-      .catch(err => next(err));
+    routeUtils.getCurrentCampaign(req)
+      .then(req => {
+        new Comment(req.body).save()
+          .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
+          .catch(err => next(err));
+      });
   }
 );
 

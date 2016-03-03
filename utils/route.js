@@ -6,7 +6,8 @@ var _ = require('lodash'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Types.ObjectId,
     User = require('../models/User'),
-    Group = require('../models/Group');
+    Group = require('../models/Group'),
+    Campaign = require('../models/Campaign');
 
 /**
  * Find a document from a mongoose model and attach it to the request
@@ -302,6 +303,24 @@ function filterJsonPatch(operations, model) {
   ) : operations;
 }
 
+/**
+ * Get the active campaign of a group in the request body
+ *
+ * @param {Request} req
+ *
+ * @returns {Promise}
+ */
+function getCurrentCampaign(req) {
+  if (!req.body.group || req.body.campaign) {
+    return Promise.resolve(req);
+  }
+
+  return Campaign.findOne({ group: req.body.group, active: true }, '_id').exec()
+    .then(campaign => (req.body.campaign = campaign._id))
+    .catch(() => null)
+    .then(() => req);
+}
+
 module.exports = {
   paramHandler,
   getAll,
@@ -314,5 +333,6 @@ module.exports = {
   ensureSameUser,
   ensureAdminOf,
   filterProperties,
-  filterJsonPatch
+  filterJsonPatch,
+  getCurrentCampaign
 };

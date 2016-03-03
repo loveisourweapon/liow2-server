@@ -44,22 +44,12 @@ router.post(
     req.body = routeUtils.filterProperties(req.body, Act);
     req.body.user = req.authUser._id;
 
-    if (!req.body.campaign && req.body.group) {
-      // Get the active campaign of the current group
-      Campaign.findOne({ group: req.body.group, active: true }, '_id')
-        .exec()
-        .then(campaign => (req.body.campaign = campaign._id))
-        .catch(() => null)
-        .then(() => saveAct(req.body));
-    } else {
-      saveAct(req.body);
-    }
-
-    function saveAct(reqBody) {
-      return new Act(reqBody).save()
-        .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
-        .catch(err => next(err));
-    }
+    routeUtils.getCurrentCampaign(req)
+      .then(req => {
+        new Act(req.body).save()
+          .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
+          .catch(err => next(err));
+      });
   }
 );
 
