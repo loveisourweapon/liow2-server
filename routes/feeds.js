@@ -1,5 +1,6 @@
 var _ = require('lodash'),
     router = require('express').Router(),
+    ObjectId = require('mongoose').Types.ObjectId,
     FeedItem = require('../models/FeedItem');
 
 /**
@@ -10,11 +11,14 @@ router.get(
   (req, res, next) => {
     // Match schema fields
     var conditions = {};
-    var fields = _.filter(_.keys(req.query), field => _.has(FeedItem.schema.paths, field));
+    var fields = _.filter(
+      _.keys(req.query),
+      field => _.has(FeedItem.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+    );
     if (fields.length) {
-      conditions.$and = _.map(fields, field => {
-        return { [field]: req.query[field] };
-      });
+      conditions.$or = _.map(fields, field => ({
+        [field]: ObjectId.isValid(req.query[field]) ? ObjectId(req.query[field]) : req.query[field]
+      }));
     }
 
     FeedItem.find(conditions)
