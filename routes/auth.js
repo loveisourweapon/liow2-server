@@ -53,7 +53,7 @@ router.post(
                       id: profile.id,
                       accessToken: accessToken.access_token
                     };
-                    user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
+                    user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?width=200&height=200`;
                     user.firstName = profile.first_name;
                     user.lastName = profile.last_name;
                     if (
@@ -86,7 +86,7 @@ router.post(
                 id: profile.id,
                 accessToken: accessToken.access_token
               };
-              user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?type=large`;
+              user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?width=200&height=200`;
               user.firstName = profile.first_name;
               user.lastName = profile.last_name;
               if (
