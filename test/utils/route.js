@@ -9,7 +9,8 @@ var ObjectId = require('mongoose').Types.ObjectId,
     Group = require('../../models/Group'),
     Campaign = require('../../models/Campaign'),
     Country = require('../../models/Country'),
-    Comment = require('../../models/Comment');
+    Comment = require('../../models/Comment'),
+    FeedItem = require('../../models/FeedItem');
 
 describe('utils/routes', () => {
   before(testUtils.dbConnect);
@@ -273,7 +274,11 @@ describe('utils/routes', () => {
         .then(newGroup => (group = newGroup))
         .then(() => new Comment({ user: ObjectId(), target: { group: group._id }, content: { text: 'Text' } }).save());
     }); // beforeEach()
-    afterEach(() => Comment.remove({}).then(() => Group.remove({})));
+    afterEach(() => {
+      return Comment.remove({})
+        .then(() => FeedItem.remove({}))
+        .then(() => Group.remove({}));
+    }); // afterEach()
 
     it('should return an error when not called with a mongoose Model', done => {
       var req = {}, res = {};

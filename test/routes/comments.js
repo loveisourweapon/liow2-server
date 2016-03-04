@@ -5,7 +5,8 @@ var testUtils = require('../../utils/tests'),
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Comment = require('../../models/Comment'),
-    Deed = require('../../models/Deed');
+    Deed = require('../../models/Deed'),
+    FeedItem = require('../../models/FeedItem');
 
 var validComment = {
   user: ObjectId(),
@@ -18,11 +19,8 @@ describe('/comments', () => {
       .then(() => new Deed({ title: 'Title', content: 'Content' }).save())
       .then(deed => (validComment.target = { deed: deed._id }));
   }); // before()
-  after(() => {
-    return Deed.remove({})
-      .then(testUtils.dbDisconnect);
-  }); // after()
-  afterEach(() => Comment.remove({}));
+  after(() => Deed.remove({}).then(testUtils.dbDisconnect));
+  afterEach(() => Comment.remove({}).then(() => FeedItem.remove({})));
 
   describe('/', () => {
     it('GET should return status 200 and an empty array', () => {

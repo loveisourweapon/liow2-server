@@ -19,7 +19,7 @@ var credentials = {
  */
 function dbConnect() {
   if (mongoose.connection.readyState === 0) {
-    return mongoose.connect(config.db.url);
+    return mongoose.connect(process.env.LIOW_DB_URL || config.db.url);
   } else {
     return Promise.resolve();
   }

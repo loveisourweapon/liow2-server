@@ -73,7 +73,7 @@ module.exports = {
 
     // Find and remove the FeedItem when removing the document
     schema.post('remove', function (doc) {
-      FeedItem.findOne(_.pick(doc, ['act', 'comment'])).exec()
+      FeedItem.findOne({ $or: [{ act: doc._id }, { comment: doc._id }] }).exec()
         .then(feedItem => feedItem.remove());
     });
   }

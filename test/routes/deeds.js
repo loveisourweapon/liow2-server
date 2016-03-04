@@ -7,7 +7,8 @@ var _ = require('lodash'),
 var ObjectId = require('mongoose').Types.ObjectId,
     Deed = require('../../models/Deed'),
     Like = require('../../models/Like'),
-    Comment = require('../../models/Comment');
+    Comment = require('../../models/Comment'),
+    FeedItem = require('../../models/FeedItem');
 
 var validDeed = {
   title: 'Deed title',
@@ -157,7 +158,7 @@ describe('/deeds', () => {
             .send(validComment)
             .then(res => (commentId = res.body._id)));
       }); // beforeEach()
-      afterEach(() => Comment.remove({}));
+      afterEach(() => Comment.remove({}).then(() => FeedItem.remove({})));
 
       it('GET should return status 200 and an array', () => {
         return request(app)

@@ -8,10 +8,7 @@ var Group = require('../../models/Group'),
     FeedItem = require('../../models/FeedItem');
 
 describe('/feeds', () => {
-  before(() => {
-    return testUtils.dbConnect()
-      .then(() => FeedItem.remove({})); // FeedItems left over from other tests
-  });
+  before(testUtils.dbConnect);
   after(testUtils.dbDisconnect);
 
   describe('/', () => {

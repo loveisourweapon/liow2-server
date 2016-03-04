@@ -5,7 +5,8 @@ var testUtils = require('../../utils/tests'),
 
 var ObjectId = require('mongoose').Types.ObjectId,
     Like = require('../../models/Like'),
-    Act = require('../../models/Act');
+    Act = require('../../models/Act'),
+    FeedItem = require('../../models/FeedItem');
 
 var validLike = {
   user: ObjectId()
@@ -19,6 +20,7 @@ describe('/likes', () => {
   }); // before()
   after(() => {
     return Act.remove({})
+      .then(() => FeedItem.remove({}))
       .then(testUtils.dbDisconnect);
   }); // after()
   afterEach(() => Like.remove({}));
