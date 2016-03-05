@@ -21,6 +21,13 @@ router.get(
       }));
     }
 
+    // Handle before/after queries
+    if (_.has(req.query, 'before') || _.has(req.query, 'after')) {
+      conditions.created = {
+        [req.query.before ? '$lt' : '$gt']: new Date(req.query[req.query.before ? 'before' : 'after'])
+      };
+    }
+
     FeedItem.find(conditions)
       .populate({ path: 'user', select: 'firstName picture' })
       .populate({ path: 'group', select: 'name urlName' })
