@@ -68,7 +68,7 @@ UserSchema.methods.validatePassword = function (password) {
 };
 
 UserSchema.methods.toJSON = function () {
-  return _.omit(this.toObject({ virtuals: true }), ['password', 'facebook', 'superAdmin']);
+  return _.omit(this.toObject({ virtuals: true }), ['password', 'email', 'facebook', 'superAdmin']);
 };
 
 /**

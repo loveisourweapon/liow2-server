@@ -1,8 +1,7 @@
 var _ = require('lodash'),
     jsonpatch = require('fast-json-patch'),
     routeUtils = require('../utils/route'),
-    express = require('express'),
-    router = express.Router(),
+    router = require('express').Router(),
     User = require('../models/User');
 
 router.param('user', _.partialRight(routeUtils.paramHandler, User));
@@ -30,11 +29,19 @@ router.get(
   routeUtils.ensureAuthenticated,
   (req, res, next) => {
     req.authUser
-      .populate('country groups', '_id name urlName admins')
+      .populate('groups', 'name urlName admins')
       .execPopulate()
       .then(user => res.status(200).json(user))
       .catch(err => next(err));
   }
+);
+
+/**
+ * GET /users/:user
+ */
+router.get(
+  '/:user',
+  _.partialRight(routeUtils.getByParam, 'user')
 );
 
 /**
