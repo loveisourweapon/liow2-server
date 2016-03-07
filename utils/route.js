@@ -40,10 +40,13 @@ function paramHandler(req, res, next, id, name, model) {
  *
  * @param {object} query
  * @param {Model}  model
+ * @param {string} [op='$and']
  *
  * @returns {object}
  */
-function buildQueryConditions(query, model) {
+function buildQueryConditions(query, model, op) {
+  op = op || '$and';
+
   var conditions = {};
   if (query.query && _.isFunction(model.getSearchable)) {
     // Search if search query included
@@ -52,11 +55,14 @@ function buildQueryConditions(query, model) {
     });
   } else {
     // Match schema fields
-    var fields = _.filter(_.keys(query), field => _.has(model.schema.paths, field));
+    var fields = _.filter(
+      _.keys(query),
+      field => _.has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+    );
     if (fields.length) {
-      conditions.$and = _.map(fields, field => {
-        return { [field]: query[field] };
-      });
+      conditions[op] = _.map(fields, field => ({
+        [field]: ObjectId.isValid(query[field]) ? ObjectId(query[field]) : query[field]
+      }));
     }
   }
 
@@ -323,6 +329,7 @@ function getCurrentCampaign(req) {
 
 module.exports = {
   paramHandler,
+  buildQueryConditions,
   getAll,
   getByParam,
   getByTarget,

@@ -1,6 +1,6 @@
 var _ = require('lodash'),
+    routeUtils = require('../utils/route'),
     router = require('express').Router(),
-    ObjectId = require('mongoose').Types.ObjectId,
     FeedItem = require('../models/FeedItem');
 
 /**
@@ -9,17 +9,7 @@ var _ = require('lodash'),
 router.get(
   '/',
   (req, res, next) => {
-    // Match schema fields
-    var conditions = {};
-    var fields = _.filter(
-      _.keys(req.query),
-      field => _.has(FeedItem.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
-    );
-    if (fields.length) {
-      conditions.$or = _.map(fields, field => ({
-        [field]: ObjectId.isValid(req.query[field]) ? ObjectId(req.query[field]) : req.query[field]
-      }));
-    }
+    var conditions = routeUtils.buildQueryConditions(req.query, FeedItem, '$or');
 
     // Handle before/after queries
     if (_.has(req.query, 'before') || _.has(req.query, 'after')) {
