@@ -61,7 +61,7 @@ function buildQueryConditions(query, model, op) {
     );
     if (fields.length) {
       conditions[op] = _.map(fields, field => ({
-        [field]: ObjectId.isValid(query[field]) ? ObjectId(query[field]) : query[field]
+        [field]: { $in: _.map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
       }));
     }
   }
@@ -110,6 +110,7 @@ function getAll(req, res, next, model, populate) {
     model.find(conditions)
       .populate(_.isString(populate) ? populate : '')
       .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
+      .sort({ _id: 1 })
       .exec()
       .then(documents => res.status(200).json(filterDocumentFields(documents, req.query)))
       .catch(err => next(err));

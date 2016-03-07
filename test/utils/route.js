@@ -84,7 +84,7 @@ describe('utils/routes', () => {
       var query = { code: 'AU' };
       var conditions = routeUtils.buildQueryConditions(query, Country);
 
-      expect(conditions).to.have.deep.property('$and[0].code', query.code);
+      expect(conditions).to.have.deep.property('$and[0].code.$in[0]', query.code);
     }); // it()
 
     it('should default the query operator to $and', () => {
@@ -105,8 +105,8 @@ describe('utils/routes', () => {
       var query = { group: String(ObjectId()) };
       var conditions = routeUtils.buildQueryConditions(query, Campaign);
 
-      expect(conditions).to.have.deep.property('$and[0].group');
-      expect(conditions.$and[0].group).to.be.an.instanceof(ObjectId);
+      expect(conditions).to.have.deep.property('$and[0].group.$in[0]');
+      expect(conditions.$and[0].group.$in[0]).to.be.an.instanceof(ObjectId);
     }); // it()
   }); // describe()
 
