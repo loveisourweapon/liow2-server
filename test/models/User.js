@@ -84,11 +84,12 @@ describe('User', () => {
   }); // describe()
 
   describe('#toJSON()', () => {
-    it('should not disclose password or superAdmin', () => {
+    it('should not disclose email, password or superAdmin', () => {
       return new User(credentials).save()
         .then(user => {
           expect(user).to.have.property('password');
           expect(user).to.have.property('superAdmin');
+          expect(user.toJSON()).to.not.have.property('email');
           expect(user.toJSON()).to.not.have.property('password');
           expect(user.toJSON()).to.not.have.property('superAdmin');
         });

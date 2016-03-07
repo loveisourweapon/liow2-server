@@ -64,6 +64,52 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
+  describe('#buildQueryConditions', () => {
+    it('should search all searchable fields if search param included', () => {
+      var query = { query: 'au' };
+      var conditions = routeUtils.buildQueryConditions(query, Country);
+
+      expect(conditions).to.have.deep.property('$or[0].code');
+      expect(conditions).to.have.deep.property('$or[1].name');
+    }); // it()
+
+    it('should search param if model has no searchable fields', () => {
+      var query = { query: 'test' };
+      var conditions = routeUtils.buildQueryConditions(query, Campaign);
+
+      expect(conditions).to.be.empty;
+    }); // it()
+
+    it('should match any specified schema fields', () => {
+      var query = { code: 'AU' };
+      var conditions = routeUtils.buildQueryConditions(query, Country);
+
+      expect(conditions).to.have.deep.property('$and[0].code', query.code);
+    }); // it()
+
+    it('should default the query operator to $and', () => {
+      var query = { code: 'AU' };
+      var conditions = routeUtils.buildQueryConditions(query, Country);
+
+      expect(conditions).to.have.property('$and');
+    }); // it()
+
+    it('should allow overriding the default $and operator with $or', () => {
+      var query = { code: 'AU' };
+      var conditions = routeUtils.buildQueryConditions(query, Country, '$or');
+
+      expect(conditions).to.have.property('$or');
+    }); // it()
+
+    it('should convert relevant field values to an ObjectId', () => {
+      var query = { group: String(ObjectId()) };
+      var conditions = routeUtils.buildQueryConditions(query, Campaign);
+
+      expect(conditions).to.have.deep.property('$and[0].group');
+      expect(conditions.$and[0].group).to.be.an.instanceof(ObjectId);
+    }); // it()
+  }); // describe()
+
   describe('#getAll', () => {
     var aus = null, uk = null;
 

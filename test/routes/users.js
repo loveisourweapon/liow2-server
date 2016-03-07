@@ -3,18 +3,19 @@ var testUtils = require('../../utils/tests'),
     expect = require('chai').expect,
     app = require('../../app');
 
-var User = require('../../models/User'),
-    Country = require('../../models/Country');
+var ObjectId = require('mongoose').Types.ObjectId,
+    User = require('../../models/User'),
+    Group = require('../../models/Group');
 
 describe('/users', () => {
+  var user = null;
+
   before(() => {
     return testUtils.dbConnect()
-      .then(() => testUtils.saveUser(testUtils.credentials));
-  }); // before()
-  after(() => {
-    return testUtils.removeUsers()
-      .then(testUtils.dbDisconnect);
-  }); // after()
+      .then(() => testUtils.saveUser(testUtils.credentials))
+      .then(newUser => (user = newUser));
+  });
+  after(() => testUtils.removeUsers().then(testUtils.dbDisconnect));
 
   describe('/', () => {
     it('GET should return a count of the number of users', () => {
@@ -47,20 +48,18 @@ describe('/users', () => {
           .expect('Content-Type', /json/)
           .expect(res => {
             expect(res.body).to.have.property('_id');
-            expect(res.body).to.have.property('email', testUtils.credentials.email);
+            expect(res.body).to.have.property('firstName', testUtils.credentials.firstName);
           }));
     }); // it()
 
-    it('GET should populate the linked country', () => {
-      var countryId = null;
+    it('GET should populate a linked group', () => {
+      var group = null;
 
-      return new Country({ name: 'Australia', code: 'AU' }).save()
-        .then(country => {
-          countryId = country._id;
-          return User.findOne({ email: testUtils.credentials.email }).exec();
-        })
+      return new Group({ name: 'Group', owner: user._id, admins: [user._id] }).save()
+        .then(newGroup => (group = newGroup))
+        .then(() => User.findOne({ email: testUtils.credentials.email }).exec())
         .then(user => {
-          user.country = countryId;
+          user.groups.push(group._id);
           return user.save();
         })
         .then(testUtils.getApiToken)
@@ -69,42 +68,66 @@ describe('/users', () => {
           .set('Authorization', `Bearer ${token}`)
           .expect(200)
           .expect('Content-Type', /json/)
-          .expect(res => expect(res.body).to.have.deep.property('country._id', String(countryId)))
-          .then(() => Country.remove({})));
+          .expect(res => expect(res.body).to.have.deep.property('groups[0]._id', group.id))
+          .then(() => Group.remove({})));
     }); // it()
   }); // describe()
 
   describe('/:user', () => {
-    var userId = null;
+    var user = null;
 
     beforeEach(() => {
       return User.findOne({ email: testUtils.credentials.email }).exec()
-        .then(user => (userId = user._id));
+        .then(newUser => (user = newUser));
     }); // beforeEach()
+
+    it('GET invalid ID should return status 400 and an error message', () => {
+      return request(app)
+        .get('/users/invalid')
+        .expect(400)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.have.property('message', 'Invalid user'));
+    }); // it()
+
+    it('GET non-existent ID should return status 404 and an error message', () => {
+      return request(app)
+        .get(`/users/${ObjectId()}`)
+        .expect(404)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
+    }); // it()
+
+    it('GET valid ID should return status 200 and a User', () => {
+      return request(app)
+        .get(`/users/${user.id}`)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.have.property('_id', user.id));
+    }); // it()
 
     it('PATCH extra data should be ignored', () => {
       return testUtils.getApiToken()
         .then(token => request(app)
-          .patch(`/users/${userId}`)
+          .patch(`/users/${user.id}`)
           .set('Authorization', `Bearer ${token}`)
           .send([{ op: 'add', path: '/extra', value: 'data' }])
           .expect(200)
-          .expect(res => expect(res.body).to.have.property('_id', String(userId)))
-          .then(() => User.findById(userId).exec())
+          .expect(res => expect(res.body).to.have.property('_id', user.id))
+          .then(() => User.findById(user._id).exec())
           .then(user => expect(user).to.not.have.property('extra')));
     }); // it()
 
     it('PATCH valid data should return status 204 and update the User', () => {
-      return User.findById(userId).exec()
+      return User.findById(user._id).exec()
         .then(user => expect(user).to.have.property('firstName', testUtils.credentials.firstName))
         .then(testUtils.getApiToken)
         .then(token => request(app)
-          .patch(`/users/${userId}`)
+          .patch(`/users/${user.id}`)
           .set('Authorization', `Bearer ${token}`)
           .send([{ op: 'replace', path: '/firstName', value: 'Foobar' }])
           .expect(200)
-          .expect(res => expect(res.body).to.have.property('_id', String(userId)))
-          .then(() => User.findById(userId).exec())
+          .expect(res => expect(res.body).to.have.property('_id', user.id))
+          .then(() => User.findById(user._id).exec())
           .then(user => expect(user).to.have.property('firstName', 'Foobar')));
     }); // it()
   }); // describe()
