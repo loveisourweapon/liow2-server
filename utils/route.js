@@ -61,7 +61,9 @@ function buildQueryConditions(query, model, op) {
     );
     if (fields.length) {
       conditions[op] = _.map(fields, field => ({
-        [field]: { $in: _.map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
+        [field]: (query[field] === 'true' || query[field] === 'false') ?
+          { $exists: query[field] === 'true' } :
+          { $in: _.map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
       }));
     }
   }

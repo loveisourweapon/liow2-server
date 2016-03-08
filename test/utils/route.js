@@ -101,6 +101,13 @@ describe('utils/routes', () => {
       expect(conditions).to.have.property('$or');
     }); // it()
 
+    it('should handle $exists queries by passing a true/false value', () => {
+      var query = { group: 'false' };
+      var conditions = routeUtils.buildQueryConditions(query, Campaign);
+
+      expect(conditions).to.have.deep.property('$and[0].group.$exists', false);
+    }); // it()
+
     it('should convert relevant field values to an ObjectId', () => {
       var query = { group: String(ObjectId()) };
       var conditions = routeUtils.buildQueryConditions(query, Campaign);
