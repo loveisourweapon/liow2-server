@@ -1,7 +1,11 @@
 var modelUtils = require('../../utils/models'),
     testUtils = require('../../utils/tests'),
-    HttpError = require('../../utils/general').HttpError,
-    Country = require('../../models/Country');
+    HttpError = require('../../utils/general').HttpError;
+
+var ObjectId = require('mongoose').Types.ObjectId,
+    Country = require('../../models/Country'),
+    Act = require('../../models/Act'),
+    FeedItem = require('../../models/FeedItem');
 
 var chai = require('chai'),
     expect = chai.expect;
@@ -88,6 +92,42 @@ describe('utils/models', () => {
       var result = Country.findOne({ name: validCountry.name }).exec();
 
       return expect(result).to.eventually.have.property('code', validCountry.code);
+    }); // it()
+  }); // describe()
+
+  describe('#addFeedItem()', () => {
+    var validAct = {
+      user: ObjectId(),
+      deed: ObjectId()
+    };
+
+    before(testUtils.dbConnect);
+    after(testUtils.dbDisconnect);
+    afterEach(() => FeedItem.remove({}).then(() => Act.remove({})));
+
+    it('should create a linked FeedItem when document saved', () => {
+      var act = null;
+
+      return new Act(validAct).save()
+        .then(newAct => (act = newAct))
+        .then(() => new Promise((resolve, reject) => setTimeout(resolve, 100))) // Wait for FeedItem to be saved
+        .then(() => FeedItem.findOne({ act: act._id }))
+        .then(foundFeedItem => {
+          expect(foundFeedItem).to.exist.and.to.have.property('user');
+          expect(String(foundFeedItem.user)).to.equal(String(validAct.user));
+        });
+    }); // it()
+
+    it('should remove a linked FeedItem when document removed', () => {
+      var act = null;
+
+      return new Act(validAct).save()
+        .then(newAct => (act = newAct))
+        .then(() => new Promise((resolve, reject) => setTimeout(resolve, 100))) // Wait for FeedItem to be saved
+        .then(() => act.remove())
+        .then(() => new Promise((resolve, reject) => setTimeout(resolve, 100))) // Wait for FeedItem to be removed
+        .then(() => FeedItem.findOne({ act: act._id }))
+        .then(feedItem => expect(feedItem).to.not.exist);
     }); // it()
   }); // describe()
 }); // describe()
