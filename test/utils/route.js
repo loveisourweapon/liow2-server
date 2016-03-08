@@ -101,8 +101,8 @@ describe('utils/routes', () => {
       expect(conditions).to.have.property('$or');
     }); // it()
 
-    it('should handle $exists queries by passing a true/false value', () => {
-      var query = { group: 'false' };
+    it('should handle not exists queries by passing a null value', () => {
+      var query = { group: 'null' };
       var conditions = routeUtils.buildQueryConditions(query, Campaign);
 
       expect(conditions).to.have.deep.property('$and[0].group.$exists', false);
