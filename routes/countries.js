@@ -10,10 +10,12 @@ router.param('country', _.partialRight(routeUtils.paramHandler, Country));
 
 /**
  * @api {get} /countries List countries
+ * @apiVersion 1.0.0
  * @apiName GetCountries
  * @apiGroup Countries
+ * @apiPermission none
  *
- * @apiUse GetCountriesSuccess
+ * @apiUse CountriesResponse
  */
 router.get(
   '/',
@@ -22,12 +24,14 @@ router.get(
 
 /**
  * @api {get} /countries/:country Get country
+ * @apiVersion 1.0.0
  * @apiName GetCountry
  * @apiGroup Countries
+ * @apiPermission none
  *
- * @apiParam {string} country Unique country ObjectId
+ * @apiParam {string} country Country ObjectId
  *
- * @apiUse GetCountrySuccess
+ * @apiUse CountryResponse
  */
 router.get(
   '/:country',
@@ -36,12 +40,14 @@ router.get(
 
 /**
  * @api {get} /countries/:country/groups Get country groups
+ * @apiVersion 1.0.0
  * @apiName GetCountryGroups
  * @apiGroup Countries
+ * @apiPermission none
  *
- * @apiParam {string} country Unique country ObjectId
+ * @apiParam {string} country Country ObjectId
  *
- * @apiSuccess {Group[]} groups Collection of groups belonging to a country
+ * @apiUse GroupsResponse
  */
 router.get(
   '/:country/groups',

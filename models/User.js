@@ -92,3 +92,35 @@ UserSchema.statics.getFilter = function () {
 };
 
 module.exports = mongoose.model('User', UserSchema);
+
+/**
+ * @apiDefine UserResponse
+ * @apiVersion 1.6.0
+ *
+ * @apiSuccess {User}     user            User
+ * @apiSuccess {string}   user._id        User ObjectId
+ * @apiSuccess {string}   user.firstName  User's first name
+ * @apiSuccess {string}   user.lastName   User's last name
+ * @apiSuccess {string}   user.name       User's full name
+ * @apiSuccess {string}   user.picture    User's profile picture URL
+ * @apiSuccess {string}   user.coverImage User cover image URL
+ * @apiSuccess {string}   user.country    Country ObjectId
+ * @apiSuccess {string[]} user.groups     List of group ObjectId's
+ * @apiSuccess {Date}     user.created    Created timestamp
+ * @apiSuccess {Date}     user.modified   Modified timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "firstName": "Fred",
+ *     "lastName": "Bloggs",
+ *     "name": "Fred Bloggs",
+ *     "picture": "https://example.com/images/picture.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "country": "55f6c56186b959ac12490e1a",
+ *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T14:32:27.250Z"
+ *   }
+ */

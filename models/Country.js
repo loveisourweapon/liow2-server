@@ -18,7 +18,7 @@ CountrySchema.statics.getSearchable = function () {
 module.exports = mongoose.model('Country', CountrySchema);
 
 /**
- * @apiDefine GetCountriesSuccess
+ * @apiDefine CountriesResponse
  *
  * @apiSuccess {Country[]} countries      List of countries
  * @apiSuccess {string}    countries._id  Country ObjectId
@@ -35,7 +35,7 @@ module.exports = mongoose.model('Country', CountrySchema);
  */
 
 /**
- * @apiDefine GetCountrySuccess
+ * @apiDefine CountryResponse
  *
  * @apiSuccess {Country} country      Country
  * @apiSuccess {string}  country._id  Country ObjectId

@@ -7,7 +7,13 @@ var _ = require('lodash'),
 router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 
 /**
- * GET /comments
+ * @api {get} /comments List comments
+ * @apiVersion 1.5.0
+ * @apiName GetComments
+ * @apiGroup Comments
+ * @apiPermission none
+ *
+ * @apiUse CommentsResponse
  */
 router.get(
   '/',
@@ -15,7 +21,16 @@ router.get(
 );
 
 /**
- * PUT /comments/:comment
+ * @api {put} /comments/:comment Update comment
+ * @apiVersion 1.5.0
+ * @apiName PutComment
+ * @apiGroup Comments
+ * @apiPermission owner
+ *
+ * @apiParam {string} comment Comment ObjectId
+ *
+ * @apiUse CommentRequestBody
+ * @apiUse CommentResponse
  */
 router.put(
   '/:comment',
@@ -25,7 +40,15 @@ router.put(
 );
 
 /**
- * DELETE /comments/:comment
+ * @api {delete} /comments/:comment Remove comment
+ * @apiVersion 1.3.0
+ * @apiName DeleteComment
+ * @apiGroup Comments
+ * @apiPermission owner
+ *
+ * @apiParam {string} comment Comment ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:comment',

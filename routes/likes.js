@@ -7,7 +7,13 @@ var _ = require('lodash'),
 router.param('like', _.partialRight(routeUtils.paramHandler, Like));
 
 /**
- * GET /likes
+ * @api {get} /likes List likes
+ * @apiVersion 1.5.0
+ * @apiName GetLikes
+ * @apiGroup Likes
+ * @apiPermission none
+ *
+ * @apiUse LikesResponse
  */
 router.get(
   '/',
@@ -15,7 +21,15 @@ router.get(
 );
 
 /**
- * DELETE /likes/:like
+ * @api {delete} /likes/:like Remove like
+ * @apiVersion 1.3.0
+ * @apiName DeleteLike
+ * @apiGroup Likes
+ * @apiPermission owner
+ *
+ * @apiParam {string} like Like ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:like',

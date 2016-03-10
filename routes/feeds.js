@@ -4,7 +4,13 @@ var _ = require('lodash'),
     FeedItem = require('../models/FeedItem');
 
 /**
- * GET /feeds
+ * @api {get} /feeds List feed items
+ * @apiVersion 1.5.0
+ * @apiName GetFeeds
+ * @apiGroup Feeds
+ * @apiPermission none
+ *
+ * @apiUse FeedsResponse
  */
 router.get(
   '/',

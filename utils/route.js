@@ -346,3 +346,35 @@ module.exports = {
   filterJsonPatch,
   getCurrentCampaign
 };
+
+/**
+ * @apiDefine NoContentResponse
+ *
+ * @apiSuccessExample Response
+ *   HTTP/1.1 204 No Content
+ */
+
+/**
+ * @apiDefine none No auth
+ * No authentication required
+ */
+
+/**
+ * @apiDefine user Auth user
+ * Must be authenticated
+ */
+
+/**
+ * @apiDefine owner Auth owner
+ * Must be authenticated as the owner of the resource
+ */
+
+/**
+ * @apiDefine admin Auth admin
+ * Must be authenticated as an admin of the resource (eg. Group)
+ */
+
+/**
+ * @apiDefine superAdmin Auth super admin
+ * Must be authenticated as an unrestricted user
+ */

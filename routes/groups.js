@@ -7,10 +7,12 @@ router.param('group', _.partialRight(routeUtils.paramHandler, Group));
 
 /**
  * @api {get} /groups List groups
+ * @apiVersion 1.0.0
  * @apiName GetGroups
  * @apiGroup Groups
+ * @apiPermission none
  *
- * @apiUse GetGroupsSuccess
+ * @apiUse GroupsResponse
  */
 router.get(
   '/',
@@ -19,10 +21,13 @@ router.get(
 
 /**
  * @api {post} /groups Create group
+ * @apiVersion 1.3.0
  * @apiName PostGroups
  * @apiGroup Groups
+ * @apiPermission user
  *
- * @apiUse CreateGroupSuccess
+ * @apiUse GroupRequestBody
+ * @apiUse CreateGroupResponse
  */
 router.post(
   '/',
@@ -45,10 +50,14 @@ router.post(
 
 /**
  * @api {get} /groups/:group Get group
+ * @apiVersion 1.0.0
  * @apiName GetGroup
  * @apiGroup Groups
+ * @apiPermission none
  *
- * @apiUse GetGroupSuccess
+ * @apiParam {string} group Group ObjectId
+ *
+ * @apiUse GroupResponse
  */
 router.get(
   '/:group',
@@ -57,10 +66,15 @@ router.get(
 
 /**
  * @api {put} /groups/:group Update group
+ * @apiVersion 1.3.0
  * @apiName PutGroup
  * @apiGroup Groups
+ * @apiPermission admin
  *
- * @apiUse GetGroupSuccess
+ * @apiParam {string} group Group ObjectId
+ *
+ * @apiUse GroupRequestBody
+ * @apiUse GroupResponse
  */
 router.put(
   '/:group',
@@ -71,10 +85,14 @@ router.put(
 
 /**
  * @api {delete} /groups/:group Remove group
+ * @apiVersion 1.3.0
  * @apiName DeleteGroup
  * @apiGroup Groups
+ * @apiPermission admin
  *
- * @apiUse NoContentSuccess
+ * @apiParam {string} group Group ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:group',

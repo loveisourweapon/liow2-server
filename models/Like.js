@@ -31,47 +31,70 @@ LikeSchema.statics.getFilter = function () {
 module.exports = mongoose.model('Like', LikeSchema);
 
 /**
- * @apiDefine GetLikesSuccess
+ * @apiDefine LikesResponse
+ * @apiVersion 1.5.0
  *
- * @apiSuccess {Like[]} likes             List of likes
- * @apiSuccess {string} likes._id         Like ObjectId
- * @apiSuccess {string} likes.user        User ObjectId
- * @apiSuccess {Date}   likes.created     Created timestamp
- * @apiSuccess {object} likes.target      Target object. Only one of deed or act will be set
- * @apiSuccess {string} likes.target.deed Deed ObjectId
- * @apiSuccess {string} likes.target.act  Act ObjectId
+ * @apiSuccess {Like[]} likes                List of likes
+ * @apiSuccess {string} likes._id            Like ObjectId
+ * @apiSuccess {string} likes.user           User ObjectId
+ * @apiSuccess {string} likes.group          Group ObjectId
+ * @apiSuccess {string} likes.campaign       Campaign ObjectId
+ * @apiSuccess {object} likes.target         Target object. Only one property will be set
+ * @apiSuccess {string} likes.target.act     Act ObjectId
+ * @apiSuccess {string} likes.target.comment Comment ObjectId
+ * @apiSuccess {Date}   likes.created        Created timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
  *   [{
- *     "_id": "55f6c56186b959ac12490e1c",
+ *     "_id": "55f6c56186b959ac12490e1e",
  *     "user": "55f6c56186b959ac12490e1a",
- *     "created": "2015-09-14T13:56:27.250Z,
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
  *     "target": {
- *       "act": "55f6c56186b959ac12490e1b"
- *     }
+ *       "act": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "created": "2015-09-14T13:56:27.250Z,
  *   }]
  */
 
 /**
- * @apiDefine CreateLikeSuccess
+ * @apiDefine LikeRequestBody
+ * @apiVersion 1.5.0
  *
- * @apiSuccess (201) {Like}   like             Created like
- * @apiSuccess (201) {string} like._id         Like ObjectId
- * @apiSuccess (201) {string} like.user        User ObjectId
- * @apiSuccess (201) {Date}   like.created     Created timestamp
- * @apiSuccess (201) {object} like.target      Target object. Only one of deed or act will be set
- * @apiSuccess (201) {string} like.target.deed Deed ObjectId
- * @apiSuccess (201) {string} like.target.act  Act ObjectId
+ * @apiParam (Body) {string} [group]    Group ObjectId
+ * @apiParam (Body) {string} [campaign] Campaign ObjectId
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "group": "55f6c57486b959ac12490e1b"
+ *   }
+ */
+
+/**
+ * @apiDefine CreateLikeResponse
+ * @apiVersion 1.5.0
+ *
+ * @apiSuccess (201) {Like}   like                Like
+ * @apiSuccess (201) {string} like._id            Like ObjectId
+ * @apiSuccess (201) {string} like.user           User ObjectId
+ * @apiSuccess (201) {string} like.group          Group ObjectId
+ * @apiSuccess (201) {string} like.campaign       Campaign ObjectId
+ * @apiSuccess (201) {object} like.target         Target object. Only one property will be set
+ * @apiSuccess (201) {string} like.target.act     Act ObjectId
+ * @apiSuccess (201) {string} like.target.comment Comment ObjectId
+ * @apiSuccess (201) {Date}   like.created        Created timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 201 Created
  *   {
- *     "_id": "55f6c56186b959ac12490e1c",
+ *     "_id": "55f6c56186b959ac12490e1e",
  *     "user": "55f6c56186b959ac12490e1a",
- *     "created": "2015-09-14T13:56:27.250Z",
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
  *     "target": {
- *       "act": "55f6c56186b959ac12490e1b"
- *     }
+ *       "act": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "created": "2015-09-14T13:56:27.250Z,
  *   }
  */

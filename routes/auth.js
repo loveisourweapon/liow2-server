@@ -8,8 +8,8 @@ var _ = require('lodash'),
     User = require('../models/User');
 
 /**
- * Login with Facebook
- * POST /auth/facebook
+ * @apiIgnore Facebook login not available through public API
+ * @api {post} /auth/facebook Login with Facebook
  */
 router.post(
   '/facebook',
@@ -109,6 +109,30 @@ router.post(
 /**
  * Login with email and password
  * POST /auth/login
+ */
+/**
+ * @api {post} /auth/login Login with email and password
+ * @apiVersion 1.0.0
+ * @apiName PostAuthLogin
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam (Body) {string} email    User email address
+ * @apiParam (Body) {string} password User password
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "email": "user@example.com"
+ *     "password": "password123"
+ *   }
+ *
+ * @apiSuccess {string} token JWT token
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "token": "valid.jwt.token"
+ *   }
  */
 router.post(
   '/login',

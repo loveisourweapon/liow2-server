@@ -7,7 +7,15 @@ var _ = require('lodash'),
 router.param('user', _.partialRight(routeUtils.paramHandler, User));
 
 /**
- * GET /users
+ * @api {get} /users Count users
+ * @apiVersion 1.1.0
+ * @apiName CountUsers
+ * @apiGroup Users
+ * @apiPermission none
+ *
+ * @apiSuccessExample {text} Response
+ *   HTTP/1.1 200 OK
+ *   "2796"
  */
 router.get(
   '/',
@@ -21,8 +29,13 @@ router.get(
 );
 
 /**
- * Get the current logged in user
- * GET /users/me
+ * @api {get} /users/me Get current user
+ * @apiVersion 1.6.0
+ * @apiName GetUsersMe
+ * @apiGroup Users
+ * @apiPermission user
+ *
+ * @apiUse UserResponse
  */
 router.get(
   '/me',
@@ -37,7 +50,15 @@ router.get(
 );
 
 /**
- * GET /users/:user
+ * @api {get} /users/:user Get user
+ * @apiVersion 1.6.0
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiPermission none
+ *
+ * @apiParam {string} user User ObjectId
+ *
+ * @apiUse UserResponse
  */
 router.get(
   '/:user',
@@ -45,7 +66,27 @@ router.get(
 );
 
 /**
- * PATCH /users/:user
+ * @api {patch} /users/:user Partial update user
+ * @apiVersion 1.6.0
+ * @apiName PatchUser
+ * @apiGroup Users
+ * @apiPermission owner
+ *
+ * @apiParam {string} user User ObjectId
+ *
+ * @apiParam (Body) {object[]} patches         JSON Patch patches
+ * @apiParam (Body) {string}   patches.op      Operation
+ * @apiParam (Body) {string}   patches.path    JSON Pointer path
+ * @apiParam (Body) {mixed}    [patches.value] New path value
+ *
+ * @apiParamExample {json} Request
+ *   [{
+ *     "op": "add",
+ *     "path": "/groups/-",
+ *     "value": "55f6c56186b959ac12490e1d"
+ *   }]
+ *
+ * @apiUse UserResponse
  */
 router.patch(
   '/:user',

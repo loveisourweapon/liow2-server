@@ -7,23 +7,18 @@ var Act = require('../models/Act'),
     Comment = require('../models/Comment'),
     Campaign = require('../models/Campaign');
 
-/**
- * @apiDefine NoContentSuccess
- *
- * @apiSuccessExample Response
- *   HTTP/1.1 204 No Content
- */
-
 router.param('act', _.partialRight(routeUtils.paramHandler, Act));
 router.param('like', _.partialRight(routeUtils.paramHandler, Like));
 router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /acts List acts
+ * @apiVersion 1.5.0
  * @apiName GetActs
  * @apiGroup Acts
+ * @apiPermission none
  *
- * @apiUse GetActsSuccess
+ * @apiUse ActsResponse
  */
 router.get(
   '/',
@@ -32,10 +27,13 @@ router.get(
 
 /**
  * @api {post} /acts Create act
+ * @apiVersion 1.5.0
  * @apiName PostActs
  * @apiGroup Acts
+ * @apiPermission user
  *
- * @apiUse CreateActSuccess
+ * @apiUse ActRequestBody
+ * @apiUse CreateActResponse
  */
 router.post(
   '/',
@@ -55,10 +53,14 @@ router.post(
 
 /**
  * @api {delete} /acts/:act Remove act
+ * @apiVersion 1.3.0
  * @apiName DeleteAct
  * @apiGroup Acts
+ * @apiPermission owner
  *
- * @apiUse NoContentSuccess
+ * @apiParam {string} act Act ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:act',
@@ -69,10 +71,14 @@ router.delete(
 
 /**
  * @api {get} /acts/:act/likes List act likes
+ * @apiVersion 1.5.0
  * @apiName GetActLikes
  * @apiGroup Acts
+ * @apiPermission none
  *
- * @apiUse GetLikesSuccess
+ * @apiParam {string} act Act ObjectId
+ *
+ * @apiUse LikesResponse
  */
 router.get(
   '/:act/likes',
@@ -81,10 +87,15 @@ router.get(
 
 /**
  * @api {post} /acts/:act/likes Create act like
+ * @apiVersion 1.5.0
  * @apiName PostActLikes
  * @apiGroup Acts
+ * @apiPermission user
  *
- * @apiUse CreateLikeSuccess
+ * @apiParam {string} act Act ObjectId
+ *
+ * @apiUse LikeRequestBody
+ * @apiUse CreateLikeResponse
  */
 router.post(
   '/:act/likes',
@@ -105,10 +116,15 @@ router.post(
 
 /**
  * @api {delete} /acts/:act/likes/:like Remove act like
+ * @apiVersion 1.3.0
  * @apiName DeleteActLike
  * @apiGroup Acts
+ * @apiPermission owner
  *
- * @apiUse NoContentSuccess
+ * @apiParam {string} act  Act ObjectId
+ * @apiParam {string} like Like ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:act/likes/:like',
@@ -119,10 +135,14 @@ router.delete(
 
 /**
  * @api {get} /acts/:act/comments List act comments
+ * @apiVersion 1.5.0
  * @apiName GetActComments
  * @apiGroup Acts
+ * @apiPermission none
  *
- * @apiUse GetCommentsSuccess
+ * @apiParam {string} act Act ObjectId
+ *
+ * @apiUse CommentsResponse
  */
 router.get(
   '/:act/comments',
@@ -131,10 +151,15 @@ router.get(
 
 /**
  * @api {post} /acts/:act/comments Create act comment
+ * @apiVersion 1.5.0
  * @apiName PostActComments
  * @apiGroup Acts
+ * @apiPermission user
  *
- * @apiUse CreateCommentSuccess
+ * @apiParam {string} act Act ObjectId
+ *
+ * @apiUse CommentRequestBody
+ * @apiUse CreateCommentResponse
  */
 router.post(
   '/:act/comments',
@@ -155,10 +180,16 @@ router.post(
 
 /**
  * @api {put} /acts/:act/comments/:comment Update act comment
+ * @apiVersion 1.5.0
  * @apiName PutActComment
  * @apiGroup Acts
+ * @apiPermission owner
  *
- * @apiUse GetCommentSuccess
+ * @apiParam {string} act     Act ObjectId
+ * @apiParam {string} comment Comment ObjectId
+ *
+ * @apiUse CommentRequestBody
+ * @apiUse CommentResponse
  */
 router.put(
   '/:act/comments/:comment',
@@ -169,10 +200,15 @@ router.put(
 
 /**
  * @api {delete} /acts/:act/comments/:comment Remove act comment
+ * @apiVersion 1.3.0
  * @apiName DeleteActComment
  * @apiGroup Acts
+ * @apiPermission owner
  *
- * @apiUse NoContentSuccess
+ * @apiParam {string} act     Act ObjectId
+ * @apiParam {string} comment Comment ObjectId
+ *
+ * @apiUse NoContentResponse
  */
 router.delete(
   '/:act/comments/:comment',

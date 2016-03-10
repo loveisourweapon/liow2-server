@@ -12,7 +12,13 @@ router.param('campaign', _.partialRight(routeUtils.paramHandler, Campaign));
 router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
 
 /**
- * GET /campaigns
+ * @api {get} /campaigns List campaigns
+ * @apiVersion 1.0.0
+ * @apiName GetCampaigns
+ * @apiGroup Campaigns
+ * @apiPermission none
+ *
+ * @apiUse CampaignsResponse
  */
 router.get(
   '/',
@@ -20,7 +26,14 @@ router.get(
 );
 
 /**
- * POST /campaigns
+ * @api {post} /campaigns Create campaign
+ * @apiVersion 1.0.0
+ * @apiName PostCampaigns
+ * @apiGroup Campaigns
+ * @apiPermission admin
+ *
+ * @apiUse CampaignRequestBody
+ * @apiUse CreateCampaignResponse
  */
 router.post(
   '/',
@@ -38,7 +51,15 @@ router.post(
 );
 
 /**
- * GET /campaigns/:campaign
+ * @api {get} /campaigns/:campaign Get campaign
+ * @apiVersion 1.0.0
+ * @apiName GetCampaign
+ * @apiGroup Campaigns
+ * @apiPermission none
+ *
+ * @apiParam {string} campaign Campaign ObjectId
+ *
+ * @apiUse CampaignResponse
  */
 router.get(
   '/:campaign',
@@ -46,7 +67,16 @@ router.get(
 );
 
 /**
- * PUT /campaigns/:campaign
+ * @api {put} /campaigns/:campaign Update campaign
+ * @apiVersion 1.4.0
+ * @apiName PutCampaign
+ * @apiGroup Campaigns
+ * @apiPermission admin
+ *
+ * @apiParam {string} campaign Campaign ObjectId
+ *
+ * @apiUse CampaignRequestBody
+ * @apiUse CampaignResponse
  */
 router.put(
   '/:campaign',
@@ -57,6 +87,29 @@ router.put(
 
 /**
  * PATCH /campaigns/:campaign
+ */
+/**
+ * @api {patch} /campaigns/:campaign Partial update campaign
+ * @apiVersion 1.3.0
+ * @apiName PatchCampaign
+ * @apiGroup Campaigns
+ * @apiPermission admin
+ *
+ * @apiParam {string} campaign Campaign ObjectId
+ *
+ * @apiParam (Body) {object[]} patches         JSON Patch patches
+ * @apiParam (Body) {string}   patches.op      Operation
+ * @apiParam (Body) {string}   patches.path    JSON Pointer path
+ * @apiParam (Body) {mixed}    [patches.value] New path value
+ *
+ * @apiParamExample {json} Request
+ *   [{
+ *     "op": "replace",
+ *     "path": "/deeds/0/published",
+ *     "value": true
+ *   }]
+ *
+ * @apiUse NoContentResponse
  */
 router.patch(
   '/:campaign',

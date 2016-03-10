@@ -7,7 +7,9 @@
   "scripts": {
     "start": "./bin/www",
     "test": "mocha",
-    "test-cov": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R min"
+    "test-cov": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R min",
+    "docs": "./node_modules/.bin/apidoc -i ./routes -i ./models -i ./utils -o ./public/docs",
+    "version": "npm run docs && git add --all public/docs"
   },
   "repository": {
     "type": "git",
@@ -41,6 +43,7 @@
     "request": "^2.69.0"
   },
   "devDependencies": {
+    "apidoc": "^0.15.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
     "istanbul": "^0.4.2",
@@ -54,6 +57,18 @@
   "apidoc": {
     "name": "LIOW API Server",
     "title": "LIOW API Server",
-    "url": "https://api.loveisourweapon.com/v1"
+    "url": "https://api.loveisourweapon.com",
+    "order": [
+      "Auth",
+      "Users",
+      "Deeds",
+      "Groups",
+      "Campaigns",
+      "Acts",
+      "Comments",
+      "Likes",
+      "Feeds",
+      "Countries"
+    ]
   }
 }

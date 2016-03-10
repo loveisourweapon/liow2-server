@@ -52,3 +52,117 @@ GroupSchema.statics.getSearchable = function () {
 };
 
 module.exports = mongoose.model('Group', GroupSchema);
+
+/**
+ * @apiDefine GroupsResponse
+ *
+ * @apiSuccess {Group[]} groups                List of groups
+ * @apiSuccess {string}  groups._id            Group ObjectId
+ * @apiSuccess {string}  groups.name           Group name
+ * @apiSuccess {string}  groups.urlName        Group URL name
+ * @apiSuccess {string}  groups.owner          User ObjectId
+ * @apiSuccess {string}  groups.admins         List of user ObjectId's
+ * @apiSuccess {string}  groups.country        Country ObjectId
+ * @apiSuccess {string}  groups.logo           Group logo URL
+ * @apiSuccess {string}  groups.coverImage     Group cover image URL
+ * @apiSuccess {string}  groups.welcomeMessage Group welcome message
+ * @apiSuccess {Date}    groups.created        Created timestamp
+ * @apiSuccess {Date}    groups.modified       Modified timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   [{
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "name": "Group Name",
+ *     "urlName": "group-name",
+ *     "owner": "55f6c56186b959ac12490e1a",
+ *     "admins": ["55f6c56186b959ac12490e1a"],
+ *     "country": "55f6c56186b959ac12490e1b",
+ *     "logo": "https://example.com/images/group-logo.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "welcomeMessage": "Example welcome message",
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T14:32:27.250Z"
+ *   }]
+ */
+
+/**
+ * @apiDefine GroupResponse
+ *
+ * @apiSuccess {Group}   group                Group
+ * @apiSuccess {string}  group._id            Group ObjectId
+ * @apiSuccess {string}  group.name           Group name
+ * @apiSuccess {string}  group.urlName        Group URL name
+ * @apiSuccess {string}  group.owner          User ObjectId
+ * @apiSuccess {string}  group.admins         List of user ObjectId's
+ * @apiSuccess {string}  group.country        Country ObjectId
+ * @apiSuccess {string}  group.logo           Group logo URL
+ * @apiSuccess {string}  group.coverImage     Group cover image URL
+ * @apiSuccess {string}  group.welcomeMessage Group welcome message
+ * @apiSuccess {Date}    group.created        Created timestamp
+ * @apiSuccess {Date}    group.modified       Modified timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "name": "Group Name",
+ *     "urlName": "group-name",
+ *     "owner": "55f6c56186b959ac12490e1a",
+ *     "admins": ["55f6c56186b959ac12490e1a"],
+ *     "country": "55f6c56186b959ac12490e1b",
+ *     "logo": "https://example.com/images/group-logo.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "welcomeMessage": "Example welcome message",
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T14:32:27.250Z"
+ *   }
+ */
+
+/**
+ * @apiDefine GroupRequestBody
+ *
+ * @apiParam (Body) {string} name             Group name
+ * @apiParam (Body) {string} [logo]           Group logo URL
+ * @apiParam (Body) {string} [coverImage]     Group cover image URL
+ * @apiParam (Body) {string} [welcomeMessage] Group welcome message
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "name": "Group Name",
+ *     "logo": "https://example.com/images/group-logo.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "welcomeMessage": "Example welcome message"
+ *   }
+ */
+
+/**
+ * @apiDefine CreateGroupResponse
+ *
+ * @apiSuccess (201) {Group}   group                Group
+ * @apiSuccess (201) {string}  group._id            Group ObjectId
+ * @apiSuccess (201) {string}  group.name           Group name
+ * @apiSuccess (201) {string}  group.urlName        Group URL name
+ * @apiSuccess (201) {string}  group.owner          User ObjectId
+ * @apiSuccess (201) {string}  group.admins         List of user ObjectId's
+ * @apiSuccess (201) {string}  group.country        Country ObjectId
+ * @apiSuccess (201) {string}  group.logo           Group logo URL
+ * @apiSuccess (201) {string}  group.coverImage     Group cover image URL
+ * @apiSuccess (201) {string}  group.welcomeMessage Group welcome message
+ * @apiSuccess (201) {Date}    group.created        Created timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 201 Created
+ *   {
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "name": "Group Name",
+ *     "urlName": "group-name",
+ *     "owner": "55f6c56186b959ac12490e1a",
+ *     "admins": ["55f6c56186b959ac12490e1a"],
+ *     "country": "55f6c56186b959ac12490e1b",
+ *     "logo": "https://example.com/images/group-logo.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "welcomeMessage": "Example welcome message",
+ *     "created": "2015-09-14T13:56:27.250Z"
+ *   }
+ */
