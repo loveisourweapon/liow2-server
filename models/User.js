@@ -7,15 +7,26 @@ var _ = require('lodash'),
 
 const SALT_ROUNDS = 10;
 
+/**
+ * Ensure password or facebook.id property is set
+ *
+ * @param {string} password
+ *
+ * @returns {boolean}
+ */
+function validatePasswordOrFacebook(password) {
+  return password !== '' || _.isNumber(this.facebook.id);
+}
+
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
-  password: String, // validate password or facebookId set
-  firstName: String,
+  password: { type: String, default: '', validate: [validatePasswordOrFacebook, 'Password is required', 'required'] },
+  firstName: { type: String, required: true },
   lastName: String,
   picture: String,
   coverImage: String,
   facebook: {
-    id: Number, // validate password or facebook.id set
+    id: Number,
     accessToken: String,
     refreshToken: String
   },
@@ -30,16 +41,16 @@ var UserSchema = new mongoose.Schema({
 });
 
 UserSchema.virtual('name').get(function () {
-  return (
-    (this.firstName ? `${this.firstName}${this.lastName ? ' ' : ''}` : '') +
-    (this.lastName ? this.lastName : '')
-  );
+  return this.firstName + (this.lastName ? ` ${this.lastName}` : '');
 });
 
 UserSchema.plugin(modelUtils.findOneOrThrow);
 UserSchema.plugin(uniqueValidator, { message: 'Email is already registered' });
 
 UserSchema.pre('save', function (next) {
+  // Explicitly clear empty password
+  if (this.password === '') { this.password = undefined; }
+
   // Only hash the password if it has been modified (or is new)
   if (!this.password || !this.isModified('password')) { return next(); }
 

@@ -9,7 +9,8 @@ var credentials = {
   email: 'test@example.com',
   firstName: 'Test',
   lastName: 'User',
-  password: 'password'
+  password: 'password',
+  facebook: { id: 0 }
 };
 
 /**

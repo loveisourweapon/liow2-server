@@ -10,12 +10,19 @@ describe('User', () => {
   afterEach(testUtils.removeUsers);
 
   describe('#save()', () => {
-    it('should require an email address', () => {
+    it('should require an email address, password and firstName', () => {
       return new User().save()
         .catch(err => {
           expect(err).to.exist.and.to.have.property('name', 'ValidationError');
           expect(err).to.have.deep.property('errors.email.kind', 'required');
+          expect(err).to.have.deep.property('errors.password.kind', 'required');
+          expect(err).to.have.deep.property('errors.firstName.kind', 'required');
         });
+    }); // it()
+
+    it('should allow blank password if facebook.id is set', () => {
+      return new User(_.omit(credentials, 'password')).save()
+        .then(user => expect(user.password).to.be.undefined);
     }); // it()
 
     it('should return a validation error for duplicate email', () => {
@@ -44,16 +51,9 @@ describe('User', () => {
         .then(user => expect(user).to.have.property('name', `${credentials.firstName} ${credentials.lastName}`));
     }); // it()
 
-    it('should return just firstName or lastName if only one set', () => {
+    it('should return just firstName if only firstName set', () => {
       return new User(_.omit(credentials, 'lastName')).save()
-        .then(user => {
-          expect(user).to.have.property('name', credentials.firstName);
-
-          user.firstName = undefined;
-          user.lastName = credentials.lastName;
-          return user.save();
-        })
-        .then(user => expect(user).to.have.property('name', credentials.lastName));
+        .then(user => expect(user).to.have.property('name', credentials.firstName));
     }); // it()
   }); // describe()
 
