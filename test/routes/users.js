@@ -8,37 +8,56 @@ var ObjectId = require('mongoose').Types.ObjectId,
     Group = require('../../models/Group');
 
 describe('/users', () => {
-  var user = null;
-
-  before(() => {
-    return testUtils.dbConnect()
-      .then(() => testUtils.saveUser(testUtils.credentials))
-      .then(newUser => (user = newUser));
-  });
-  after(() => testUtils.removeUsers().then(testUtils.dbDisconnect));
+  before(testUtils.dbConnect);
+  after(testUtils.dbDisconnect);
+  afterEach(testUtils.removeUsers);
 
   describe('/', () => {
     it('GET should return a count of the number of users', () => {
-      return request(app)
-        .get('/users?count=true')
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => expect(res).to.have.property('text', '1'));
+      return testUtils.saveUser(testUtils.credentials)
+        .then(() => request(app)
+          .get('/users?count=true')
+          .expect(200)
+          .expect('Content-Type', /html/)
+          .expect(res => expect(res).to.have.property('text', '1')));
     }); // it()
 
     it('GET should return a count of the number of users even without ?count=true flag', () => {
+      return testUtils.saveUser(testUtils.credentials)
+        .then(() => request(app)
+          .get('/users')
+          .expect(200)
+          .expect('Content-Type', /html/)
+          .expect(res => {
+            expect(res.body).to.be.empty;
+            expect(res).to.have.property('text', '1');
+          }));
+    }); // it()
+
+    it('POST invalid data should return status 400 and an error message', () => {
       return request(app)
-        .get('/users')
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          expect(res.body).to.be.empty;
-          expect(res).to.have.property('text', '1');
-        });
+        .post('/users')
+        .send({})
+        .expect(400)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.have.property('message', 'User validation failed'));
+    }); // it()
+
+    it('POST valid data should return status 201 and the created User', () => {
+      return request(app)
+        .post('/users')
+        .send(testUtils.credentials)
+        .expect(201)
+        .expect('Content-Type', /json/)
+        .expect('Location', /users/)
+        .expect(res => expect(res.body).be.be.an('object').and.to.have.property('_id'));
     }); // it()
   }); // describe()
 
   describe('/me', () => {
+    var user = null;
+    beforeEach(() => testUtils.saveUser(testUtils.credentials).then(newUser => (user = newUser)));
+
     it('GET should return the details of the current user', () => {
       return testUtils.getApiToken()
         .then(token => request(app)
@@ -75,11 +94,7 @@ describe('/users', () => {
 
   describe('/:user', () => {
     var user = null;
-
-    beforeEach(() => {
-      return User.findOne({ email: testUtils.credentials.email }).exec()
-        .then(newUser => (user = newUser));
-    }); // beforeEach()
+    beforeEach(() => testUtils.saveUser(testUtils.credentials).then(newUser => (user = newUser)));
 
     it('GET invalid ID should return status 400 and an error message', () => {
       return request(app)
@@ -103,6 +118,37 @@ describe('/users', () => {
         .expect(200)
         .expect('Content-Type', /json/)
         .expect(res => expect(res.body).to.have.property('_id', user.id));
+    }); // it()
+
+    it('PUT extra data should be ignored', () => {
+      return testUtils.getApiToken()
+        .then(token => request(app)
+          .put(`/users/${user.id}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ extra: 'Extra data' })
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', user.id);
+            expect(res.body).to.not.have.property('extra');
+          }));
+    }); // it()
+
+    it('PUT valid data should return status 200 and update the User', () => {
+      var update = { firstName: 'Foobar' };
+
+      return testUtils.getApiToken()
+        .then(token => request(app)
+          .put(`/users/${user.id}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send(update)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.have.property('_id', user.id);
+            expect(res.body).to.have.property('modified');
+            expect(res.body).to.have.property('firstName', update.firstName);
+          }));
     }); // it()
 
     it('PATCH extra data should be ignored', () => {

@@ -35,6 +35,7 @@ var UserSchema = new mongoose.Schema({
     type: [{ type: ObjectId, ref: 'Group' }]
   },
   superAdmin: { type: Boolean, default: false, required: true },
+  confirmed: { type: Boolean, default: false, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: Date,
   lastSeen: Date
@@ -117,6 +118,7 @@ module.exports = mongoose.model('User', UserSchema);
  * @apiSuccess {string}   user.coverImage User cover image URL
  * @apiSuccess {string}   user.country    Country ObjectId
  * @apiSuccess {string[]} user.groups     List of group ObjectId's
+ * @apiSuccess {boolean}  user.confirmed  Has user confirmed email address
  * @apiSuccess {Date}     user.created    Created timestamp
  * @apiSuccess {Date}     user.modified   Modified timestamp
  *
@@ -131,7 +133,66 @@ module.exports = mongoose.model('User', UserSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "country": "55f6c56186b959ac12490e1a",
  *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "confirmed": true,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
+ *   }
+ */
+
+/**
+ * @apiDefine UserRequestBody
+ * @apiVersion 1.7.0
+ *
+ * @apiParam (Body) {string}   email        User's email address
+ * @apiParam (Body) {string}   password     User's password
+ * @apiParam (Body) {string}   firstName    User's first name
+ * @apiParam (Body) {string}   [lastName]   User's last name
+ * @apiParam (Body) {string}   [picture]    User's profile picture URL
+ * @apiParam (Body) {string}   [coverImage] User's cover image URL
+ * @apiParam (Body) {string}   [country]    Country ObjectId
+ * @apiParam (Body) {string[]} [groups]     List of group ObjectId's
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "email": "fredb@example.com",
+ *     "password": "password123",
+ *     "firstName": "Fred",
+ *     "lastName": "Bloggs",
+ *     "picture": "https://example.com/images/picture.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "country": "55f6c56186b959ac12490e1a",
+ *     "groups": ["55f6c56186b959ac12490e1b"]
+ *   }
+ */
+
+/**
+ * @apiDefine CreateUserResponse
+ * @apiVersion 1.7.0
+ *
+ * @apiSuccess (201) {User}     user            User
+ * @apiSuccess (201) {string}   user._id        User ObjectId
+ * @apiSuccess (201) {string}   user.firstName  User's first name
+ * @apiSuccess (201) {string}   user.lastName   User's last name
+ * @apiSuccess (201) {string}   user.name       User's full name
+ * @apiSuccess (201) {string}   user.picture    User's profile picture URL
+ * @apiSuccess (201) {string}   user.coverImage User cover image URL
+ * @apiSuccess (201) {string}   user.country    Country ObjectId
+ * @apiSuccess (201) {string[]} user.groups     List of group ObjectId's
+ * @apiSuccess (201) {boolean}  user.confirmed  Has user confirmed email address
+ * @apiSuccess (201) {Date}     user.created    Created timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 201 Created
+ *   {
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "firstName": "Fred",
+ *     "lastName": "Bloggs",
+ *     "name": "Fred Bloggs",
+ *     "picture": "https://example.com/images/picture.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "country": "55f6c56186b959ac12490e1a",
+ *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "confirmed": false,
+ *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */

@@ -29,6 +29,27 @@ router.get(
 );
 
 /**
+ * @api {post} /users Create user
+ * @apiVersion 1.7.0
+ * @apiName PostUsers
+ * @apiGroup Users
+ * @apiPermission none
+ *
+ * @apiUse UserRequestBody
+ * @apiUse CreateUserResponse
+ */
+router.post(
+  '/',
+  (req, res, next) => {
+    req.body = routeUtils.filterProperties(req.body, User);
+
+    new User(req.body).save()
+      .then(user => res.status(201).location(`/users/${user._id}`).json(user))
+      .catch(err => next(err));
+  }
+);
+
+/**
  * @api {get} /users/me Get current user
  * @apiVersion 1.6.0
  * @apiName GetUsersMe
@@ -63,6 +84,25 @@ router.get(
 router.get(
   '/:user',
   _.partialRight(routeUtils.getByParam, 'user')
+);
+
+/**
+ * @api {put} /users/:user Update user
+ * @apiVersion 1.7.0
+ * @apiName PutUser
+ * @apiGroup Users
+ * @apiPermission owner
+ *
+ * @apiParam {string} user User ObjectId
+ *
+ * @apiUse UserRequestBody
+ * @apiUse UserResponse
+ */
+router.put(
+  '/:user',
+  routeUtils.ensureAuthenticated,
+  _.partialRight(routeUtils.ensureSameUser, 'user._id'),
+  _.partialRight(routeUtils.putByParam, User, 'user')
 );
 
 /**

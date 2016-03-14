@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+    moment = require('moment'),
     jwt = require('jsonwebtoken'),
     request = require('request'),
     config = require('../config'),
@@ -37,17 +38,16 @@ router.post(
         }
 
         if (req.headers.authorization) {
-          User.findOne({ 'facebook.id': profile.id })
-            .exec()
+          User.findOne({ 'facebook.id': profile.id }).exec()
             .then(() => next(new HttpError('There is already a Facebook account that belongs to you', 409)))
             .catch(() => {
               var token = req.headers.authorization.split(' ')[1];
               jwt.verify(token, config.secret, (err, userId) => {
                 if (err) { return next(err); }
 
-                User.findById(userId)
-                  .exec()
+                User.findById(userId).exec()
                   .then(user => {
+                    user.confirmed = true;
                     user.lastSeen = new Date();
                     user.facebook = {
                       id: profile.id,
@@ -71,16 +71,14 @@ router.post(
             });
         } else {
           // Step 3b. Create a new user account or return an existing one.
-          User.findOne({ email: profile.email })
-            .exec()
+          User.findOne({ email: profile.email }).exec()
             .catch(err => {
               if (err.message !== 'Not Found') { return next(err); }
 
-              var user = new User();
-              user.email = profile.email;
-              return Promise.resolve(user);
+              return Promise.resolve(new User({ email: profile.email }));
             })
             .then(user => {
+              user.confirmed = true;
               user.lastSeen = new Date();
               user.facebook = {
                 id: profile.id,
@@ -145,13 +143,16 @@ router.post(
               throw new HttpError('Invalid email and/or password', 401);
             }
 
+            if (!user.confirmed && moment().isAfter(moment(user.created).add(3, 'days'))) {
+              throw new HttpError('Please confirm your email address', 403);
+            }
+
             user.lastSeen = new Date();
             return user.save();
           })
-          .then(user => res.send({ token: jwt.sign(user.id, config.secret) }))
-          .catch(err => next(err));
+          .then(user => res.send({ token: jwt.sign(user.id, config.secret) }));
       })
-      .catch(() => next(new HttpError('Invalid email and/or password', 401)));
+      .catch(err => next(err.status === 403 ? err : new HttpError('Invalid email and/or password', 401)));
   }
 );
 
