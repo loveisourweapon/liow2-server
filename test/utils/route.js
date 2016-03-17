@@ -64,7 +64,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#buildQueryConditions', () => {
+  describe('#buildQueryConditions()', () => {
     it('should search all searchable fields if search param included', () => {
       var query = { query: 'au' };
       var conditions = routeUtils.buildQueryConditions(query, Country);
@@ -117,7 +117,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#getAll', () => {
+  describe('#getAll()', () => {
     var aus = null, uk = null;
 
     beforeEach(() => {
@@ -253,7 +253,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#getByParam', () => {
+  describe('#getByParam()', () => {
     var user = null;
     var country = null;
 
@@ -318,7 +318,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#getByTarget', () => {
+  describe('#getByTarget()', () => {
     var group = null;
 
     beforeEach(() => {
@@ -374,7 +374,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#putByParam', () => {
+  describe('#putByParam()', () => {
     var country = null;
 
     beforeEach(() => {
@@ -425,7 +425,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#deleteByParam', () => {
+  describe('#deleteByParam()', () => {
     var country = null;
 
     beforeEach(() => {
@@ -469,7 +469,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#ensureAuthenticated', () => {
+  describe('#ensureAuthenticated()', () => {
     beforeEach(() => testUtils.saveUser(testUtils.credentials));
     afterEach(testUtils.removeUsers);
 
@@ -496,7 +496,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#ensureSuperAdmin', () => {
+  describe('#ensureSuperAdmin()', () => {
     var authUser = null;
 
     beforeEach(() => {
@@ -524,7 +524,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#ensureSameUser', () => {
+  describe('#ensureSameUser()', () => {
     var authUser = null;
 
     beforeEach(() => {
@@ -552,7 +552,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#ensureAdminOf', () => {
+  describe('#ensureAdminOf()', () => {
     var authUser = null;
     var group = null;
 
@@ -603,7 +603,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#filterProperties', () => {
+  describe('#filterProperties()', () => {
     var properties = {
       firstName: 'Foobar',
       superAdmin: true
@@ -622,7 +622,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#filterJsonPatch', () => {
+  describe('#filterJsonPatch()', () => {
     var patches = [
       { op: 'replace', path: '/firstName', value: 'Foobar' },
       { op: 'replace', path: '/superAdmin', value: true }
@@ -642,7 +642,7 @@ describe('utils/routes', () => {
     }); // it()
   }); // describe()
 
-  describe('#getCurrentCampaign', () => {
+  describe('#getCurrentCampaign()', () => {
     var group = null;
     var campaign = null;
 

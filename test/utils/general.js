@@ -30,7 +30,7 @@ describe('utils/general', () => {
     }); // it()
   }); // describe()
 
-  describe('#isNumeric', () => {
+  describe('#isNumeric()', () => {
     it('should return true for numbers', () => {
       expect(utils.isNumeric(0)).to.be.true;
       expect(utils.isNumeric(1)).to.be.true;
