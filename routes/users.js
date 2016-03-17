@@ -1,5 +1,6 @@
 var _ = require('lodash'),
     jsonpatch = require('fast-json-patch'),
+    mailUtils = require('../utils/mail'),
     routeUtils = require('../utils/route'),
     router = require('express').Router(),
     User = require('../models/User');
@@ -44,7 +45,11 @@ router.post(
     req.body = routeUtils.filterProperties(req.body, User);
 
     new User(req.body).save()
-      .then(user => res.status(201).location(`/users/${user._id}`).json(user))
+      .then(user => {
+        mailUtils.sendConfirmEmail(user);
+
+        res.status(201).location(`/users/${user._id}`).json(user);
+      })
       .catch(err => next(err));
   }
 );
