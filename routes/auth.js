@@ -1,10 +1,10 @@
-var _ = require('lodash'),
+var config = require('../config'),
+    _ = require('lodash'),
     moment = require('moment'),
     jwt = require('jsonwebtoken'),
     request = require('request'),
-    config = require('../config'),
-    express = require('express'),
-    router = express.Router(),
+    router = require('express').Router(),
+    mailUtils = require('../utils/mail'),
     HttpError = require('../utils/general').HttpError,
     User = require('../models/User');
 
@@ -153,6 +153,64 @@ router.post(
           .then(user => res.send({ token: jwt.sign(user.id, config.secret) }));
       })
       .catch(err => next(err.status === 403 ? err : new HttpError('Invalid email and/or password', 401)));
+  }
+);
+
+/**
+ * @api {get} /auth/forgot Forgot email address
+ * @apiVersion 1.7.0
+ * @apiName GetAuthForgot
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam {string} email User's email address
+ *
+ * @apiUse NoContentResponse
+ */
+router.get(
+  '/forgot',
+  (req, res, next) => {
+    if (!req.query.email) {
+      return next(new HttpError('Email address required'));
+    }
+
+    User.findOne({ email: req.query.email }).exec()
+      .then(user => mailUtils.sendPasswordReset(user))
+      .then(() => res.status(204).send())
+      .catch(err => (
+        err.message === 'Not Found' ?
+          res.status(204).send() : // Don't disclose if user wasn't found
+          next(err)
+      ));
+  }
+);
+
+/**
+ * @api {get} /auth/confirm Re-send confirm email address
+ * @apiVersion 1.7.0
+ * @apiName GetAuthConfirm
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam {string} email User's email address
+ *
+ * @apiUse NoContentResponse
+ */
+router.get(
+  '/confirm',
+  (req, res, next) => {
+    if (!req.query.email) {
+      return next(new HttpError('Email address required'));
+    }
+
+    User.findOne({ email: req.query.email }).exec()
+      .then(user => mailUtils.sendConfirmEmail(user))
+      .then(() => res.status(204).send())
+      .catch(err => (
+        err.message === 'Not Found' ?
+          res.status(204).send() : // Don't disclose if user wasn't found
+          next(err)
+      ));
   }
 );
 
