@@ -6,7 +6,8 @@ var config = require('../config'),
     router = require('express').Router(),
     mailUtils = require('../utils/mail'),
     HttpError = require('../utils/general').HttpError,
-    User = require('../models/User');
+    User = require('../models/User'),
+    Token = require('../models/Token');
 
 /**
  * @apiIgnore Facebook login not available through public API
@@ -211,6 +212,30 @@ router.get(
           res.status(204).send() : // Don't disclose if user wasn't found
           next(err)
       ));
+  }
+);
+
+/**
+ * @api {post} /auth/confirm Handle confirm email address
+ * @apiVersion 1.7.0
+ * @apiName PostAuthConfirm
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam (Body) {string} token Email confirmation token
+ *
+ * @apiUse NoContentResponse
+ */
+router.post(
+  '/confirm',
+  (req, res, next) => {
+    Token.findOne({ token: req.body.token, expires: { $gt: new Date() } }).exec()
+      .then(token => {
+        return User.findByIdAndUpdate(token.user, { confirmed: true }).exec()
+          .then(() => token.remove())
+          .then(() => res.status(204).send());
+      })
+      .catch(err => next(err));
   }
 );
 

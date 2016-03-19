@@ -1,5 +1,6 @@
 var crypto = require('crypto'),
     moment = require('moment'),
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -9,6 +10,8 @@ var TokenSchema = new mongoose.Schema({
   expires: { type: Date, required: true },
   user: { type: ObjectId, ref: 'User', required: true }
 });
+
+TokenSchema.plugin(modelUtils.findOneOrThrow);
 
 TokenSchema.pre('validate', function (next) {
   // Set expires automatically for 'confirm' and 'reset' types
