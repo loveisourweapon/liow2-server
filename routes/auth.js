@@ -187,6 +187,36 @@ router.get(
 );
 
 /**
+ * @api {post} /auth/reset Reset user's password
+ * @apiVersion 1.7.0
+ * @apiName PostAuthReset
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam (Body) {string} password New password
+ * @apiParam (Body) {string} token    Password reset token
+ *
+ * @apiUse NoContentResponse
+ */
+router.post(
+  '/reset',
+  (req, res, next) => {
+    Token.findOne({ token: req.body.token, expires: { $gt: new Date() } }).exec()
+      .then(token => {
+        return User.findById(token.user).exec()
+          .then(user => {
+            user.password = req.body.password;
+            user.confirmed = true; // Reset password link also delivered to email
+            return user.save();
+          })
+          .then(() => token.remove())
+          .then(() => res.status(204).send());
+      })
+      .catch(err => next(err));
+  }
+);
+
+/**
  * @api {get} /auth/confirm Re-send confirm email address
  * @apiVersion 1.7.0
  * @apiName GetAuthConfirm

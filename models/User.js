@@ -20,7 +20,11 @@ function validatePasswordOrFacebook(password) {
 
 var UserSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true }, required: true },
-  password: { type: String, default: '', validate: [validatePasswordOrFacebook, 'Password is required', 'required'] },
+  password: {
+    type: String,
+    default: '',
+    validate: [validatePasswordOrFacebook, 'Password is required', 'required']
+  },
   firstName: { type: String, required: true },
   lastName: String,
   picture: String,
