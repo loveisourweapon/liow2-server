@@ -17,8 +17,9 @@ router.post(
   '/facebook',
   (req, res, next) => {
     var fields = ['id', 'email', 'first_name', 'last_name', 'name'];
-    var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
-    var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
+    var baseUrl = 'https://graph.facebook.com/v2.5';
+    var accessTokenUrl = `${baseUrl}/oauth/access_token`;
+    var graphApiUrl = `${baseUrl}/me?fields=${fields.join(',')}`;
     var params = {
       code: req.body.code,
       client_id: req.body.clientId,
@@ -27,13 +28,13 @@ router.post(
     };
 
     // Step 1. Exchange authorization code for access token.
-    request.get({ url: accessTokenUrl, qs: params, json: true }, function (err, response, accessToken) {
+    request.get({ url: accessTokenUrl, qs: params, json: true }, (err, response, accessToken) => {
       if (err || response.statusCode !== 200) {
         return next(new HttpError(err.message || accessToken.error.message, 500));
       }
 
       // Step 2. Retrieve profile information about the current user.
-      request.get({ url: graphApiUrl, qs: accessToken, json: true }, function (err, response, profile) {
+      request.get({ url: graphApiUrl, qs: accessToken, json: true }, (err, response, profile) => {
         if (err || response.statusCode !== 200) {
           return next(new HttpError(err.message || profile.error.message, 500));
         }
@@ -54,9 +55,13 @@ router.post(
                       id: profile.id,
                       accessToken: accessToken.access_token
                     };
-                    user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?width=200&height=200`;
-                    user.firstName = profile.first_name;
-                    user.lastName = profile.last_name;
+                    user.picture = user.picture || `${baseUrl}/${profile.id}/picture?width=200&height=200`;
+
+                    if (!_.has(user, 'firstName')) {
+                      user.firstName = profile.first_name;
+                      user.lastName = profile.last_name;
+                    }
+
                     if (
                       _.has(req.body, 'group') &&
                       !_.some(user.groups, group => String(group) === String(req.body.group))
@@ -85,9 +90,13 @@ router.post(
                 id: profile.id,
                 accessToken: accessToken.access_token
               };
-              user.picture = `https://graph.facebook.com/v2.5/${profile.id}/picture?width=200&height=200`;
-              user.firstName = profile.first_name;
-              user.lastName = profile.last_name;
+              user.picture = user.picture || `${baseUrl}/${profile.id}/picture?width=200&height=200`;
+
+              if (!_.has(user, 'firstName')) {
+                user.firstName = profile.first_name;
+                user.lastName = profile.last_name;
+              }
+
               if (
                 _.has(req.body, 'group') &&
                 !_.some(user.groups, group => String(group) === String(req.body.group))
