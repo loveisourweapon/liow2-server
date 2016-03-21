@@ -1,6 +1,6 @@
 {
   "name": "liow2-server",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "dependencies": {
     "bcrypt": {
       "version": "0.8.5",
