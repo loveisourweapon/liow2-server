@@ -1,4 +1,4 @@
-var config = require('./config'),
+var config = require('./utils/config')(),
     express = require('express'),
     app = express(),
     logger = require('morgan'),
@@ -22,7 +22,7 @@ var auth = require('./routes/auth'),
 
 // Connect to database
 var db = mongoose.connection,
-    dbUrl = process.env.LIOW_DB_URL || config.db.url,
+    dbUrl = config.db.url,
     debug = require('debug')('liow2:mongo');
 mongoose.connect(dbUrl);
 mongoose.Promise = Promise;

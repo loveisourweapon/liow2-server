@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken'),
-    config = require('../../config'),
+    config = require('../../utils/config')(),
     testUtils = require('../../utils/tests'),
     credentials = testUtils.credentials,
     expect = require('chai').expect,

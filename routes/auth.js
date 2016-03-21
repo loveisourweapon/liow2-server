@@ -1,4 +1,4 @@
-var config = require('../config'),
+var config = require('../utils/config')(),
     _ = require('lodash'),
     moment = require('moment'),
     jwt = require('jsonwebtoken'),

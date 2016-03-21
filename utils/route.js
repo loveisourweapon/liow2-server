@@ -1,6 +1,6 @@
 var _ = require('lodash'),
     jwt = require('jsonwebtoken'),
-    config = require('../config'),
+    config = require('../utils/config')(),
     utils = require('../utils/general'),
     HttpError = utils.HttpError,
     mongoose = require('mongoose'),

@@ -1,6 +1,6 @@
 var _ = require('lodash'),
     jwt = require('jsonwebtoken'),
-    config = require('../config'),
+    config = require('../utils/config')(),
     mongoose = require('mongoose'),
     User = require('../models/User');
 
@@ -20,7 +20,7 @@ var credentials = {
  */
 function dbConnect() {
   if (mongoose.connection.readyState === 0) {
-    return mongoose.connect(process.env.LIOW_DB_URL || config.db.url);
+    return mongoose.connect(config.db.url);
   } else {
     return Promise.resolve();
   }
