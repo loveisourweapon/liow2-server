@@ -46,7 +46,7 @@ if (app.get('env') !== 'testing') {
 }
 
 // Add CORS (Cross-origin Resource Sharing) support
-app.use(cors());
+app.use(cors({ origin: config.client_url }));
 app.options('*', cors()); // CORS OPTIONS pre-flight request
 
 // Add routes
