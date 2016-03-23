@@ -1,4 +1,22 @@
 /**
+ * @apiDefine GroupRequestBody
+ * @apiVersion 1.0.0
+ *
+ * @apiParam (Body) {string} name             Group name
+ * @apiParam (Body) {string} [logo]           Group logo URL
+ * @apiParam (Body) {string} [coverImage]     Group cover image URL
+ * @apiParam (Body) {string} [welcomeMessage] Group welcome message
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "name": "Group Name",
+ *     "logo": "https://example.com/images/group-logo.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "welcomeMessage": "Example welcome message"
+ *   }
+ */
+
+/**
  * @apiDefine UserResponse
  * @apiVersion 1.0.0
  *

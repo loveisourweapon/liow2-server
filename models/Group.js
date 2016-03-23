@@ -44,7 +44,7 @@ GroupSchema.pre('validate', function (next) {
 });
 
 GroupSchema.statics.getFilter = function () {
-  return ['name', 'logo', 'coverImage', 'welcomeMessage'];
+  return ['name', 'logo', 'coverImage', 'admins', 'welcomeMessage'];
 };
 
 GroupSchema.statics.getSearchable = function () {
@@ -121,17 +121,20 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupRequestBody
+ * @apiVersion 1.7.2
  *
- * @apiParam (Body) {string} name             Group name
- * @apiParam (Body) {string} [logo]           Group logo URL
- * @apiParam (Body) {string} [coverImage]     Group cover image URL
- * @apiParam (Body) {string} [welcomeMessage] Group welcome message
+ * @apiParam (Body) {string}   name             Group name
+ * @apiParam (Body) {string}   [logo]           Group logo URL
+ * @apiParam (Body) {string}   [coverImage]     Group cover image URL
+ * @apiParam (Body) {string[]} [admins]         List of user ObjectId's
+ * @apiParam (Body) {string}   [welcomeMessage] Group welcome message
  *
  * @apiParamExample {json} Request
  *   {
  *     "name": "Group Name",
  *     "logo": "https://example.com/images/group-logo.png",
  *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "admins": ["55f6c56186b959ac12490e1a", "55f6c56186b959ac12490e1d"],
  *     "welcomeMessage": "Example welcome message"
  *   }
  */
