@@ -13,6 +13,23 @@ describe('/users', () => {
   afterEach(testUtils.removeUsers);
 
   describe('/', () => {
+    it('GET should return status 200 and an empty array', () => {
+      return request(app)
+        .get('/users')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.be.an('array').and.to.have.lengthOf(0));
+    }); // it()
+
+    it('GET should return status 200 and an array', () => {
+      return testUtils.saveUser(testUtils.credentials)
+        .then(() => request(app)
+          .get('/users')
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => expect(res.body).to.be.an('array').and.to.have.lengthOf(1)));
+    }); // it()
+
     it('GET should return a count of the number of users', () => {
       return testUtils.saveUser(testUtils.credentials)
         .then(() => request(app)
@@ -20,18 +37,6 @@ describe('/users', () => {
           .expect(200)
           .expect('Content-Type', /html/)
           .expect(res => expect(res).to.have.property('text', '1')));
-    }); // it()
-
-    it('GET should return a count of the number of users even without ?count=true flag', () => {
-      return testUtils.saveUser(testUtils.credentials)
-        .then(() => request(app)
-          .get('/users')
-          .expect(200)
-          .expect('Content-Type', /html/)
-          .expect(res => {
-            expect(res.body).to.be.empty;
-            expect(res).to.have.property('text', '1');
-          }));
     }); // it()
 
     it('POST invalid data should return status 400 and an error message', () => {
