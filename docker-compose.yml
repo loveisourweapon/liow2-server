@@ -3,7 +3,7 @@ server:
   links:
     - mongo
   ports:
-    - "3000:3000"
+    - "3001:3000"
   volumes:
     - .:/usr/src/app
   environment:
