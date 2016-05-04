@@ -62,7 +62,7 @@ module.exports = {
   addFeedItem(schema, opts) {
     // Save a FeedItem after saving the document
     schema.post('save', function (doc) {
-      if (doc.deed || _.has(doc, 'target.deed') || _.has(doc, 'target.group')) {
+      if (_.hasIn(doc, 'deed') || _.hasIn(doc, 'target.deed') || _.hasIn(doc, 'target.group')) {
         var feedItem = _.pick(doc.toObject(), ['user', 'group', 'campaign']);
         feedItem.target = doc.deed ? { deed: doc.deed } : doc.target;
         feedItem[opts.type.toLowerCase()] = doc._id;
