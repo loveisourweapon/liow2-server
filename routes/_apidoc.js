@@ -1,4 +1,29 @@
 /**
+ * @api {post} /auth/login Login with email and password
+ * @apiVersion 1.0.0
+ * @apiName PostAuthLogin
+ * @apiGroup Auth
+ * @apiPermission none
+ *
+ * @apiParam (Body) {string} email    User email address
+ * @apiParam (Body) {string} password User password
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "email": "user@example.com",
+ *     "password": "password123"
+ *   }
+ *
+ * @apiSuccess {string} token JWT token
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "token": "valid.jwt.token"
+ *   }
+ */
+
+/**
  * @api {get} /users/me Get current user
  * @apiVersion 1.0.0
  * @apiName GetUsersMe

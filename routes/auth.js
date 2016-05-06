@@ -115,23 +115,21 @@ router.post(
 );
 
 /**
- * Login with email and password
- * POST /auth/login
- */
-/**
  * @api {post} /auth/login Login with email and password
- * @apiVersion 1.0.0
+ * @apiVersion 1.7.5
  * @apiName PostAuthLogin
  * @apiGroup Auth
  * @apiPermission none
  *
  * @apiParam (Body) {string} email    User email address
  * @apiParam (Body) {string} password User password
+ * @apiParam (Body) {string} [group]  Group ObjectId to add user to
  *
  * @apiParamExample {json} Request
  *   {
- *     "email": "user@example.com"
- *     "password": "password123"
+ *     "email": "user@example.com",
+ *     "password": "password123",
+ *     "group": "55f6c56186b959ac12490e1b"
  *   }
  *
  * @apiSuccess {string} token JWT token
@@ -155,6 +153,13 @@ router.post(
 
             if (!user.confirmed && moment().isAfter(moment(user.created).add(3, 'days'))) {
               throw new HttpError('Please confirm your email address', 403);
+            }
+
+            if (
+              _.has(req.body, 'group') &&
+              !_.some(user.groups, group => String(group) === String(req.body.group))
+            ) {
+              user.groups.push(req.body.group);
             }
 
             user.lastSeen = new Date();
