@@ -28,7 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^0.8.6",
-    "body-parser": "^1.15.0",
+    "body-parser": "^1.15.1",
     "cookie-parser": "^1.4.1",
     "cors": "^2.7.1",
     "debug": "^2.2.0",
@@ -37,10 +37,10 @@
     "fast-json-patch": "^0.5.7",
     "handlebars": "^4.0.5",
     "jsonwebtoken": "^6.2.0",
-    "lodash": "^4.11.2",
+    "lodash": "^4.12.0",
     "mailgun-js": "^0.7.10",
     "moment": "^2.13.0",
-    "mongoose": "^4.4.14",
+    "mongoose": "^4.4.16",
     "mongoose-unique-validator": "^1.0.2",
     "morgan": "^1.7.0",
     "request": "^2.72.0"
