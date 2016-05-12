@@ -1,6 +1,7 @@
 var _ = require('lodash'),
     routeUtils = require('../utils/route'),
     router = require('express').Router(),
+    ObjectId = require('mongoose').Types.ObjectId,
     FeedItem = require('../models/FeedItem');
 
 /**
@@ -19,8 +20,8 @@ router.get(
 
     // Handle before/after queries
     if (_.has(req.query, 'before') || _.has(req.query, 'after')) {
-      conditions.created = {
-        [req.query.before ? '$lt' : '$gt']: new Date(req.query[req.query.before ? 'before' : 'after'])
+      conditions._id = {
+        [req.query.before ? '$lt' : '$gt']: ObjectId(req.query[req.query.before ? 'before' : 'after'])
       };
     }
 
@@ -31,7 +32,7 @@ router.get(
       .populate({ path: 'target.group', model: 'Group', select: 'name urlName' })
       .populate({ path: 'act', select: 'likes comments' })
       .populate({ path: 'comment', select: 'content likes comments' })
-      .sort({ created: -1 })
+      .sort({ _id: -1 })
       .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : 20)
       .exec()
       .then(feedItems => res.status(200).json(feedItems))
