@@ -3,6 +3,9 @@ MAINTAINER Ben Booth <bkbooth@gmail.com>
 
 EXPOSE 3000
 
+# Set Timezone
+ENV TZ Australia/Sydney
+
 # Setup application directory
 ENV APP_DIR /usr/src/app/
 RUN mkdir -p ${APP_DIR}
