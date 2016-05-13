@@ -1,6 +1,6 @@
 {
   "name": "liow2-server",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "dependencies": {
     "abbrev": {
       "version": "1.0.7",
