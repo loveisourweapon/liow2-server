@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var merge = require('lodash/merge'),
     testUtils = require('../../utils/tests'),
     request = require('supertest-as-promised'),
     expect = require('chai').expect,
@@ -18,7 +18,7 @@ var validDeed = {
 describe('/deeds', () => {
   before(() => {
     return testUtils.dbConnect()
-      .then(() => testUtils.saveUser(_.merge({ superAdmin: true }, testUtils.credentials)));
+      .then(() => testUtils.saveUser(merge({ superAdmin: true }, testUtils.credentials)));
   }); // before()
   after(() => {
     return testUtils.removeUsers()

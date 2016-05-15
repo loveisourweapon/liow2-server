@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var has = require('lodash/has'),
+    partialRight = require('lodash/partialRight'),
     moment = require('moment'),
     jsonpatch = require('fast-json-patch'),
     routeUtils = require('../utils/route'),
@@ -8,8 +9,8 @@ var _ = require('lodash'),
 var Campaign = require('../models/Campaign'),
     Deed = require('../models/Deed');
 
-router.param('campaign', _.partialRight(routeUtils.paramHandler, Campaign));
-router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
+router.param('campaign', partialRight(routeUtils.paramHandler, Campaign));
+router.param('deed', partialRight(routeUtils.paramHandler, Deed));
 
 /**
  * @api {get} /campaigns List campaigns
@@ -22,7 +23,7 @@ router.param('deed', _.partialRight(routeUtils.paramHandler, Deed));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Campaign, 'deeds.deed')
+  partialRight(routeUtils.getAll, Campaign, 'deeds.deed')
 );
 
 /**
@@ -38,11 +39,11 @@ router.get(
 router.post(
   '/',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureAdminOf, 'body.group'),
+  partialRight(routeUtils.ensureAdminOf, 'body.group'),
   (req, res, next) => {
     req.body = routeUtils.filterProperties(req.body, Campaign);
-    req.body.dateStart = _.has(req.body.dateStart) ? moment(req.body.dateStart).toDate() : moment().toDate();
-    req.body.dateEnd = _.has(req.body.dateEnd) ? moment(req.body.dateEnd).toDate() : null;
+    req.body.dateStart = has(req.body.dateStart) ? moment(req.body.dateStart).toDate() : moment().toDate();
+    req.body.dateEnd = has(req.body.dateEnd) ? moment(req.body.dateEnd).toDate() : null;
 
     new Campaign(req.body).save()
       .then(campaign => res.status(201).location(`/campaigns/${campaign._id}`).json(campaign))
@@ -63,7 +64,7 @@ router.post(
  */
 router.get(
   '/:campaign',
-  _.partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed')
+  partialRight(routeUtils.getByParam, 'campaign', 'deeds.deed')
 );
 
 /**
@@ -81,8 +82,8 @@ router.get(
 router.put(
   '/:campaign',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
-  _.partialRight(routeUtils.putByParam, Campaign, 'campaign')
+  partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
+  partialRight(routeUtils.putByParam, Campaign, 'campaign')
 );
 
 /**
@@ -114,7 +115,7 @@ router.put(
 router.patch(
   '/:campaign',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
+  partialRight(routeUtils.ensureAdminOf, 'campaign.group'),
   (req, res, next) => {
     jsonpatch.apply(req.campaign, routeUtils.filterJsonPatch(req.body, Campaign));
     req.campaign.modified = new Date();

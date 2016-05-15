@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var pick = require('lodash/pick'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -25,7 +25,7 @@ var FeedItemSchema = new mongoose.Schema({
  * @returns {Promise}
  */
 FeedItemSchema.statics.findOrCreate = function (newFeedItem) {
-  return this.findOne(_.pick(newFeedItem, ['act', 'comment'])).exec()
+  return this.findOne(pick(newFeedItem, ['act', 'comment'])).exec()
     .then(feedItem => (feedItem || new this(newFeedItem).save()));
 };
 

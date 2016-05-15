@@ -1,9 +1,9 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     routeUtils = require('../utils/route'),
     router = require('express').Router(),
     Group = require('../models/Group');
 
-router.param('group', _.partialRight(routeUtils.paramHandler, Group));
+router.param('group', partialRight(routeUtils.paramHandler, Group));
 
 /**
  * @api {get} /groups List groups
@@ -16,7 +16,7 @@ router.param('group', _.partialRight(routeUtils.paramHandler, Group));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Group, 'country')
+  partialRight(routeUtils.getAll, Group, 'country')
 );
 
 /**
@@ -61,7 +61,7 @@ router.post(
  */
 router.get(
   '/:group',
-  _.partialRight(routeUtils.getByParam, 'group', 'country')
+  partialRight(routeUtils.getByParam, 'group', 'country')
 );
 
 /**
@@ -79,8 +79,8 @@ router.get(
 router.put(
   '/:group',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureAdminOf, 'group._id'),
-  _.partialRight(routeUtils.putByParam, Group, 'group')
+  partialRight(routeUtils.ensureAdminOf, 'group._id'),
+  partialRight(routeUtils.putByParam, Group, 'group')
 );
 
 /**
@@ -97,8 +97,8 @@ router.put(
 router.delete(
   '/:group',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'group.owner'),
-  _.partialRight(routeUtils.deleteByParam, 'group')
+  partialRight(routeUtils.ensureSameUser, 'group.owner'),
+  partialRight(routeUtils.deleteByParam, 'group')
 );
 
 module.exports = router;

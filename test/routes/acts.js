@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var merge = require('lodash/merge'),
     testUtils = require('../../utils/tests'),
     request = require('supertest-as-promised'),
     expect = require('chai').expect,
@@ -78,7 +78,7 @@ describe('/acts', () => {
                   return request(app)
                     .post('/acts')
                     .set('Authorization', `Bearer ${token}`)
-                    .send(_.merge({ group: resGroup.body._id }, validAct))
+                    .send(merge({ group: resGroup.body._id }, validAct))
                     .expect(res => expect(res.body).to.have.property('campaign', resCampaign.body._id));
                 });
             });

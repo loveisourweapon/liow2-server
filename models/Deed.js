@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var kebabCase = require('lodash/kebabCase'),
     modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     uniqueValidator = require('mongoose-unique-validator');
@@ -18,7 +18,7 @@ DeedSchema.plugin(modelUtils.findOneOrThrow);
 DeedSchema.plugin(uniqueValidator, { message: 'Title is already taken' });
 
 DeedSchema.pre('validate', function (next) {
-  this.urlTitle = _.kebabCase(this.title);
+  this.urlTitle = kebabCase(this.title);
   next();
 });
 

@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var defaults = require('lodash/defaults'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
 
@@ -29,11 +29,11 @@ describe('Like', () => {
     }); // it()
 
     it('should require a single target', () => {
-      return new Like(_.defaults({ target: {} }, validLike)).save()
+      return new Like(defaults({ target: {} }, validLike)).save()
         .catch(err => {
           expect(err).to.exist.and.to.have.deep.property('errors.target.kind', 'onetarget');
 
-          return new Like(_.defaults({
+          return new Like(defaults({
             target: {
               act: ObjectId(),
               comment: ObjectId()

@@ -1,4 +1,7 @@
-var _ = require('lodash'),
+var map = require('lodash/map'),
+    merge = require('lodash/merge'),
+    defaults = require('lodash/defaults'),
+    cloneDeep = require('lodash/cloneDeep'),
     testUtils = require('../../utils/tests'),
     routeUtils = require('../../utils/route'),
     HttpError = require('../../utils/general').HttpError,
@@ -260,7 +263,7 @@ describe('utils/routes', () => {
     beforeEach(() => {
       return new Country({ name: 'Australia', code: 'AU' }).save()
         .then(newCountry => (country = newCountry))
-        .then(() => new User(_.merge({ country }, testUtils.credentials)).save())
+        .then(() => new User(merge({ country }, testUtils.credentials)).save())
         .then(newUser => (user = newUser));
     }); // beforeEach()
     afterEach(() => User.remove({}).then(() => Country.remove({})));
@@ -515,7 +518,7 @@ describe('utils/routes', () => {
     }); // it()
 
     it('should continue if authorized user is a superAdmin', done => {
-      var req = { authUser: _.defaults({ superAdmin: true }, authUser) }, res = {};
+      var req = { authUser: defaults({ superAdmin: true }, authUser) }, res = {};
       routeUtils.ensureSuperAdmin(req, res, err => {
         testUtils.catchify(() => {
           expect(err).to.not.exist;
@@ -634,7 +637,7 @@ describe('utils/routes', () => {
 
     it('should filter patches by paths using model\'s filter', () => {
       var filtered = routeUtils.filterJsonPatch(patches, User);
-      var paths = _.map(filtered, 'path');
+      var paths = map(filtered, 'path');
 
       expect(filtered).to.not.deep.equal(patches);
       expect(paths).to.include('/firstName');
@@ -660,13 +663,13 @@ describe('utils/routes', () => {
 
     it('should do nothing if request doesn\'t have group', () => {
       var req = { body: { property: 'value' } };
-      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+      return routeUtils.getCurrentCampaign(cloneDeep(req))
         .then(newReq => expect(newReq).to.deep.equal(req));
     }); // it()
 
     it('should do nothing if request already has group and campaign', () => {
       var req = { body: { group, campaign } };
-      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+      return routeUtils.getCurrentCampaign(cloneDeep(req))
         .then(newReq => expect(newReq).to.deep.equal(req));
     }); // it()
 
@@ -675,13 +678,13 @@ describe('utils/routes', () => {
 
       campaign.active = false;
       return campaign.save()
-        .then(() => routeUtils.getCurrentCampaign(_.cloneDeep(req)))
+        .then(() => routeUtils.getCurrentCampaign(cloneDeep(req)))
         .then(newReq => expect(newReq).to.deep.equal(req));
     }); // it()
 
     it('should add campaign to request if group has an active campaign', () => {
       var req = { body: { group } };
-      return routeUtils.getCurrentCampaign(_.cloneDeep(req))
+      return routeUtils.getCurrentCampaign(cloneDeep(req))
         .then(newReq => expect(newReq.body.campaign).to.deep.equal(campaign._id));
     }); // it()
   }); // describe()

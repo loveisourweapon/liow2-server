@@ -1,4 +1,11 @@
-var _ = require('lodash'),
+var has = require('lodash/has'),
+    hasIn = require('lodash/hasIn'),
+    pick = require('lodash/pick'),
+    omit = require('lodash/omit'),
+    some = require('lodash/some'),
+    isObject = require('lodash/isObject'),
+    isArray = require('lodash/isArray'),
+    isEmpty = require('lodash/isEmpty'),
     HttpError = require('./general').HttpError,
     FeedItem = require('../models/FeedItem');
 
@@ -13,13 +20,13 @@ module.exports = {
    * @returns {boolean|Error}
    */
   oneOf(object, properties) {
-    if (!_.isObject(object)) { return new Error('Object should be type Object'); }
-    if (!_.isArray(properties)) { return new Error('Properties should be an Array of Strings'); }
+    if (!isObject(object)) { return new Error('Object should be type Object'); }
+    if (!isArray(properties)) { return new Error('Properties should be an Array of Strings'); }
 
-    return _.some(properties, property => {
+    return some(properties, property => {
       return (
-        _.has(object, property) &&
-        _.isEmpty(_.omit(object, property))
+        has(object, property) &&
+        isEmpty(omit(object, property))
       );
     });
   },
@@ -32,7 +39,7 @@ module.exports = {
    * @returns {boolean|Error}
    */
   hasOne(property) {
-    if (!_.isArray(property)) { return new Error('Property should be an Array'); }
+    if (!isArray(property)) { return new Error('Property should be an Array'); }
 
     return property.length > 0;
   },
@@ -62,8 +69,8 @@ module.exports = {
   addFeedItem(schema, opts) {
     // Save a FeedItem after saving the document
     schema.post('save', function (doc) {
-      if (_.hasIn(doc, 'deed') || _.hasIn(doc, 'target.deed') || _.hasIn(doc, 'target.group')) {
-        var feedItem = _.pick(doc.toObject(), ['user', 'group', 'campaign']);
+      if (hasIn(doc, 'deed') || hasIn(doc, 'target.deed') || hasIn(doc, 'target.group')) {
+        var feedItem = pick(doc.toObject(), ['user', 'group', 'campaign']);
         feedItem.target = doc.deed ? { deed: doc.deed } : doc.target;
         feedItem[opts.type.toLowerCase()] = doc._id;
 

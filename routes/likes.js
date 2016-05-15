@@ -1,10 +1,10 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router(),
     Like = require('../models/Like');
 
-router.param('like', _.partialRight(routeUtils.paramHandler, Like));
+router.param('like', partialRight(routeUtils.paramHandler, Like));
 
 /**
  * @api {get} /likes List likes
@@ -17,7 +17,7 @@ router.param('like', _.partialRight(routeUtils.paramHandler, Like));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Like)
+  partialRight(routeUtils.getAll, Like)
 );
 
 /**
@@ -34,8 +34,8 @@ router.get(
 router.delete(
   '/:like',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'like.user'),
-  _.partialRight(routeUtils.deleteByParam, 'like')
+  partialRight(routeUtils.ensureSameUser, 'like.user'),
+  partialRight(routeUtils.deleteByParam, 'like')
 );
 
 module.exports = router;

@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var merge = require('lodash/merge'),
     jwt = require('jsonwebtoken'),
     config = require('../utils/config')(),
     mongoose = require('mongoose'),
@@ -63,7 +63,7 @@ function removeUsers() {
  */
 function getApiToken(extraCredentials) {
   return dbConnect()
-    .then(() => saveUser(_.merge({}, extraCredentials || {}, credentials)))
+    .then(() => saveUser(merge({}, extraCredentials || {}, credentials)))
     .then(user => jwt.sign(user.id, config.secret));
 }
 

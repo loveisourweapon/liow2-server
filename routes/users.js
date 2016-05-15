@@ -1,11 +1,11 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     jsonpatch = require('fast-json-patch'),
     mailUtils = require('../utils/mail'),
     routeUtils = require('../utils/route'),
     router = require('express').Router(),
     User = require('../models/User');
 
-router.param('user', _.partialRight(routeUtils.paramHandler, User));
+router.param('user', partialRight(routeUtils.paramHandler, User));
 
 /**
  * @api {get} /users Count users
@@ -20,7 +20,7 @@ router.param('user', _.partialRight(routeUtils.paramHandler, User));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, User)
+  partialRight(routeUtils.getAll, User)
 );
 
 /**
@@ -82,7 +82,7 @@ router.get(
  */
 router.get(
   '/:user',
-  _.partialRight(routeUtils.getByParam, 'user')
+  partialRight(routeUtils.getByParam, 'user')
 );
 
 /**
@@ -100,8 +100,8 @@ router.get(
 router.put(
   '/:user',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'user._id'),
-  _.partialRight(routeUtils.putByParam, User, 'user')
+  partialRight(routeUtils.ensureSameUser, 'user._id'),
+  partialRight(routeUtils.putByParam, User, 'user')
 );
 
 /**
@@ -130,7 +130,7 @@ router.put(
 router.patch(
   '/:user',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'user._id'),
+  partialRight(routeUtils.ensureSameUser, 'user._id'),
   (req, res, next) => {
     jsonpatch.apply(req.user, routeUtils.filterJsonPatch(req.body, User));
 

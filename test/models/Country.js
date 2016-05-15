@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var defaults = require('lodash/defaults'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect,
     Country = require('../../models/Country');
@@ -25,7 +25,7 @@ describe('Country', () => {
     }); // it()
 
     it('should require code to be exactly 2 characters', () => {
-      return new Country(_.defaults({ code: 'toolong' }, validCountry)).save()
+      return new Country(defaults({ code: 'toolong' }, validCountry)).save()
         .catch(err => {
           expect(err).to.exist.and.to.have.property('name', 'ValidationError');
           expect(err).to.have.deep.property('errors.code.kind', 'maxlength');
@@ -38,7 +38,7 @@ describe('Country', () => {
     }); // it()
 
     it('should uppercase code', () => {
-      return new Country(_.defaults({ code: validCountry.code.toLowerCase() }, validCountry)).save()
+      return new Country(defaults({ code: validCountry.code.toLowerCase() }, validCountry)).save()
         .then(country => expect(country).to.have.property('code', validCountry.code.toUpperCase()));
     }); // it()
   }); // describe()

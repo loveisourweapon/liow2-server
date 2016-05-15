@@ -1,5 +1,5 @@
 var config = require('../utils/config')(),
-    _ = require('lodash'),
+    defaults = require('lodash/defaults'),
     moment = require('moment'),
     path = require('path'),
     EmailTemplate = require('email-templates').EmailTemplate,
@@ -78,12 +78,12 @@ function getToken(user, type) {
  */
 function sendConfirmEmail(user) {
   return getToken(user, 'confirm')
-    .then(token => renderHtmlTemplate('confirm-email', _.defaults({
+    .then(token => renderHtmlTemplate('confirm-email', defaults({
       firstName: user.firstName,
       token: token.token,
       date: moment(token.expires).format('lll')
     }, templateDefaults)))
-    .then(template => sendEmail(_.defaults({
+    .then(template => sendEmail(defaults({
       to: `${user.name} <${user.email}>`,
       subject: 'Confirm your Love is our Weapon registration',
       text: template.text,
@@ -100,12 +100,12 @@ function sendConfirmEmail(user) {
  */
 function sendPasswordReset(user) {
   return getToken(user, 'reset')
-    .then(token => renderHtmlTemplate('password-reset', _.defaults({
+    .then(token => renderHtmlTemplate('password-reset', defaults({
       firstName: user.firstName,
       token: token.token,
       date: moment(token.expires).format('LTS')
     }, templateDefaults)))
-    .then(template => sendEmail(_.defaults({
+    .then(template => sendEmail(defaults({
       to: `${user.name} <${user.email}>`,
       subject: 'Reset your Love is our Weapon password',
       text: template.text,

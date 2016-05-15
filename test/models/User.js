@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var omit = require('lodash/omit'),
     testUtils = require('../../utils/tests'),
     credentials = testUtils.credentials,
     expect = require('chai').expect,
@@ -21,7 +21,7 @@ describe('User', () => {
     }); // it()
 
     it('should allow blank password if facebook.id is set', () => {
-      return new User(_.omit(credentials, 'password')).save()
+      return new User(omit(credentials, 'password')).save()
         .then(user => expect(user.password).to.be.undefined);
     }); // it()
 
@@ -40,7 +40,7 @@ describe('User', () => {
     }); // it()
 
     it('should not hash if no password is set', () => {
-      return new User(_.omit(credentials, 'password')).save()
+      return new User(omit(credentials, 'password')).save()
         .then(user => expect(user.password).to.not.exist);
     }); // it()
   }); // describe()
@@ -52,7 +52,7 @@ describe('User', () => {
     }); // it()
 
     it('should return just firstName if only firstName set', () => {
-      return new User(_.omit(credentials, 'lastName')).save()
+      return new User(omit(credentials, 'lastName')).save()
         .then(user => expect(user).to.have.property('name', credentials.firstName));
     }); // it()
   }); // describe()

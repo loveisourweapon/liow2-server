@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var omit = require('lodash/omit'),
+    isNumber = require('lodash/isNumber'),
     bcrypt = require('bcrypt'),
     modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
@@ -15,7 +16,7 @@ const SALT_ROUNDS = 10;
  * @returns {boolean}
  */
 function validatePasswordOrFacebook(password) {
-  return password !== '' || _.isNumber(this.facebook.id);
+  return password !== '' || isNumber(this.facebook.id);
 }
 
 var UserSchema = new mongoose.Schema({
@@ -84,7 +85,7 @@ UserSchema.methods.validatePassword = function (password) {
 };
 
 UserSchema.methods.toJSON = function () {
-  return _.omit(this.toObject({ virtuals: true }), ['password', 'email', 'facebook', 'superAdmin']);
+  return omit(this.toObject({ virtuals: true }), ['password', 'email', 'facebook', 'superAdmin']);
 };
 
 /**

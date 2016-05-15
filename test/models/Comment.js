@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var defaults = require('lodash/defaults'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
 
@@ -29,11 +29,11 @@ describe('Comment', () => {
     }); // it()
 
     it('should require a single target', () => {
-      return new Comment(_.defaults({ target: {} }, validComment)).save()
+      return new Comment(defaults({ target: {} }, validComment)).save()
         .catch(err => {
           expect(err).to.have.deep.property('errors.target.kind', 'onetarget');
 
-          return new Comment(_.defaults({
+          return new Comment(defaults({
             target: {
               user: ObjectId(),
               deed: ObjectId()
@@ -44,7 +44,7 @@ describe('Comment', () => {
     }); // it()
 
     it('should require content text or image', () => {
-      return new Comment(_.defaults({ content: {} }, validComment)).save()
+      return new Comment(defaults({ content: {} }, validComment)).save()
         .catch(err => expect(err).to.have.deep.property('errors.content.kind', 'hascontent'));
     }); // it()
 

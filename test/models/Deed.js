@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var kebabCase = require('lodash/kebabCase'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect,
     Deed = require('../../models/Deed');
@@ -41,7 +41,7 @@ describe('Deed', () => {
 
     it('should create urlTitle as a kebab case copy of title', () => {
       return new Deed(validDeed).save()
-        .then(deed => expect(deed).to.have.property('urlTitle', _.kebabCase(validDeed.title)));
+        .then(deed => expect(deed).to.have.property('urlTitle', kebabCase(validDeed.title)));
     }); // it()
   }); // describe()
 

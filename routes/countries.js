@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router();
@@ -6,7 +6,7 @@ var _ = require('lodash'),
 var Country = require('../models/Country'),
     Group = require('../models/Group');
 
-router.param('country', _.partialRight(routeUtils.paramHandler, Country));
+router.param('country', partialRight(routeUtils.paramHandler, Country));
 
 /**
  * @api {get} /countries List countries
@@ -19,7 +19,7 @@ router.param('country', _.partialRight(routeUtils.paramHandler, Country));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Country)
+  partialRight(routeUtils.getAll, Country)
 );
 
 /**
@@ -35,7 +35,7 @@ router.get(
  */
 router.get(
   '/:country',
-  _.partialRight(routeUtils.getByParam, 'country')
+  partialRight(routeUtils.getByParam, 'country')
 );
 
 /**

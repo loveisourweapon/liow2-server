@@ -1,5 +1,6 @@
 var config = require('../utils/config')(),
-    _ = require('lodash'),
+    has = require('lodash/has'),
+    some = require('lodash/some'),
     moment = require('moment'),
     jwt = require('jsonwebtoken'),
     request = require('request'),
@@ -57,14 +58,14 @@ router.post(
                     };
                     user.picture = user.picture || `${baseUrl}/${profile.id}/picture?width=200&height=200`;
 
-                    if (!_.has(user, 'firstName')) {
+                    if (!has(user, 'firstName')) {
                       user.firstName = profile.first_name;
                       user.lastName = profile.last_name;
                     }
 
                     if (
-                      _.has(req.body, 'group') &&
-                      !_.some(user.groups, group => String(group) === String(req.body.group))
+                      has(req.body, 'group') &&
+                      !some(user.groups, group => String(group) === String(req.body.group))
                     ) {
                       user.groups.push(req.body.group);
                     }
@@ -92,14 +93,14 @@ router.post(
               };
               user.picture = user.picture || `${baseUrl}/${profile.id}/picture?width=200&height=200`;
 
-              if (!_.has(user, 'firstName')) {
+              if (!has(user, 'firstName')) {
                 user.firstName = profile.first_name;
                 user.lastName = profile.last_name;
               }
 
               if (
-                _.has(req.body, 'group') &&
-                !_.some(user.groups, group => String(group) === String(req.body.group))
+                has(req.body, 'group') &&
+                !some(user.groups, group => String(group) === String(req.body.group))
               ) {
                 user.groups.push(req.body.group);
               }
@@ -156,8 +157,8 @@ router.post(
             }
 
             if (
-              _.has(req.body, 'group') &&
-              !_.some(user.groups, group => String(group) === String(req.body.group))
+              has(req.body, 'group') &&
+              !some(user.groups, group => String(group) === String(req.body.group))
             ) {
               user.groups.push(req.body.group);
             }

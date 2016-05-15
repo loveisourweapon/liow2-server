@@ -1,4 +1,17 @@
-var _ = require('lodash'),
+var has = require('lodash/has'),
+    hasIn = require('lodash/hasIn'),
+    map = require('lodash/map'),
+    keys = require('lodash/keys'),
+    get = require('lodash/get'),
+    pick = require('lodash/pick'),
+    some = require('lodash/some'),
+    filter = require('lodash/filter'),
+    assign = require('lodash/assign'),
+    partialRight = require('lodash/partialRight'),
+    isString = require('lodash/isString'),
+    isFunction = require('lodash/isFunction'),
+    isUndefined = require('lodash/isUndefined'),
+    escapeRegExp = require('lodash/escapeRegExp'),
     jwt = require('jsonwebtoken'),
     config = require('../utils/config')(),
     utils = require('../utils/general'),
@@ -20,7 +33,7 @@ var _ = require('lodash'),
  * @param {Model}    model
  */
 function paramHandler(req, res, next, id, name, model) {
-  if (!_.has(model, 'base') || model.base !== mongoose) {
+  if (!has(model, 'base') || model.base !== mongoose) {
     return next(new Error('Must be called with a mongoose model'));
   }
   if (!ObjectId.isValid(id)) {
@@ -48,22 +61,22 @@ function buildQueryConditions(query, model, op) {
   op = op || '$and';
 
   var conditions = {};
-  if (query.query && _.isFunction(model.getSearchable)) {
+  if (query.query && isFunction(model.getSearchable)) {
     // Search if search query included
-    conditions.$or = _.map(model.getSearchable(), field => {
-      return { [field]: new RegExp(_.escapeRegExp(query.query), 'i') };
+    conditions.$or = map(model.getSearchable(), field => {
+      return { [field]: new RegExp(escapeRegExp(query.query), 'i') };
     });
   } else {
     // Match schema fields
-    var fields = _.filter(
-      _.keys(query),
-      field => _.has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+    var fields = filter(
+      keys(query),
+      field => has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
     );
     if (fields.length) {
-      conditions[op] = _.map(fields, field => ({
+      conditions[op] = map(fields, field => ({
         [field]: (query[field] === 'null') ?
           { $exists: false } :
-          { $in: _.map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
+          { $in: map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
       }));
     }
   }
@@ -80,9 +93,9 @@ function buildQueryConditions(query, model, op) {
  * @returns {object[]}
  */
 function filterDocumentFields(documents, query) {
-  return _.isString(query.fields) ? _.map(
+  return isString(query.fields) ? map(
     documents,
-    _.partialRight(_.pick, query.fields.split(','))
+    partialRight(pick, query.fields.split(','))
   ) : documents;
 }
 
@@ -96,7 +109,7 @@ function filterDocumentFields(documents, query) {
  * @param {string}   populate
  */
 function getAll(req, res, next, model, populate) {
-  if (!_.has(model, 'base') || model.base !== mongoose) {
+  if (!has(model, 'base') || model.base !== mongoose) {
     return next(new Error('Must be called with a mongoose model'));
   }
 
@@ -110,7 +123,7 @@ function getAll(req, res, next, model, populate) {
   } else {
     // Retrieve documents
     model.find(conditions)
-      .populate(_.isString(populate) ? populate : '')
+      .populate(isString(populate) ? populate : '')
       .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
       .sort({ _id: 1 })
       .exec()
@@ -130,11 +143,11 @@ function getAll(req, res, next, model, populate) {
  * @param {string}   populate
  */
 function getByParam(req, res, next, param, populate) {
-  if (!_.has(req.params, param) || _.isUndefined(req[param])) {
+  if (!has(req.params, param) || isUndefined(req[param])) {
     return next(new Error(`Invalid param ${param}`));
   }
 
-  if (_.isString(populate)) {
+  if (isString(populate)) {
     req[param].populate(populate);
   }
 
@@ -152,10 +165,10 @@ function getByParam(req, res, next, param, populate) {
  * @param {string}   target
  */
 function getByTarget(req, res, next, model, target) {
-  if (!_.has(model, 'base') || model.base !== mongoose) {
+  if (!has(model, 'base') || model.base !== mongoose) {
     return next(new Error('Must be called with a mongoose model'));
   }
-  if (!_.has(req.params, target) || _.isUndefined(req[target])) {
+  if (!has(req.params, target) || isUndefined(req[target])) {
     return next(new Error(`Invalid target ${target}`));
   }
 
@@ -175,16 +188,16 @@ function getByTarget(req, res, next, model, target) {
  * @param {string}   param
  */
 function putByParam(req, res, next, model, param) {
-  if (!_.has(model, 'base') || model.base !== mongoose) {
+  if (!has(model, 'base') || model.base !== mongoose) {
     return next(new Error('Must be called with a mongoose model'));
   }
-  if (!_.has(req.params, param) || _.isUndefined(req[param])) {
+  if (!has(req.params, param) || isUndefined(req[param])) {
     return next(new Error(`Invalid param ${param}`));
   }
 
   req.body = filterProperties(req.body, model);
   req.body.modified = new Date();
-  _.assign(req[param], req.body).save()
+  assign(req[param], req.body).save()
     .then(document => res.status(200).json(document))
     .catch(err => next(err));
 }
@@ -199,7 +212,7 @@ function putByParam(req, res, next, model, param) {
  * @param {string}   param
  */
 function deleteByParam(req, res, next, param) {
-  if (!_.has(req.params, param) || _.isUndefined(req[param])) {
+  if (!has(req.params, param) || isUndefined(req[param])) {
     return next(new Error(`Invalid param ${param}`));
   }
 
@@ -257,7 +270,7 @@ function ensureSuperAdmin(req, res, next) {
  * @param {string}   userIdPath
  */
 function ensureSameUser(req, res, next, userIdPath) {
-  if (_.get(req, userIdPath).equals(req.authUser._id)) {
+  if (get(req, userIdPath).equals(req.authUser._id)) {
     return next();
   } else {
     return next(new HttpError('Must be logged in as this user', 403));
@@ -274,9 +287,9 @@ function ensureSameUser(req, res, next, userIdPath) {
  * @param {string}   groupIdPath
  */
 function ensureAdminOf(req, res, next, groupIdPath) {
-  Group.findById(_.get(req, groupIdPath)).exec()
+  Group.findById(get(req, groupIdPath)).exec()
     .then(group => {
-      if (_.hasIn(req, 'authUser._id') && _.some(group.admins, admin => admin.equals(req.authUser._id))) {
+      if (hasIn(req, 'authUser._id') && some(group.admins, admin => admin.equals(req.authUser._id))) {
         return next();
       } else {
         return next(new HttpError('Must be an admin of group', 403));
@@ -294,7 +307,7 @@ function ensureAdminOf(req, res, next, groupIdPath) {
  * @returns {object}
  */
 function filterProperties(body, model) {
-  return _.isFunction(model.getFilter) ? _.pick(body, model.getFilter()) : body;
+  return isFunction(model.getFilter) ? pick(body, model.getFilter()) : body;
 }
 
 /**
@@ -306,9 +319,9 @@ function filterProperties(body, model) {
  * @returns {array}
  */
 function filterJsonPatch(operations, model) {
-  return _.isFunction(model.getFilter) ? _.filter(
+  return isFunction(model.getFilter) ? filter(
     operations,
-    operation => _.some(model.getFilter(), property => ~operation.path.indexOf(`/${property}`))
+    operation => some(model.getFilter(), property => ~operation.path.indexOf(`/${property}`))
   ) : operations;
 }
 

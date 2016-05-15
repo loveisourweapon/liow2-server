@@ -1,10 +1,10 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router(),
     Comment = require('../models/Comment');
 
-router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
+router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /comments List comments
@@ -17,7 +17,7 @@ router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Comment)
+  partialRight(routeUtils.getAll, Comment)
 );
 
 /**
@@ -35,8 +35,8 @@ router.get(
 router.put(
   '/:comment',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
-  _.partialRight(routeUtils.putByParam, Comment, 'comment')
+  partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  partialRight(routeUtils.putByParam, Comment, 'comment')
 );
 
 /**
@@ -53,8 +53,8 @@ router.put(
 router.delete(
   '/:comment',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
-  _.partialRight(routeUtils.deleteByParam, 'comment')
+  partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  partialRight(routeUtils.deleteByParam, 'comment')
 );
 
 module.exports = router;

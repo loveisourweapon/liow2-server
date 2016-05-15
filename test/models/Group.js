@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var defaults = require('lodash/defaults'),
+    kebabCase = require('lodash/kebabCase'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
 
@@ -31,7 +32,7 @@ describe('Group', () => {
     }); // it()
 
     it('should require owner to be an admin', () => {
-      return new Group(_.defaults({ owner: ObjectId() }, validGroup)).save()
+      return new Group(defaults({ owner: ObjectId() }, validGroup)).save()
         .catch(err => expect(err).to.have.deep.property('errors.admins.kind', 'ownerisadmin'));
     }); // it()
 
@@ -51,7 +52,7 @@ describe('Group', () => {
 
     it('should create urlName as a kebab case copy of name', () => {
       return new Group(validGroup).save()
-        .then(group => expect(group).to.have.property('urlName', _.kebabCase(validGroup.name)));
+        .then(group => expect(group).to.have.property('urlName', kebabCase(validGroup.name)));
     }); // it()
   }); // describe()
 

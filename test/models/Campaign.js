@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var defaults = require('lodash/defaults'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
 
@@ -27,7 +27,7 @@ describe('Campaign', () => {
     }); // it()
 
     it('should require at least one deed', () => {
-      return new Campaign(_.defaults({ deeds: [] }, validCampaign)).save()
+      return new Campaign(defaults({ deeds: [] }, validCampaign)).save()
         .catch(err => expect(err).to.have.deep.property('errors.deeds.kind', 'required'));
     }); // it()
 

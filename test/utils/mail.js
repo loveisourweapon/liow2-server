@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var assign = require('lodash/assign'),
     mailUtils = require('../../utils/mail'),
     testUtils = require('../../utils/tests'),
     expect = require('chai').expect;
@@ -11,7 +11,7 @@ describe('utils/mail', () => {
   after(testUtils.dbDisconnect);
   afterEach(() => Token.remove({}));
 
-  var user = _.assign({
+  var user = assign({
     _id: ObjectId(),
     name: `${testUtils.credentials.firstName} ${testUtils.credentials.lastName}`
   }, testUtils.credentials);

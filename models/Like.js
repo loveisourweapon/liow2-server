@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
@@ -14,7 +14,7 @@ var LikeSchema = new mongoose.Schema({
     },
     required: true,
     validate: [
-      _.partialRight(modelUtils.oneOf, ['act', 'comment']),
+      partialRight(modelUtils.oneOf, ['act', 'comment']),
       'One target should be set',
       'onetarget'
     ]

@@ -1,4 +1,7 @@
-var _ = require('lodash'),
+var has = require('lodash/has'),
+    mapValues = require('lodash/mapValues'),
+    snakeCase = require('lodash/snakeCase'),
+    isObject = require('lodash/isObject'),
     config = require('../config'),
     configPrefix = 'liow';
 
@@ -13,14 +16,14 @@ module.exports = () => buildConfig(config, [configPrefix]);
  * @returns {object}
  */
 function buildConfig(config, path) {
-  return _.mapValues(config, (value, key) => {
-    var newPath = path.concat(_.snakeCase(key));
+  return mapValues(config, (value, key) => {
+    var newPath = path.concat(snakeCase(key));
 
-    if (_.isObject(value)) {
+    if (isObject(value)) {
       return buildConfig(value, newPath);
     }
 
     var envVar = newPath.join('_').toUpperCase();
-    return _.has(process.env, envVar) ? process.env[envVar] : value;
+    return has(process.env, envVar) ? process.env[envVar] : value;
   });
 }

@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
     router = require('express').Router(),
     routeUtils = require('../utils/route');
 
@@ -7,9 +7,9 @@ var Act = require('../models/Act'),
     Comment = require('../models/Comment'),
     Campaign = require('../models/Campaign');
 
-router.param('act', _.partialRight(routeUtils.paramHandler, Act));
-router.param('like', _.partialRight(routeUtils.paramHandler, Like));
-router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
+router.param('act', partialRight(routeUtils.paramHandler, Act));
+router.param('like', partialRight(routeUtils.paramHandler, Like));
+router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /acts List acts
@@ -22,7 +22,7 @@ router.param('comment', _.partialRight(routeUtils.paramHandler, Comment));
  */
 router.get(
   '/',
-  _.partialRight(routeUtils.getAll, Act)
+  partialRight(routeUtils.getAll, Act)
 );
 
 /**
@@ -65,8 +65,8 @@ router.post(
 router.delete(
   '/:act',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'act.user'),
-  _.partialRight(routeUtils.deleteByParam, 'act')
+  partialRight(routeUtils.ensureSameUser, 'act.user'),
+  partialRight(routeUtils.deleteByParam, 'act')
 );
 
 /**
@@ -82,7 +82,7 @@ router.delete(
  */
 router.get(
   '/:act/likes',
-  _.partialRight(routeUtils.getByTarget, Like, 'act')
+  partialRight(routeUtils.getByTarget, Like, 'act')
 );
 
 /**
@@ -129,8 +129,8 @@ router.post(
 router.delete(
   '/:act/likes/:like',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'like.user'),
-  _.partialRight(routeUtils.deleteByParam, 'like')
+  partialRight(routeUtils.ensureSameUser, 'like.user'),
+  partialRight(routeUtils.deleteByParam, 'like')
 );
 
 /**
@@ -146,7 +146,7 @@ router.delete(
  */
 router.get(
   '/:act/comments',
-  _.partialRight(routeUtils.getByTarget, Comment, 'act')
+  partialRight(routeUtils.getByTarget, Comment, 'act')
 );
 
 /**
@@ -194,8 +194,8 @@ router.post(
 router.put(
   '/:act/comments/:comment',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
-  _.partialRight(routeUtils.putByParam, Comment, 'comment')
+  partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  partialRight(routeUtils.putByParam, Comment, 'comment')
 );
 
 /**
@@ -213,8 +213,8 @@ router.put(
 router.delete(
   '/:act/comments/:comment',
   routeUtils.ensureAuthenticated,
-  _.partialRight(routeUtils.ensureSameUser, 'comment.user'),
-  _.partialRight(routeUtils.deleteByParam, 'comment')
+  partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  partialRight(routeUtils.deleteByParam, 'comment')
 );
 
 module.exports = router;

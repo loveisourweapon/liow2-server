@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var some = require('lodash/some'),
+    kebabCase = require('lodash/kebabCase'),
     modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId,
@@ -12,7 +13,7 @@ var _ = require('lodash'),
  * @returns {boolean}
  */
 function validateOwnerIsAdmin(admins) {
-  return _.some(admins, admin => admin.equals(this.owner));
+  return some(admins, admin => admin.equals(this.owner));
 }
 
 var GroupSchema = new mongoose.Schema({
@@ -39,7 +40,7 @@ GroupSchema.plugin(modelUtils.findOneOrThrow);
 GroupSchema.plugin(uniqueValidator, { message: 'Name is already taken' });
 
 GroupSchema.pre('validate', function (next) {
-  this.urlName = _.kebabCase(this.name);
+  this.urlName = kebabCase(this.name);
   next();
 });
 

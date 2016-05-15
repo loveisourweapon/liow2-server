@@ -1,4 +1,4 @@
-var _ = require('lodash'),
+var has = require('lodash/has'),
     routeUtils = require('../utils/route'),
     router = require('express').Router(),
     ObjectId = require('mongoose').Types.ObjectId,
@@ -19,7 +19,7 @@ router.get(
     var conditions = routeUtils.buildQueryConditions(req.query, FeedItem, '$or');
 
     // Handle before/after queries
-    if (_.has(req.query, 'before') || _.has(req.query, 'after')) {
+    if (has(req.query, 'before') || has(req.query, 'after')) {
       conditions._id = {
         [req.query.before ? '$lt' : '$gt']: ObjectId(req.query[req.query.before ? 'before' : 'after'])
       };

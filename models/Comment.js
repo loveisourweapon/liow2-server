@@ -1,4 +1,5 @@
-var _ = require('lodash'),
+var partialRight = require('lodash/partialRight'),
+    isString = require('lodash/isString'),
     modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
@@ -11,7 +12,7 @@ var _ = require('lodash'),
  * @returns {boolean}
  */
 function validateHasContent(content) {
-  return _.isString(content.text) || _.isString(content.image);
+  return isString(content.text) || isString(content.image);
 }
 
 var CommentSchema = new mongoose.Schema({
@@ -27,7 +28,7 @@ var CommentSchema = new mongoose.Schema({
     },
     required: true,
     validate: [
-      _.partialRight(modelUtils.oneOf, ['group', 'deed', 'act', 'comment']),
+      partialRight(modelUtils.oneOf, ['group', 'deed', 'act', 'comment']),
       'One target should be set',
       'onetarget'
     ]
