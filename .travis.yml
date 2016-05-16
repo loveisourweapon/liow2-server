@@ -2,27 +2,19 @@ language: node_js
 node_js:
   - "4"
 
-services:
-  - mongodb
-
-env:
-  - NODE_ENV=testing LIOW_DB_URL=mongodb://localhost/liow2
-
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - gcc-4.8
       - g++-4.8
 
-before_install:
-  - npm install -g node-gyp
-  - rm -rf ~/.node-gyp/
+services:
+  - mongodb
 
-install:
-  - export CXX=g++-4.8
-  - $CXX --version
-  - npm install
+env:
+  - NODE_ENV=testing LIOW_DB_URL=mongodb://localhost/liow2 CXX=g++-4.8
 
 before_script:
   - cp config.example.js config.js
