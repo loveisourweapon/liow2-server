@@ -84,8 +84,11 @@ UserSchema.methods.validatePassword = function (password) {
   });
 };
 
-UserSchema.methods.toJSON = function () {
-  return omit(this.toObject({ virtuals: true }), ['password', 'email', 'facebook', 'superAdmin']);
+UserSchema.methods.toJSON = function (isUser) {
+  var toFilter = ['password', 'facebook'];
+  if (!isUser) toFilter = toFilter.concat('email', 'superAdmin');
+
+  return omit(this.toObject({ virtuals: true }), toFilter);
 };
 
 /**
