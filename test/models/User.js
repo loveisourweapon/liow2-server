@@ -57,6 +57,35 @@ describe('User', () => {
     }); // it()
   }); // describe()
 
+  describe('#validate()', () => {
+    beforeEach(() => testUtils.saveUser(credentials));
+
+    it('should return an error when current password is incorrect', () => {
+      return User.findOne({ email: credentials.email })
+        .then(user => {
+          user.currentPassword = 'incorrect';
+          return user.save();
+        })
+        .catch(err => expect(err).to.exist.and.to.have.property('message', 'Incorrect password'));
+    }); // it()
+
+    it('should save new password when current password is correct', () => {
+      var newPassword = 'aNewPassword';
+      return User.findOne({ email: credentials.email })
+        .then(user => {
+          user.currentPassword = credentials.password;
+          user.newPassword = newPassword;
+          return user.save();
+        })
+        .then(user => {
+          expect(user).to.not.have.property('currentPassword');
+          expect(user).to.not.have.property('newPassword');
+          return user.validatePassword(newPassword);
+        })
+        .then(isMatch => expect(isMatch).to.be.true);
+    }); // it()
+  }); // describe()
+
   describe('#validatePassword()', () => {
     beforeEach(() => testUtils.saveUser(credentials));
 
