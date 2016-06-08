@@ -138,6 +138,10 @@ UserSchema.statics.getFilter = function () {
   ];
 };
 
+UserSchema.statics.getSearchable = function () {
+  return ['email', 'name'];
+};
+
 module.exports = mongoose.model('User', UserSchema);
 
 /**
