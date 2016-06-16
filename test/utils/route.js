@@ -664,28 +664,40 @@ describe('utils/routes', () => {
     it('should do nothing if request doesn\'t have group', () => {
       var req = { body: { property: 'value' } };
       return routeUtils.getCurrentCampaign(cloneDeep(req))
-        .then(newReq => expect(newReq).to.deep.equal(req));
+        .then(newReq => {
+          expect(newReq.body).to.have.property('property', req.body.property);
+          expect(newReq.body).to.not.have.property('campaign');
+        });
     }); // it()
 
     it('should do nothing if request already has group and campaign', () => {
-      var req = { body: { group, campaign } };
+      var req = { body: { group: group._id, campaign: campaign._id } };
       return routeUtils.getCurrentCampaign(cloneDeep(req))
-        .then(newReq => expect(newReq).to.deep.equal(req));
+        .then(newReq => {
+          expect(newReq.body.group).to.deep.equal(req.body.group);
+          expect(newReq.body.campaign).to.deep.equal(req.body.campaign);
+        });
     }); // it()
 
     it('should do nothing if group doesn\'t have an active campaign', () => {
-      var req = { body: { group } };
+      var req = { body: { group: group._id } };
 
       campaign.active = false;
       return campaign.save()
         .then(() => routeUtils.getCurrentCampaign(cloneDeep(req)))
-        .then(newReq => expect(newReq).to.deep.equal(req));
+        .then(newReq => {
+          expect(newReq.body.group).to.deep.equal(req.body.group);
+          expect(newReq.body).to.not.have.property('campaign');
+        });
     }); // it()
 
     it('should add campaign to request if group has an active campaign', () => {
-      var req = { body: { group } };
+      var req = { body: { group: group._id } };
       return routeUtils.getCurrentCampaign(cloneDeep(req))
-        .then(newReq => expect(newReq.body.campaign).to.deep.equal(campaign._id));
+        .then(newReq => {
+          expect(newReq.body.group).to.deep.equal(req.body.group);
+          expect(newReq.body.campaign).to.deep.equal(campaign._id);
+        });
     }); // it()
   }); // describe()
 }); // describe()
