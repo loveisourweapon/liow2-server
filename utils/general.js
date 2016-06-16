@@ -1,8 +1,8 @@
 /**
  * New Error class that adds a HTTP status code
  *
- * @param {string} message
- * @param {number} status
+ * @param {string} [message='Error']
+ * @param {number} [status=400]
  *
  * @constructor
  */

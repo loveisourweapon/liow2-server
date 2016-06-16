@@ -57,6 +57,35 @@ describe('User', () => {
     }); // it()
   }); // describe()
 
+  describe('#validate()', () => {
+    beforeEach(() => testUtils.saveUser(credentials));
+
+    it('should return an error when current password is incorrect', () => {
+      return User.findOne({ email: credentials.email })
+        .then(user => {
+          user.currentPassword = 'incorrect';
+          return user.save();
+        })
+        .catch(err => expect(err).to.exist.and.to.have.property('message', 'Incorrect password'));
+    }); // it()
+
+    it('should save new password when current password is correct', () => {
+      var newPassword = 'aNewPassword';
+      return User.findOne({ email: credentials.email })
+        .then(user => {
+          user.currentPassword = credentials.password;
+          user.newPassword = newPassword;
+          return user.save();
+        })
+        .then(user => {
+          expect(user).to.not.have.property('currentPassword');
+          expect(user).to.not.have.property('newPassword');
+          return user.validatePassword(newPassword);
+        })
+        .then(isMatch => expect(isMatch).to.be.true);
+    }); // it()
+  }); // describe()
+
   describe('#validatePassword()', () => {
     beforeEach(() => testUtils.saveUser(credentials));
 
@@ -87,11 +116,22 @@ describe('User', () => {
     it('should not disclose email, password or superAdmin', () => {
       return new User(credentials).save()
         .then(user => {
+          expect(user).to.have.property('email');
           expect(user).to.have.property('password');
           expect(user).to.have.property('superAdmin');
           expect(user.toJSON()).to.not.have.property('email');
           expect(user.toJSON()).to.not.have.property('password');
           expect(user.toJSON()).to.not.have.property('superAdmin');
+        });
+    }); // it()
+
+    it('should allow email and superAdmin for self', () => {
+      return new User(credentials).save()
+        .then(user => {
+          expect(user).to.have.property('email');
+          expect(user).to.have.property('superAdmin');
+          expect(user.toJSON(true)).have.property('email');
+          expect(user.toJSON(true)).have.property('superAdmin');
         });
     }); // it()
   }); // describe()
@@ -129,6 +169,12 @@ describe('User', () => {
   describe('#getFilter()', () => {
     it('should return an array of strings', () => {
       expect(User.getFilter()).to.be.an('array').and.have.length.above(0);
+    }); // it()
+  }); // describe()
+
+  describe('#getSearchable()', () => {
+    it('should return an array of strings', () => {
+      expect(User.getSearchable()).to.be.an('array').and.have.length.above(0);
     }); // it()
   }); // describe()
 }); // describe()

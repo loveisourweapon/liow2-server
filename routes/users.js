@@ -64,7 +64,7 @@ router.get(
     req.authUser
       .populate('groups', 'name urlName admins')
       .execPopulate()
-      .then(user => res.status(200).json(user))
+      .then(user => res.status(200).send(user.toJSON(true)))
       .catch(err => next(err));
   }
 );

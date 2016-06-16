@@ -53,6 +53,28 @@ UserSchema.virtual('name').get(function () {
 UserSchema.plugin(modelUtils.findOneOrThrow);
 UserSchema.plugin(uniqueValidator, { message: 'Email is already registered' });
 
+UserSchema.pre('validate', function (next) {
+  if (!(this.currentPassword || this.newPassword)) {
+    return next();
+  }
+
+  // Handle change password request
+  this.validatePassword(this.currentPassword)
+    .then(isMatch => {
+      if (!isMatch) {
+        return next(new Error('Incorrect password'));
+      }
+
+      // Set the new password and remove the temp password properties
+      this.password = this.newPassword;
+      delete this.currentPassword;
+      delete this.newPassword;
+
+      next();
+    })
+    .catch(err => next(err));
+});
+
 UserSchema.pre('save', function (next) {
   // Explicitly clear empty password
   if (this.password === '') { this.password = undefined; }
@@ -77,15 +99,18 @@ UserSchema.methods.validatePassword = function (password) {
 
     // Compare the input password with the hashed password
     bcrypt.compare(password, this.password, (err, result) => {
-      if (err) { return reject(result); }
+      if (err) { return reject(err); }
 
       resolve(result);
     });
   });
 };
 
-UserSchema.methods.toJSON = function () {
-  return omit(this.toObject({ virtuals: true }), ['password', 'email', 'facebook', 'superAdmin']);
+UserSchema.methods.toJSON = function (isUser) {
+  var toFilter = ['password', 'facebook'];
+  if (!isUser) toFilter = toFilter.concat('email', 'superAdmin');
+
+  return omit(this.toObject({ virtuals: true }), toFilter);
 };
 
 /**
@@ -105,7 +130,16 @@ UserSchema.statics.findOrCreate = function (newUser) {
 };
 
 UserSchema.statics.getFilter = function () {
-  return ['email', 'password', 'firstName', 'lastName', 'picture', 'coverImage', 'country', 'groups'];
+  return [
+    'email', 'firstName', 'lastName',
+    'password', 'currentPassword', 'newPassword',
+    'picture', 'coverImage',
+    'country', 'groups'
+  ];
+};
+
+UserSchema.statics.getSearchable = function () {
+  return ['email', 'name'];
 };
 
 module.exports = mongoose.model('User', UserSchema);
