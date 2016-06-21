@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "4"
+  - 6
 
 addons:
   apt:
@@ -20,8 +20,8 @@ before_script:
   - cp config.example.js config.js
 
 after_success:
-  - "npm run test-cov"
-  - "npm install -g codeclimate-test-reporter && codeclimate-test-reporter < ./coverage/lcov.info"
+  - npm run test-cov
+  - npm install -g codeclimate-test-reporter && codeclimate-test-reporter < ./coverage/lcov.info
 
 notifications:
   webhooks:
