@@ -88,6 +88,40 @@ function buildQueryConditions(query, model, op) {
 }
 
 /**
+ * Find documents matching conditions
+ *
+ * @param {Model}  model
+ * @param {object} conditions
+ * @param {object} query
+ * @param {string} populate
+ *
+ * @returns {Promise}
+ */
+function findDocuments(model, conditions, query, populate) {
+  let skip = query.skip,
+      limit = query.limit;
+
+  return model.find(conditions)
+    .sort({ _id: 1 })
+    .skip(skip && utils.isNumeric(skip) ? parseFloat(skip) : null)
+    .limit(limit && utils.isNumeric(limit) ? parseFloat(limit) : null)
+    .populate(isString(populate) ? populate : '')
+    .exec();
+}
+
+/**
+ * Count the number of documents returned with conditions
+ *
+ * @param {Model}  model
+ * @param {object} conditions
+ *
+ * @returns {Promise}
+ */
+function countDocuments(model, conditions) {
+  return model.find(conditions).count().exec();
+}
+
+/**
  * Filter fields from document
  *
  * @param {object[]} documents
@@ -119,17 +153,11 @@ function getAll(req, res, next, model, populate) {
   var conditions = buildQueryConditions(req.query, model);
 
   if (req.query.count === 'true') {
-    // Count documents
-    model.find(conditions).count().exec()
+    countDocuments(model, conditions)
       .then(count => res.status(200).send(String(count)))
       .catch(err => next(err));
   } else {
-    // Retrieve documents
-    model.find(conditions)
-      .populate(isString(populate) ? populate : '')
-      .limit(req.query.limit && utils.isNumeric(req.query.limit) ? parseFloat(req.query.limit) : null)
-      .sort({ _id: 1 })
-      .exec()
+    findDocuments(model, conditions, req.query, populate)
       .then(documents => res.status(200).json(filterDocumentFields(documents, req.query)))
       .catch(err => next(err));
   }
