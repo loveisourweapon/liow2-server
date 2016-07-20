@@ -1,3 +1,5 @@
+const isString = require('lodash/isString');
+
 /**
  * New Error class that adds a HTTP status code
  *
@@ -26,7 +28,19 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+/**
+ * Check if value is a valid ObjectId
+ *
+ * @param {*} value
+ *
+ * @returns {boolean}
+ */
+function isValidObjectId(value) {
+  return isString(value) && /^[a-fA-F0-9]{24}$/.test(value);
+}
+
 module.exports = {
   HttpError,
-  isNumeric
+  isNumeric,
+  isValidObjectId,
 };

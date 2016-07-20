@@ -36,7 +36,7 @@ function paramHandler(req, res, next, id, name, model) {
   if (!has(model, 'base') || model.base !== mongoose) {
     return next(new Error('Must be called with a mongoose model'));
   }
-  if (!ObjectId.isValid(id)) {
+  if (!utils.isValidObjectId(id)) {
     return next(new Error(`Invalid ${name}`));
   }
 
@@ -76,7 +76,10 @@ function buildQueryConditions(query, model, op) {
       conditions[op] = map(fields, field => ({
         [field]: (query[field] === 'null') ?
           { $exists: false } :
-          { $in: map(query[field].split(','), value => ObjectId.isValid(value) ? ObjectId(value) : value) }
+          { $in: map(
+            query[field].split(','),
+            value => utils.isValidObjectId(value) ? ObjectId(value) : value
+          ) }
       }));
     }
   }
