@@ -59,29 +59,31 @@ function paramHandler(req, res, next, id, name, model) {
  */
 function buildQueryConditions(query, model, op) {
   op = op || '$and';
-
   var conditions = {};
+
+  // Match schema fields
+  var fields = filter(
+    keys(query),
+    field => has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+  );
+  if (fields.length) {
+    conditions[op] = map(fields, field => ({
+      [field]: (query[field] === 'null') ?
+      { $exists: false } :
+      { $in: map(
+        query[field].split(','),
+        value => utils.isValidObjectId(value) ? ObjectId(value) : value
+      ) }
+    }));
+  }
+
+  // Search if search query included
   if (query.query && isFunction(model.getSearchable)) {
-    // Search if search query included
-    conditions.$or = map(model.getSearchable(), field => {
-      return { [field]: new RegExp(escapeRegExp(query.query), 'i') };
-    });
-  } else {
-    // Match schema fields
-    var fields = filter(
-      keys(query),
-      field => has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+    conditions.$or = (conditions.$or || []).concat(
+      map(model.getSearchable(), field => {
+        return { [field]: new RegExp(escapeRegExp(query.query), 'i') };
+      })
     );
-    if (fields.length) {
-      conditions[op] = map(fields, field => ({
-        [field]: (query[field] === 'null') ?
-          { $exists: false } :
-          { $in: map(
-            query[field].split(','),
-            value => utils.isValidObjectId(value) ? ObjectId(value) : value
-          ) }
-      }));
-    }
   }
 
   return conditions;
