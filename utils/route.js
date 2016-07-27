@@ -101,10 +101,17 @@ function buildQueryConditions(query, model, op) {
  */
 function findDocuments(model, conditions, query, populate) {
   let skip = query.skip,
-      limit = query.limit;
+      limit = query.limit,
+      sort = query.sort,
+      sortDirection = 1;
+
+  if (sort && sort[0] === '-') {
+    sort = sort.substr(1);
+    sortDirection = -1;
+  }
 
   let findQuery = model.find(conditions)
-    .sort({ _id: 1 })
+    .sort({ [sort || '_id']: sortDirection })
     .skip(skip && utils.isNumeric(skip) ? parseFloat(skip) : null)
     .limit(limit && utils.isNumeric(limit) ? parseFloat(limit) : null);
 
