@@ -95,7 +95,7 @@ function buildQueryConditions(query, model, op) {
  * @param {Model}  model
  * @param {object} conditions
  * @param {object} query
- * @param {string} populate
+ * @param {array|string|object} populate
  *
  * @returns {Promise}
  */
@@ -103,12 +103,16 @@ function findDocuments(model, conditions, query, populate) {
   let skip = query.skip,
       limit = query.limit;
 
-  return model.find(conditions)
+  let findQuery = model.find(conditions)
     .sort({ _id: 1 })
     .skip(skip && utils.isNumeric(skip) ? parseFloat(skip) : null)
-    .limit(limit && utils.isNumeric(limit) ? parseFloat(limit) : null)
-    .populate(isString(populate) ? populate : '')
-    .exec();
+    .limit(limit && utils.isNumeric(limit) ? parseFloat(limit) : null);
+
+  if (populate) {
+    [].concat(populate).forEach(populate => findQuery.populate(populate));
+  }
+
+  return findQuery.exec();
 }
 
 /**
