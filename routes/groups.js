@@ -16,7 +16,7 @@ router.param('group', partialRight(routeUtils.paramHandler, Group));
  */
 router.get(
   '/',
-  partialRight(routeUtils.getAll, Group, 'country')
+  partialRight(routeUtils.getAll, Group)
 );
 
 /**

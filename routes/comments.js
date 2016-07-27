@@ -17,7 +17,14 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
  */
 router.get(
   '/',
-  partialRight(routeUtils.getAll, Comment)
+  partialRight(routeUtils.getAll, Comment, [{
+    path: 'user',
+    select: 'firstName lastName name picture'
+  }, {
+    path: 'target.deed',
+    model: 'Deed',
+    select: 'title urlTitle logo'
+  }])
 );
 
 /**

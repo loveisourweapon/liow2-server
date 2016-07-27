@@ -23,7 +23,10 @@ router.param('deed', partialRight(routeUtils.paramHandler, Deed));
  */
 router.get(
   '/',
-  partialRight(routeUtils.getAll, Campaign, 'deeds.deed')
+  partialRight(routeUtils.getAll, Campaign, {
+    path: 'deeds.deed',
+    select: 'title urlTitle logo'
+  })
 );
 
 /**
