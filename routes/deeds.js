@@ -6,7 +6,8 @@ var partialRight = require('lodash/partialRight'),
 var Deed = require('../models/Deed'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment'),
-    Campaign = require('../models/Campaign');
+    Campaign = require('../models/Campaign'),
+    Act = require('../models/Act');
 
 router.param('deed', partialRight(routeUtils.paramHandler, Deed));
 router.param('like', partialRight(routeUtils.paramHandler, Like));
@@ -47,6 +48,40 @@ router.post(
       .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
       .catch(err => next(err));
   }
+);
+
+/**
+ * @api {get} /counters Get deed counters
+ * @apiVersion 1.10.0
+ * @apiName CountDeeds
+ * @apiGroup Deeds
+ * @apiPermission none
+ *
+ * @apiSuccess {object[]} counters       List of deed counters
+ * @apiSuccess {string}   counters.deed  Deed ObjectId
+ * @apiSuccess {number}   counters.count Deed counter
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   [{
+ *     "deed": "55f6c56186b959ac12490e1a",
+ *     "count": 1234
+ *   }, {
+ *     "deed": "55f6c56186b959ac12490e1b",
+ *     "count": 5678
+ *   }]
+ */
+router.get(
+  '/counters',
+  (req, res, next) => Deed.find()
+    .then(deeds =>
+        Promise.all(deeds.map(deed => Act.find({ deed: deed._id }).count().exec()))
+          .then(responses => res.send(responses.map((counter, i) => ({
+            deed: deeds[i]._id,
+            count: counter
+          }))))
+    )
+    .catch(err => next(err))
 );
 
 /**

@@ -68,6 +68,29 @@ describe('/deeds', () => {
     }); // it()
   }); // describe()
 
+  describe('/counters', () => {
+    it('GET with no deeds should return an empty array', () => {
+      return request(app)
+        .get('/deeds/counters')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect(res => expect(res.body).to.be.an('array').and.to.have.lengthOf(0));
+    }); // it()
+
+    it('GET with a deed and no acts should return a count of 0', () => {
+      return new Deed(validDeed).save()
+        .then(deed => request(app)
+          .get('/deeds/counters')
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.be.an('array').and.to.have.lengthOf(1);
+            expect(res.body).to.have.deep.property('0.deed', deed.id);
+            expect(res.body).to.have.deep.property('0.count', 0);
+          }));
+    }); // it()
+  }); // describe()
+
   describe('/:deed', () => {
     var deedId = null;
 
