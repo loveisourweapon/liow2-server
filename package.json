@@ -1,6 +1,6 @@
 {
   "name": "liow2-server",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "The Love is our Weapon Campaign website API server",
   "private": true,
   "main": "app.js",
@@ -30,29 +30,29 @@
     "bcrypt": "0.8.7",
     "body-parser": "1.15.2",
     "cookie-parser": "1.4.3",
-    "cors": "2.7.1",
-    "debug": "2.2.0",
-    "email-templates": "2.4.0",
+    "cors": "2.8.1",
+    "debug": "2.3.2",
+    "email-templates": "2.5.4",
     "express": "4.14.0",
-    "fast-json-patch": "1.0.0",
-    "handlebars": "4.0.5",
-    "jsonwebtoken": "7.1.7",
-    "lodash": "4.14.1",
-    "mailgun-js": "0.7.11",
-    "moment": "2.14.1",
-    "mongoose": "4.5.8",
+    "fast-json-patch": "1.1.1",
+    "handlebars": "4.0.6",
+    "jsonwebtoken": "7.1.9",
+    "lodash": "4.17.2",
+    "mailgun-js": "0.7.13",
+    "moment": "2.16.0",
+    "mongoose": "4.6.8",
     "mongoose-unique-validator": "1.0.2",
     "morgan": "1.7.0",
-    "request": "2.74.0"
+    "request": "2.78.0"
   },
   "devDependencies": {
     "apidoc": "0.16.1",
     "chai": "3.5.0",
-    "chai-as-promised": "5.3.0",
-    "istanbul": "0.4.4",
-    "mocha": "3.0.1",
-    "supertest": "2.0.0",
-    "supertest-as-promised": "3.2.0"
+    "chai-as-promised": "6.0.0",
+    "istanbul": "0.4.5",
+    "mocha": "3.1.2",
+    "supertest": "2.0.1",
+    "supertest-as-promised": "4.0.2"
   },
   "engines": {
     "node": ">=4 <=6"
