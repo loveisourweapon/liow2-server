@@ -191,7 +191,7 @@ router.get(
     }
 
     User.findOne({ email: req.query.email }).exec()
-      .then(user => mailUtils.sendPasswordReset(user))
+      .then(user => mailUtils.sendPasswordReset(user, req.headers.origin))
       .then(() => res.status(204).send())
       .catch(err => (
         err.message === 'Not Found' ?
@@ -250,7 +250,7 @@ router.get(
     }
 
     User.findOne({ email: req.query.email }).exec()
-      .then(user => mailUtils.sendConfirmEmail(user))
+      .then(user => mailUtils.sendConfirmEmail(user, req.headers.origin))
       .then(() => res.status(204).send())
       .catch(err => (
         err.message === 'Not Found' ?

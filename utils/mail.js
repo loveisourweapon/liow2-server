@@ -73,12 +73,14 @@ function getToken(user, type) {
  * Send email for user to confirm email address
  *
  * @param {object} user
+ * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendConfirmEmail(user) {
+function sendConfirmEmail(user, baseUrl) {
   return getToken(user, 'confirm')
     .then(token => renderHtmlTemplate('confirm-email', defaults({
+      baseUrl: baseUrl,
       firstName: user.firstName,
       token: token.token,
       date: moment(token.expires).format('lll')
@@ -95,12 +97,14 @@ function sendConfirmEmail(user) {
  * Send email for user to reset their password
  *
  * @param {object} user
+ * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendPasswordReset(user) {
+function sendPasswordReset(user, baseUrl) {
   return getToken(user, 'reset')
     .then(token => renderHtmlTemplate('password-reset', defaults({
+      baseUrl: baseUrl,
       firstName: user.firstName,
       token: token.token,
       date: moment(token.expires).format('LTS')
