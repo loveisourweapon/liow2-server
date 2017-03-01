@@ -2,6 +2,7 @@ var has = require('lodash/has'),
     mapValues = require('lodash/mapValues'),
     snakeCase = require('lodash/snakeCase'),
     isObject = require('lodash/isObject'),
+    isArray = require('lodash/isArray'),
     config = require('../config'),
     configPrefix = 'liow';
 
@@ -19,7 +20,7 @@ function buildConfig(config, path) {
   return mapValues(config, (value, key) => {
     var newPath = path.concat(snakeCase(key));
 
-    if (isObject(value)) {
+    if (isObject(value) && !isArray(value)) {
       return buildConfig(value, newPath);
     }
 

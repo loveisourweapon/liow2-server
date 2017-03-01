@@ -5,16 +5,16 @@ var configFile = require('../../config'),
 describe('utils/config', () => {
   it('should return config defined in config.js', () => {
     var config = configLoader();
-    expect(config.client_url).to.equal(configFile.client_url);
+    expect(config.client_urls).to.equal(configFile.client_urls);
   }); // it()
 
   it('should override config with correctly named environment variables', () => {
-    var originalValue = process.env.LIOW_CLIENT_URL;
-    process.env.LIOW_CLIENT_URL = 'https://example.com';
+    var originalValue = process.env.LIOW_CLIENT_URLS;
+    process.env.LIOW_CLIENT_URLS = ['https://example.com'];
 
     var config = configLoader();
-    expect(config.client_url).to.equal(process.env.LIOW_CLIENT_URL);
+    expect(config.client_urls).to.equal(process.env.LIOW_CLIENT_URLS);
 
-    process.env.LIOW_CLIENT_URL = originalValue;
+    process.env.LIOW_CLIENT_URLS = originalValue;
   }); // it()
 }); // describe()
