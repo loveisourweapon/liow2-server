@@ -7,9 +7,8 @@ module.exports = {
   // Sign all access tokens, change to something secret
   secret: 'notsosecret', // LIOW_SECRET
 
-  // Client application URL
-  // TODO: how to handle mobile applications?
-  client_url: 'http://localhost:3000', // LIOW_CLIENT_URL
+  // Client application URLs
+  client_urls: ['http://localhost:3000'], // LIOW_CLIENT_URLS
 
   // MongoDB connection
   db: {

@@ -11,7 +11,7 @@ var mailDefaults = {
 };
 
 var templateDefaults = {
-  baseUrl: config.client_url
+  baseUrl: config.client_urls[0]
 };
 
 /**
