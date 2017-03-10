@@ -66,24 +66,11 @@ app.use((req, res, next) => {
   return next(new HttpError('Not Found', 404));
 });
 
-// Error handlers
-// Development error handler, will print stacktrace
+// Error handler
 app.use((err, req, res, next) => {
-  if (app.get('env') !== 'development') {
-    return next(err);
-  }
-
   res.status(err.status || 400).json({
     message: err.message,
     error: err
-  });
-});
-
-// Production error handler, no stacktraces leaked to user
-app.use((err, req, res, next) => { // jshint ignore:line
-  res.status(err.status || 400).json({
-    message: err.message,
-    error: {}
   });
 });
 
