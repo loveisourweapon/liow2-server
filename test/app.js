@@ -11,29 +11,10 @@ describe('Error handler', () => {
       .expect(res => expect(res.body).to.have.property('message', 'Not Found'));
   }); // it()
 
-  describe('development', () => {
-    var appEnv = app.get('env');
-    before(() => { app.set('env', 'development'); });
-    after(() => { app.set('env', appEnv); });
-
-    it('should return a non-empty error object', () => {
-      return request(app)
-        .get('/noroute')
-        .expect(404)
-        .expect(res => expect(res.body.error).to.exist.and.to.be.not.empty);
-    }); // it()
-  }); // describe()
-
-  describe('production', () => {
-    var appEnv = app.get('env');
-    before(() => { app.set('env', 'production'); });
-    after(() => { app.set('env', appEnv); });
-
-    it('should return an empty error object', () => {
-      return request(app)
-        .get('/noroute')
-        .expect(404)
-        .expect(res => expect(res.body.error).to.exist.and.to.be.empty);
-    }); // it()
-  }); // describe()
+  it('should return a non-empty error object', () => {
+    return request(app)
+      .get('/noroute')
+      .expect(404)
+      .expect(res => expect(res.body.error).to.exist.and.to.be.not.empty);
+  }); // it()
 }); // describe()
