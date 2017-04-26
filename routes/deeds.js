@@ -1,4 +1,5 @@
-var partialRight = require('lodash/partialRight'),
+var assign = require('lodash/assign'),
+    partialRight = require('lodash/partialRight'),
     routeUtils = require('../utils/route'),
     express = require('express'),
     router = express.Router();
@@ -73,15 +74,24 @@ router.post(
  */
 router.get(
   '/counters',
-  (req, res, next) => Deed.find()
-    .then(deeds =>
-        Promise.all(deeds.map(deed => Act.find({ deed: deed._id }).count().exec()))
+  (req, res, next) => {
+    let actQuery = {};
+    if (req.query.campaign) {
+      actQuery.campaign = req.query.campaign;
+    } else if (req.query.group) {
+      actQuery.group = req.query.group;
+    }
+
+    return Deed.find()
+      .then(deeds =>
+        Promise.all(deeds.map(deed => Act.find(assign(actQuery, { deed: deed._id })).count().exec()))
           .then(responses => res.send(responses.map((counter, i) => ({
             deed: deeds[i]._id,
             count: counter
           }))))
-    )
-    .catch(err => next(err))
+      )
+      .catch(err => next(err));
+  }
 );
 
 /**
