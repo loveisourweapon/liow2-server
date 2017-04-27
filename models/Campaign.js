@@ -1,4 +1,5 @@
-var modelUtils = require('../utils/models'),
+var HttpError = require('../utils/general').HttpError,
+    modelUtils = require('../utils/models'),
     mongoose = require('mongoose'),
     ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -22,6 +23,22 @@ var CampaignSchema = new mongoose.Schema({
 });
 
 CampaignSchema.plugin(modelUtils.findOneOrThrow);
+
+CampaignSchema.pre('validate', function (next) {
+  if (!this.isNew) {
+    return next();
+  }
+
+  mongoose.models['Campaign']
+    .find({ group: this.group, active: true })
+    .then(campaigns => {
+      if (campaigns.length > 0) {
+        return next(new HttpError('There is already an active campaign for your group'));
+      }
+      next();
+    })
+    .catch(() => next()); // Ignore errors for now
+});
 
 CampaignSchema.statics.getFilter = function () {
   return ['group', 'dateStart', 'dateEnd', 'active', 'deeds'];
