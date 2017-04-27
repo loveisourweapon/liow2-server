@@ -25,7 +25,10 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
  */
 router.get(
   '/',
-  partialRight(routeUtils.getAll, Deed)
+  (req, res, next) => {
+    req.query.enabled = 'true';
+    return routeUtils.getAll(req, res, next, Deed);
+  }
 );
 
 /**
