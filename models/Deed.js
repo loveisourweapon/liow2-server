@@ -10,6 +10,7 @@ var DeedSchema = new mongoose.Schema({
   logo: String,
   videoUrl: String,
   coverImage: String,
+  enabled: { type: Boolean, default: true, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });
