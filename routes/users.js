@@ -38,6 +38,11 @@ router.post(
   (req, res, next) => {
     req.body = routeUtils.filterProperties(req.body, User);
 
+    // Copy currentGroup from groups property
+    if (req.body.groups && req.body.groups.length) {
+      req.body.currentGroup = req.body.groups[0];
+    }
+
     new User(req.body).save()
       .then(user => {
         mailUtils.sendConfirmEmail(user);
