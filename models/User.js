@@ -39,6 +39,7 @@ var UserSchema = new mongoose.Schema({
   groups: {
     type: [{ type: ObjectId, ref: 'Group' }]
   },
+  currentGroup: { type: ObjectId, ref: 'Group' },
   superAdmin: { type: Boolean, default: false, required: true },
   confirmed: { type: Boolean, default: false, required: true },
   created: { type: Date, default: Date.now, required: true },
@@ -134,7 +135,7 @@ UserSchema.statics.getFilter = function () {
     'email', 'firstName', 'lastName',
     'password', 'currentPassword', 'newPassword',
     'picture', 'coverImage',
-    'country', 'groups'
+    'country', 'groups', 'currentGroup',
   ];
 };
 
@@ -146,20 +147,21 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine UserResponse
- * @apiVersion 1.6.0
+ * @apiVersion 1.16.0
  *
- * @apiSuccess {User}     user            User
- * @apiSuccess {string}   user._id        User ObjectId
- * @apiSuccess {string}   user.firstName  User's first name
- * @apiSuccess {string}   user.lastName   User's last name
- * @apiSuccess {string}   user.name       User's full name
- * @apiSuccess {string}   user.picture    User's profile picture URL
- * @apiSuccess {string}   user.coverImage User cover image URL
- * @apiSuccess {string}   user.country    Country ObjectId
- * @apiSuccess {string[]} user.groups     List of group ObjectId's
- * @apiSuccess {boolean}  user.confirmed  Has user confirmed email address
- * @apiSuccess {Date}     user.created    Created timestamp
- * @apiSuccess {Date}     user.modified   Modified timestamp
+ * @apiSuccess {User}     user              User
+ * @apiSuccess {string}   user._id          User ObjectId
+ * @apiSuccess {string}   user.firstName    User's first name
+ * @apiSuccess {string}   user.lastName     User's last name
+ * @apiSuccess {string}   user.name         User's full name
+ * @apiSuccess {string}   user.picture      User's profile picture URL
+ * @apiSuccess {string}   user.coverImage   User cover image URL
+ * @apiSuccess {string}   user.country      Country ObjectId
+ * @apiSuccess {string[]} user.groups       List of group ObjectId's
+ * @apiSuccess {string}   user.currentGroup Group ObjectId
+ * @apiSuccess {boolean}  user.confirmed    Has user confirmed email address
+ * @apiSuccess {Date}     user.created      Created timestamp
+ * @apiSuccess {Date}     user.modified     Modified timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
@@ -172,6 +174,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "country": "55f6c56186b959ac12490e1a",
  *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "currentGroup": "55f6c56186b959ac12490e1b",
  *     "confirmed": true,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
@@ -206,19 +209,20 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine CreateUserResponse
- * @apiVersion 1.7.0
+ * @apiVersion 1.16.0
  *
- * @apiSuccess (201) {User}     user            User
- * @apiSuccess (201) {string}   user._id        User ObjectId
- * @apiSuccess (201) {string}   user.firstName  User's first name
- * @apiSuccess (201) {string}   user.lastName   User's last name
- * @apiSuccess (201) {string}   user.name       User's full name
- * @apiSuccess (201) {string}   user.picture    User's profile picture URL
- * @apiSuccess (201) {string}   user.coverImage User cover image URL
- * @apiSuccess (201) {string}   user.country    Country ObjectId
- * @apiSuccess (201) {string[]} user.groups     List of group ObjectId's
- * @apiSuccess (201) {boolean}  user.confirmed  Has user confirmed email address
- * @apiSuccess (201) {Date}     user.created    Created timestamp
+ * @apiSuccess (201) {User}     user              User
+ * @apiSuccess (201) {string}   user._id          User ObjectId
+ * @apiSuccess (201) {string}   user.firstName    User's first name
+ * @apiSuccess (201) {string}   user.lastName     User's last name
+ * @apiSuccess (201) {string}   user.name         User's full name
+ * @apiSuccess (201) {string}   user.picture      User's profile picture URL
+ * @apiSuccess (201) {string}   user.coverImage   User cover image URL
+ * @apiSuccess (201) {string}   user.country      Country ObjectId
+ * @apiSuccess (201) {string[]} user.groups       List of group ObjectId's
+ * @apiSuccess (201) {string}   user.currentGroup Group ObjectId
+ * @apiSuccess (201) {boolean}  user.confirmed    Has user confirmed email address
+ * @apiSuccess (201) {Date}     user.created      Created timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 201 Created
@@ -231,6 +235,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "country": "55f6c56186b959ac12490e1a",
  *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "currentGroup": "55f6c56186b959ac12490e1b",
  *     "confirmed": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
