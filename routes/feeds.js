@@ -16,7 +16,7 @@ var has = require('lodash/has'),
 router.get(
   '/',
   (req, res, next) => {
-    var conditions = routeUtils.buildQueryConditions(req.query, FeedItem, '$or');
+    var conditions = routeUtils.buildQueryConditions(req.query, FeedItem);
 
     // Handle before/after queries
     if (has(req.query, 'before') || has(req.query, 'after')) {
