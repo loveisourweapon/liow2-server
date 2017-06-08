@@ -98,8 +98,8 @@ describe('utils/routes', () => {
     }); // it()
 
     it('should allow overriding the default $and operator with $or', () => {
-      var query = { code: 'AU' };
-      var conditions = routeUtils.buildQueryConditions(query, Country, '$or');
+      var query = { code: 'AU', operator: '$or' };
+      var conditions = routeUtils.buildQueryConditions(query, Country);
 
       expect(conditions).to.have.property('$or');
     }); // it()

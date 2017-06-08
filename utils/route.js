@@ -53,13 +53,14 @@ function paramHandler(req, res, next, id, name, model) {
  *
  * @param {object} query
  * @param {Model}  model
- * @param {string} [op='$and']
  *
  * @returns {object}
  */
-function buildQueryConditions(query, model, op) {
-  op = op || '$and';
+function buildQueryConditions(query, model) {
   var conditions = {};
+
+  // Set join operator
+  var op = has(query, 'operator') ? query.operator : '$and';
 
   // Match schema fields
   var fields = filter(
