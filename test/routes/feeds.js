@@ -56,9 +56,9 @@ describe('/feeds', () => {
         });
     }); // it()
 
-    it('should combine query params into $or array', () => {
+    it('should combine query params into $or array with operator query', () => {
       return request(app)
-        .get(`/feeds?target.deed=${deed.id}&target.group=${group.id}`)
+        .get(`/feeds?target.deed=${deed.id}&target.group=${group.id}&operator=$or`)
         .expect(200)
         .expect('Content-Type', /json/)
         .expect(res => {
