@@ -14,7 +14,9 @@ var FeedItemSchema = new mongoose.Schema({
   },
   act: { type: ObjectId, ref: 'Act' },
   comment: { type: ObjectId, ref: 'Comment' },
-  created: { type: Date, default: Date.now, required: true }
+  count: { type: String, default: 1, required: true },
+  created: { type: Date, default: Date.now, required: true },
+  modified: { type: Date, default: Date.now, required: true }
 });
 
 /**
@@ -33,7 +35,7 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
 
 /**
  * @apiDefine FeedsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.18.0
  *
  * @apiSuccess {FeedItem[]} feedItems              List of feed items
  * @apiSuccess {string}     feedItems._id          Feed item ObjectId
@@ -45,7 +47,9 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
  * @apiSuccess {string}     feedItems.target.deed  Group ObjectId
  * @apiSuccess {string}     feedItems.act          Act ObjectId
  * @apiSuccess {string}     feedItems.comment      Comment ObjectId
+ * @apiSuccess {number}     feedItems.count        Count for repeated feed items
  * @apiSuccess {Date}       feedItems.created      Created timestamp
+ * @apiSuccess {Date}       feedItems.modified     Modified timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
@@ -58,6 +62,8 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
  *       "deed": "55f6c56186b959ac12490e1d"
  *     },
  *     "act": "55f6c56186b959ac12490e1d",
+ *     "count": 1,
+ *     "created": "2015-09-14T13:56:27.250Z",
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }]
  */

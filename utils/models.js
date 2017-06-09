@@ -6,6 +6,7 @@ var has = require('lodash/has'),
     isObject = require('lodash/isObject'),
     isArray = require('lodash/isArray'),
     isEmpty = require('lodash/isEmpty'),
+    moment = require('moment'),
     HttpError = require('./general').HttpError,
     FeedItem = require('../models/FeedItem');
 
@@ -74,7 +75,28 @@ module.exports = {
         feedItem.target = doc.deed ? { deed: doc.deed } : doc.target;
         feedItem[opts.type.toLowerCase()] = doc._id;
 
-        FeedItem.findOrCreate(feedItem);
+        if (feedItem.act) {
+          // Find and update recent FeedItem for deeds done
+          FeedItem.findOne({
+            user: feedItem.user,
+            'target.deed': feedItem.target.deed,
+            modified: { $gt: moment().subtract(5, 'minutes').toDate() }
+          })
+            .then(foundFeedItem => {
+              if (foundFeedItem) {
+                // Found recent FeedItem, update it
+                foundFeedItem.count++;
+                foundFeedItem.modified = new Date();
+                return foundFeedItem.save();
+              } else {
+                // No recent FeedItem, create it
+                return FeedItem.findOrCreate(feedItem);
+              }
+            });
+        } else {
+          // Always find or create for testimonies
+          FeedItem.findOrCreate(feedItem);
+        }
       }
     });
 
