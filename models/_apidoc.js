@@ -1,4 +1,35 @@
 /**
+ * @apiDefine FeedsResponse
+ * @apiVersion 1.5.0
+ *
+ * @apiSuccess {FeedItem[]} feedItems              List of feed items
+ * @apiSuccess {string}     feedItems._id          Feed item ObjectId
+ * @apiSuccess {string}     feedItems.user         User ObjectId
+ * @apiSuccess {string}     feedItems.group        Group ObjectId
+ * @apiSuccess {string}     feedItems.campaign     Campaign ObjectId
+ * @apiSuccess {object}     feedItems.target       Target object. Only one property will be set
+ * @apiSuccess {string}     feedItems.target.group Group ObjectId
+ * @apiSuccess {string}     feedItems.target.deed  Group ObjectId
+ * @apiSuccess {string}     feedItems.act          Act ObjectId
+ * @apiSuccess {string}     feedItems.comment      Comment ObjectId
+ * @apiSuccess {Date}       feedItems.created      Created timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   [{
+ *     "_id": "55f6c56186b959ac12490e1e",
+ *     "user": "55f6c56186b959ac12490e1a",
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
+ *     "target": {
+ *       "deed": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "act": "55f6c56186b959ac12490e1d",
+ *     "created": "2015-09-14T13:56:27.250Z"
+ *   }]
+ */
+
+/**
  * @apiDefine CreateUserResponse
  * @apiVersion 1.7.0
  *
