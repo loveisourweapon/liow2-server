@@ -39,7 +39,7 @@
     "jsonwebtoken": "7.1.9",
     "lodash": "4.17.13",
     "mailgun-js": "0.7.13",
-    "moment": "2.16.0",
+    "moment": "2.19.3",
     "mongoose": "4.6.8",
     "mongoose-unique-validator": "1.0.2",
     "morgan": "1.7.0",
