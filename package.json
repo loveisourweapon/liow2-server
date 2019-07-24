@@ -42,7 +42,7 @@
     "moment": "2.16.0",
     "mongoose": "4.6.8",
     "mongoose-unique-validator": "1.0.2",
-    "morgan": "1.7.0",
+    "morgan": "1.9.1",
     "request": "2.78.0"
   },
   "devDependencies": {
