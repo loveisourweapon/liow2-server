@@ -27,6 +27,6 @@ services:
   #     - LIOW_DB_URL=mongodb://mongo/liow2-test
 
   mongo:
-    image: mongo:3.6
+    image: mongo:3.2
     ports:
       - "27017:27017"

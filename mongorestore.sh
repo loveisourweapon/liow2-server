@@ -6,4 +6,4 @@ docker run --rm \
   --net=liow2-server_default \
   -v $(pwd)/data:/data-in \
   -w "/" \
-  mongo mongorestore --host=db --gzip --archive=/data-in/liow2.archive.gz --db=liow2
+  mongo:3.2 mongorestore --host=db --gzip --archive=/data-in/liow2.archive.gz --db=liow2
