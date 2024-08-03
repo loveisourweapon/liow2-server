@@ -1,10 +1,8 @@
-FROM mhart/alpine-node:6
-MAINTAINER Ben Booth <bkbooth@gmail.com>
+FROM mhart/alpine-node:8
+MAINTAINER Ben Booth <hey@benbooth.dev>
 
-EXPOSE 3000
-
-# Set Timezone
-ENV TZ Australia/Sydney
+# Add build dependencies for bcrypt
+RUN apk add --no-cache make gcc g++ python
 
 # Setup application directory
 ENV APP_DIR /usr/src/app/
@@ -18,7 +16,13 @@ COPY . ${APP_DIR}
 # Install nodemon and node dependencies
 RUN npm install --quiet -g nodemon && \
     npm install --quiet && \
-    npm cache clear
+    npm cache clear --force
+
+# Set Timezone
+ENV TZ Australia/Sydney
+
+# Open app port
+EXPOSE 3000
 
 # Run with nodemon
 CMD nodemon --exec "npm start"
