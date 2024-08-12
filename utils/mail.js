@@ -139,9 +139,28 @@ function sendGroupSignup(group, user, baseUrl) {
       html: template.html,
     }, mailDefaults)));
 }
+/**
+ * Send email to site admin when the contact form is filled out
+ *
+ * @param {object} contactForm
+ *
+ * @returns {Promise}
+ */
+function sendContactEmail(contactForm) {
+  return renderHtmlTemplate('contact-form', defaults({
+      contactForm: contactForm,
+    }, templateDefaults))
+    .then(template => sendEmail(defaults({
+      to: `Love is our Weapon <${config.emails.admin}>`,
+      subject: `Received a Love is our Weapon message from ${contactForm.name}`,
+      text: template.text,
+      html: template.html,
+    }, mailDefaults)));
+}
 
 module.exports = {
   sendConfirmEmail,
   sendPasswordReset,
   sendGroupSignup,
+  sendContactEmail,
 };

@@ -284,4 +284,19 @@ router.post(
   }
 );
 
+/**
+ * @apiIgnore Don't document this endpoint
+ * @api {post} /auth/contact Send a contact email
+ * 
+ * I don't have a good home for this, so I'm putting it here for now
+ */
+router.post(
+  '/contact',
+  (req, res, next) => {
+    mailUtils.sendContactEmail(req.body)
+      .then(() => res.status(204).send())
+      .catch(err => next(err));
+  }
+)
+
 module.exports = router;

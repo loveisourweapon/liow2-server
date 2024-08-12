@@ -16,15 +16,15 @@
                 </tr>
                 <tr>
                   <td class="content-block">
-                    {{ group.name }} just signed up to run a campaign on Love is our Weapon!
+                    Received a new Love is our Weapon contact form submission.
                   </td>
                 </tr>
                 <tr>
                   <td class="content-block">
-                    <b>Name:</b> {{ group.name }}<br>
-                    <b>URL:</b> <a href="{{ baseUrl }}/g/{{ group.urlName }}">{{ baseUrl }}/g/{{ group.urlName }}</a><br>
-                    <b>Owner:</b> {{ owner.name }}<br>
-                    <b>Email:</b> <a href="mailto:{{ owner.email }}">{{ owner.email }}</a><br>
+                    <b>Your name:</b> {{ contactForm.name }}<br>
+                    <b>Email or phone number:</b> {{ contactForm.emailOrPhone }}<br>
+                    <b>Nature of enquiry:</b> {{ contactForm.natureOfEnquiry }}<br>
+                    <b>Message:</b><br>{{ contactForm.message }}
                   </td>
                 </tr>
                 <tr>
