@@ -1,6 +1,7 @@
 var partialRight = require('lodash/partialRight'),
-    routeUtils = require('../utils/route'),
     router = require('express').Router(),
+    routeUtils = require('../utils/route'),
+    mailUtils = require('../utils/mail'),
     Group = require('../models/Group');
 
 router.param('group', partialRight(routeUtils.paramHandler, Group));
@@ -40,6 +41,7 @@ router.post(
 
     new Group(req.body).save()
       .then(group => {
+        mailUtils.sendGroupSignup(group, req.authUser, req.headers.origin);
         req.authUser.groups.push(group._id);
         return req.authUser.save()
           .then(() => res.status(201).location(`/groups/${group._id}`).json(group));

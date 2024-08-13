@@ -24,10 +24,10 @@
     "node",
     "express"
   ],
-  "author": "Ben Booth <bkbooth@gmail.com>",
+  "author": "Ben Booth <hey@benbooth.dev>",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "0.8.7",
+    "bcrypt": "3.0.8",
     "body-parser": "1.15.2",
     "cookie-parser": "1.4.3",
     "cors": "2.8.1",
@@ -55,7 +55,7 @@
     "supertest-as-promised": "4.0.2"
   },
   "engines": {
-    "node": ">=4 <=6"
+    "node": "8"
   },
   "apidoc": {
     "name": "LIOW API Server",

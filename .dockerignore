@@ -2,5 +2,7 @@
 .gitignore
 .idea
 .atom
+.code
+node_modules
 coverage
 data

@@ -1,0 +1,45 @@
+<body itemscope itemtype="http://schema.org/EmailMessage">
+
+<table class="body-wrap">
+  <tr>
+    <td></td>
+    <td class="container" width="600">
+      <div class="content">
+        <table class="main" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="content-wrap">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="content-block">
+                    <img src="https://loveisourweapon.com/images/logo-navbar.png" class="logo" alt="Love is our Weapon logo">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="content-block">
+                    Received a new Love is our Weapon contact form submission.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="content-block">
+                    <b>Your name:</b> {{ contactForm.name }}<br>
+                    <b>Email or phone number:</b> {{ contactForm.emailOrPhone }}<br>
+                    <b>Nature of enquiry:</b> {{ contactForm.natureOfEnquiry }}<br>
+                    <b>Message:</b><br>{{ contactForm.message }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="content-block">
+                    &mdash; The Love is our Weapon team
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+    <td></td>
+  </tr>
+</table>
+
+</body>

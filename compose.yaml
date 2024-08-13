@@ -1,0 +1,34 @@
+services:
+  server:
+    build: .
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules/
+    environment:
+      - NODE_ENV=development
+      - DEBUG=liow2:*
+
+  test:
+    build: .
+    command: nodemon --exec "npm test"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules/
+    environment:
+      - NODE_ENV=testing
+      - LIOW_DB_URL=mongodb://mongo/liow2-test
+
+  mongo:
+    image: mongo:3.2
+    ports:
+      - "27017:27017"

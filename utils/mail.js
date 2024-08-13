@@ -7,7 +7,7 @@ var config = require('../utils/config')(),
     Token = require('../models/Token');
 
 var mailDefaults = {
-  from: 'Love is our Weapon <support@loveisourweapon.com>'
+  from: `Love is our Weapon <${config.emails.mailer}>`
 };
 
 var templateDefaults = {
@@ -117,7 +117,50 @@ function sendPasswordReset(user, baseUrl) {
     }, mailDefaults)));
 }
 
+/**
+ * Send email to site admin when a new group registers
+ *
+ * @param {object} group
+ * @param {object} user
+ * @param {string} [baseUrl]
+ *
+ * @returns {Promise}
+ */
+function sendGroupSignup(group, user, baseUrl) {
+  return renderHtmlTemplate('group-signup', defaults({
+      group: group,
+      owner: user,
+      baseUrl: baseUrl,
+    }, templateDefaults))
+    .then(template => sendEmail(defaults({
+      to: `Love is our Weapon <${config.emails.admin}>`,
+      subject: `${group.name} joined Love is our Weapon`,
+      text: template.text,
+      html: template.html,
+    }, mailDefaults)));
+}
+/**
+ * Send email to site admin when the contact form is filled out
+ *
+ * @param {object} contactForm
+ *
+ * @returns {Promise}
+ */
+function sendContactEmail(contactForm) {
+  return renderHtmlTemplate('contact-form', defaults({
+      contactForm: contactForm,
+    }, templateDefaults))
+    .then(template => sendEmail(defaults({
+      to: `Love is our Weapon <${config.emails.admin}>`,
+      subject: `Received a Love is our Weapon message from ${contactForm.name}`,
+      text: template.text,
+      html: template.html,
+    }, mailDefaults)));
+}
+
 module.exports = {
   sendConfirmEmail,
-  sendPasswordReset
+  sendPasswordReset,
+  sendGroupSignup,
+  sendContactEmail,
 };
