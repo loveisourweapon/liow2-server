@@ -6,7 +6,7 @@ services:
     links:
       - mongo
     ports:
-      - "3001:3000"
+      - '3001:3000'
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules/
@@ -31,4 +31,4 @@ services:
   mongo:
     image: mongo:3.2
     ports:
-      - "27017:27017"
+      - '27017:27017'
