@@ -56,7 +56,7 @@
     "supertest-as-promised": "4.0.2"
   },
   "engines": {
-    "node": "8"
+    "node": ">=8 <=10"
   },
   "apidoc": {
     "name": "LIOW API Server",
