@@ -12,6 +12,8 @@ var has = require('lodash/has'),
     isFunction = require('lodash/isFunction'),
     isUndefined = require('lodash/isUndefined'),
     escapeRegExp = require('lodash/escapeRegExp'),
+    Filter = require('bad-words'),
+    badWordsFilter = new Filter(),
     jwt = require('jsonwebtoken'),
     config = require('../utils/config')(),
     utils = require('../utils/general'),
@@ -344,6 +346,24 @@ function ensureAdminOf(req, res, next, groupIdPath) {
 }
 
 /**
+ * Middleware to ensure the text in the given field is clean
+ * Uses the bad-words (github.com/web-mech/badwords) library to filter out profanity
+ *
+ * @param {Request}  req
+ * @param {Response} res
+ * @param {function} next
+ * @param {string}   textFieldPath
+ */
+function ensureCleanText(req, res, next, textFieldPath) {
+  var field = get(req.body, textFieldPath);
+  if (badWordsFilter.isProfane(field)) {
+    return next(new HttpError('Please ensure your text is clean', 400));
+  }
+
+  return next();
+}
+
+/**
  * Filter the properties of a body
  *
  * @param {object} body
@@ -400,6 +420,7 @@ module.exports = {
   ensureSuperAdmin,
   ensureSameUser,
   ensureAdminOf,
+  ensureCleanText,
   filterProperties,
   filterJsonPatch,
   getCurrentCampaign

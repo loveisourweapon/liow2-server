@@ -164,6 +164,7 @@ router.get(
 router.post(
   '/:act/comments',
   routeUtils.ensureAuthenticated,
+  partialRight(routeUtils.ensureCleanText, 'content.text'),
   (req, res, next) => {
     req.body = routeUtils.filterProperties(req.body, Comment);
     req.body.user = req.authUser._id;
@@ -195,6 +196,7 @@ router.put(
   '/:act/comments/:comment',
   routeUtils.ensureAuthenticated,
   partialRight(routeUtils.ensureSameUser, 'comment.user'),
+  partialRight(routeUtils.ensureCleanText, 'content.text'),
   partialRight(routeUtils.putByParam, Comment, 'comment')
 );
 
