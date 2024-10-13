@@ -41,7 +41,7 @@ var CommentSchema = new mongoose.Schema({
     required: true,
     validate: [
       { validator: validateHasContent, msg: 'Text or image should be included', type: 'hascontent' },
-      { validator: partialRight(modelUtils.validateIsClean, 'text'), msg: 'Text must use clean language', type: 'isclean' },
+      { validator: partialRight(modelUtils.validateIsClean, 'text'), msg: 'Please use clean language', type: 'isclean' },
     ]
   },
   likes: { type: [{ type: ObjectId, ref: 'Like' }] },

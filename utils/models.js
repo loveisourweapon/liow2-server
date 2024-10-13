@@ -4,9 +4,10 @@ var has = require('lodash/has'),
     pick = require('lodash/pick'),
     omit = require('lodash/omit'),
     some = require('lodash/some'),
-    isObject = require('lodash/isObject'),
     isArray = require('lodash/isArray'),
     isEmpty = require('lodash/isEmpty'),
+    isObject = require('lodash/isObject'),
+    isString = require('lodash/isString'),
     Filter = require('bad-words'),
     badWordsFilter = new Filter(),
     moment = require('moment'),
@@ -118,7 +119,7 @@ module.exports = {
    * @param {string|undefined} path
    */
   validateIsClean(property, path) {
-    var value = path ? get(property, path) : property;
+    var value = isString(path) ? get(property, path) : property;
     return isEmpty(value) || !badWordsFilter.isProfane(value);
   }
 
