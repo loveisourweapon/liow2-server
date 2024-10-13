@@ -1,11 +1,14 @@
 var has = require('lodash/has'),
     hasIn = require('lodash/hasIn'),
+    get = require('lodash/get'),
     pick = require('lodash/pick'),
     omit = require('lodash/omit'),
     some = require('lodash/some'),
     isObject = require('lodash/isObject'),
     isArray = require('lodash/isArray'),
     isEmpty = require('lodash/isEmpty'),
+    Filter = require('bad-words'),
+    badWordsFilter = new Filter(),
     moment = require('moment'),
     HttpError = require('./general').HttpError,
     FeedItem = require('../models/FeedItem');
@@ -105,6 +108,18 @@ module.exports = {
       FeedItem.findOne({ $or: [{ act: doc._id }, { comment: doc._id }] }).exec()
         .then(feedItem => feedItem.remove());
     });
+  },
+
+  /**
+   * Validate that a given text field is clean
+   * Uses the bad-words (github.com/web-mech/badwords) library to filter out profanity
+   *
+   * @param {any} property
+   * @param {string|undefined} path
+   */
+  validateIsClean(property, path) {
+    var value = path ? get(property, path) : property;
+    return isEmpty(value) || !badWordsFilter.isProfane(value);
   }
 
 };

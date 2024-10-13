@@ -43,7 +43,6 @@ router.put(
   '/:comment',
   routeUtils.ensureAuthenticated,
   partialRight(routeUtils.ensureSameUser, 'comment.user'),
-  partialRight(routeUtils.ensureCleanText, 'content.text'),
   partialRight(routeUtils.putByParam, Comment, 'comment')
 );
 
