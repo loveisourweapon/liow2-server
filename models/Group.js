@@ -17,7 +17,11 @@ function validateOwnerIsAdmin(admins) {
 }
 
 var GroupSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
+    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean' ]
+  },
   urlName: { type: String, required: true, unique: true },
   owner: { type: ObjectId, ref: 'User', required: true },
   admins: {
@@ -31,7 +35,10 @@ var GroupSchema = new mongoose.Schema({
   country: { type: ObjectId, ref: 'Country' },
   logo: String,
   coverImage: String,
-  welcomeMessage: String,
+  welcomeMessage: {
+    type: String,
+    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean' ]
+  },
   created: { type: Date, default: Date.now, required: true },
   modified: Date
 });

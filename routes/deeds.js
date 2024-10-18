@@ -27,6 +27,7 @@ router.get(
   '/',
   (req, res, next) => {
     req.query.enabled = 'true';
+    req.query.sort = req.query.sort || 'order';
     return routeUtils.getAll(req, res, next, Deed);
   }
 );

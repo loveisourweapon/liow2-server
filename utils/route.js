@@ -332,6 +332,11 @@ function ensureSameUser(req, res, next, userIdPath) {
  * @param {string}   groupIdPath
  */
 function ensureAdminOf(req, res, next, groupIdPath) {
+  // Super admin should be considered admin of all groups
+  if (req.authUser.superAdmin) {
+    return next();
+  }
+
   Group.findById(get(req, groupIdPath)).exec()
     .then(group => {
       if (hasIn(req, 'authUser._id') && some(group.admins, admin => admin.equals(req.authUser._id))) {

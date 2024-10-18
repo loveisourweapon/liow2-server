@@ -27,6 +27,7 @@
   "author": "Ben Booth <hey@benbooth.dev>",
   "license": "ISC",
   "dependencies": {
+    "bad-words": "1.6.5",
     "bcrypt": "3.0.8",
     "body-parser": "1.15.2",
     "cookie-parser": "1.4.3",
@@ -56,7 +57,7 @@
     "supertest-as-promised": "4.0.2"
   },
   "engines": {
-    "node": "8"
+    "node": ">=8 <=10"
   },
   "apidoc": {
     "name": "LIOW API Server",
