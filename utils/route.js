@@ -315,6 +315,11 @@ function ensureSuperAdmin(req, res, next) {
  * @param {string}   userIdPath
  */
 function ensureSameUser(req, res, next, userIdPath) {
+  // Super admin can bypass ownership checks
+  if (req.authUser.superAdmin) {
+    return next();
+  }
+
   if (get(req, userIdPath).equals(req.authUser._id)) {
     return next();
   } else {
@@ -332,7 +337,7 @@ function ensureSameUser(req, res, next, userIdPath) {
  * @param {string}   groupIdPath
  */
 function ensureAdminOf(req, res, next, groupIdPath) {
-  // Super admin should be considered admin of all groups
+  // Super admin can bypass admin checks
   if (req.authUser.superAdmin) {
     return next();
   }
