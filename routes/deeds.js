@@ -7,7 +7,6 @@ var assign = require('lodash/assign'),
 var Deed = require('../models/Deed'),
     Like = require('../models/Like'),
     Comment = require('../models/Comment'),
-    Campaign = require('../models/Campaign'),
     Act = require('../models/Act');
 
 router.param('deed', partialRight(routeUtils.paramHandler, Deed));
@@ -16,7 +15,7 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /deeds List deeds
- * @apiVersion 1.0.0
+ * @apiVersion 1.20.0
  * @apiName GetDeeds
  * @apiGroup Deeds
  * @apiPermission none
@@ -34,7 +33,7 @@ router.get(
 
 /**
  * @api {post} /deeds Create deed
- * @apiVersion 1.3.0
+ * @apiVersion 1.20.0
  * @apiName PostDeeds
  * @apiGroup Deeds
  * @apiPermission superAdmin
@@ -100,7 +99,7 @@ router.get(
 
 /**
  * @api {get} /deeds/:deed Get deed
- * @apiVersion 1.0.0
+ * @apiVersion 1.20.0
  * @apiName GetDeed
  * @apiGroup Deeds
  * @apiPermission none
@@ -116,7 +115,7 @@ router.get(
 
 /**
  * @api {put} /deeds/:deed Update deed
- * @apiVersion 1.3.0
+ * @apiVersion 1.20.0
  * @apiName PutDeed
  * @apiGroup Deeds
  * @apiPermission superAdmin
