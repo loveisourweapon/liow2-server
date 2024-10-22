@@ -1,8 +1,8 @@
-var partialRight = require('lodash/partialRight'),
-    isString = require('lodash/isString'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var partialRight = require('lodash/partialRight');
+var isString = require('lodash/isString');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 /**
  * Ensure text or image field is included
@@ -24,30 +24,38 @@ var CommentSchema = new mongoose.Schema({
       group: { type: ObjectId, ref: 'Group' },
       deed: { type: ObjectId, ref: 'Deed' },
       act: { type: ObjectId, ref: 'Act' },
-      comment: { type: ObjectId, ref: 'Comment' }
+      comment: { type: ObjectId, ref: 'Comment' },
     },
     required: true,
     validate: [
       partialRight(modelUtils.oneOf, ['group', 'deed', 'act', 'comment']),
       'One target should be set',
-      'onetarget'
-    ]
+      'onetarget',
+    ],
   },
   content: {
     type: {
       text: String,
-      image: String
+      image: String,
     },
     required: true,
     validate: [
-      { validator: validateHasContent, msg: 'Text or image should be included', type: 'hascontent' },
-      { validator: partialRight(modelUtils.validateIsClean, 'text'), msg: 'Please use clean language', type: 'isclean' },
-    ]
+      {
+        validator: validateHasContent,
+        msg: 'Text or image should be included',
+        type: 'hascontent',
+      },
+      {
+        validator: partialRight(modelUtils.validateIsClean, 'text'),
+        msg: 'Please use clean language',
+        type: 'isclean',
+      },
+    ],
   },
   likes: { type: [{ type: ObjectId, ref: 'Like' }] },
   comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
   created: { type: Date, default: Date.now, required: true },
-  modified: Date
+  modified: Date,
 });
 
 CommentSchema.plugin(modelUtils.findOneOrThrow);

@@ -1,14 +1,14 @@
-var crypto = require('crypto'),
-    moment = require('moment'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var crypto = require('crypto');
+var moment = require('moment');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var TokenSchema = new mongoose.Schema({
   type: { type: String, required: true },
   token: { type: String, index: { unique: true }, required: true },
   expires: { type: Date, required: true },
-  user: { type: ObjectId, ref: 'User', required: true }
+  user: { type: ObjectId, ref: 'User', required: true },
 });
 
 TokenSchema.plugin(modelUtils.findOneOrThrow);
@@ -23,7 +23,9 @@ TokenSchema.pre('validate', function (next) {
 
   // Generate a random string of bytes for the token
   crypto.randomBytes(12, (err, buf) => {
-    if (err) { return next(err); }
+    if (err) {
+      return next(err);
+    }
 
     this.token = buf.toString('hex');
     next();

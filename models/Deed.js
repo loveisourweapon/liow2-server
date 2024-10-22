@@ -1,7 +1,7 @@
-var kebabCase = require('lodash/kebabCase'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    uniqueValidator = require('mongoose-unique-validator');
+var kebabCase = require('lodash/kebabCase');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 
 var DeedSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -13,7 +13,7 @@ var DeedSchema = new mongoose.Schema({
   order: { type: Number, default: 0, required: true },
   enabled: { type: Boolean, default: true, required: true },
   created: { type: Date, default: Date.now, required: true },
-  modified: Date
+  modified: Date,
 });
 
 DeedSchema.plugin(modelUtils.findOneOrThrow);
@@ -45,6 +45,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  * @apiSuccess {string} deeds.logo       Deed logo URL
  * @apiSuccess {string} deeds.videoUrl   Deed video URL
  * @apiSuccess {string} deeds.coverImage Deed cover image URL
+ * @apiSuccess {number} deeds.order      Deed listing order
  * @apiSuccess {Date}   deeds.created    Created timestamp
  * @apiSuccess {Date}   deeds.modified   Modified timestamp
  *
@@ -74,6 +75,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  * @apiSuccess {string} deed.logo       Deed logo URL
  * @apiSuccess {string} deed.videoUrl   Deed video URL
  * @apiSuccess {string} deed.coverImage Deed cover image URL
+ * @apiSuccess {number} deed.order      Deed listing order
  * @apiSuccess {Date}   deed.created    Created timestamp
  * @apiSuccess {Date}   deed.modified   Modified timestamp
  *
@@ -122,6 +124,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  * @apiSuccess (201) {string} deed.logo       Deed logo URL
  * @apiSuccess (201) {string} deed.videoUrl   Deed video URL
  * @apiSuccess (201) {string} deed.coverImage Deed cover image URL
+ * @apiSuccess (201) {number} deed.order      Deed listing order
  * @apiSuccess (201) {Date}   deed.created    Created timestamp
  *
  * @apiSuccessExample {json} Response

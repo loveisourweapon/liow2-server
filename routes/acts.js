@@ -1,11 +1,10 @@
-var partialRight = require('lodash/partialRight'),
-    router = require('express').Router(),
-    routeUtils = require('../utils/route');
+var partialRight = require('lodash/partialRight');
+var router = require('express').Router();
+var routeUtils = require('../utils/route');
 
-var Act = require('../models/Act'),
-    Like = require('../models/Like'),
-    Comment = require('../models/Comment'),
-    Campaign = require('../models/Campaign');
+var Act = require('../models/Act');
+var Like = require('../models/Like');
+var Comment = require('../models/Comment');
 
 router.param('act', partialRight(routeUtils.paramHandler, Act));
 router.param('like', partialRight(routeUtils.paramHandler, Like));
@@ -20,10 +19,7 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
  *
  * @apiUse ActsResponse
  */
-router.get(
-  '/',
-  partialRight(routeUtils.getAll, Act)
-);
+router.get('/', partialRight(routeUtils.getAll, Act));
 
 /**
  * @api {post} /acts Create act
@@ -35,21 +31,17 @@ router.get(
  * @apiUse ActRequestBody
  * @apiUse CreateActResponse
  */
-router.post(
-  '/',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Act);
-    req.body.user = req.authUser._id;
+router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Act);
+  req.body.user = req.authUser._id;
 
-    routeUtils.getCurrentCampaign(req)
-      .then(req => {
-        new Act(req.body).save()
-          .then(act => res.status(201).location(`/acts/${act._id}`).json(act))
-          .catch(err => next(err));
-      });
-  }
-);
+  routeUtils.getCurrentCampaign(req).then((req) => {
+    new Act(req.body)
+      .save()
+      .then((act) => res.status(201).location(`/acts/${act._id}`).json(act))
+      .catch((err) => next(err));
+  });
+});
 
 /**
  * @api {delete} /acts/:act Remove act
@@ -80,10 +72,7 @@ router.delete(
  *
  * @apiUse LikesResponse
  */
-router.get(
-  '/:act/likes',
-  partialRight(routeUtils.getByTarget, Like, 'act')
-);
+router.get('/:act/likes', partialRight(routeUtils.getByTarget, Like, 'act'));
 
 /**
  * @api {post} /acts/:act/likes Create act like
@@ -97,22 +86,18 @@ router.get(
  * @apiUse LikeRequestBody
  * @apiUse CreateLikeResponse
  */
-router.post(
-  '/:act/likes',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Like);
-    req.body.user = req.authUser._id;
-    req.body.target = { act: req.act._id };
+router.post('/:act/likes', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Like);
+  req.body.user = req.authUser._id;
+  req.body.target = { act: req.act._id };
 
-    routeUtils.getCurrentCampaign(req)
-      .then(req => {
-        new Like(req.body).save()
-          .then(like => res.status(201).location(`/acts/${req.act._id}/likes/${like._id}`).json(like))
-          .catch(err => next(err));
-      });
-  }
-);
+  routeUtils.getCurrentCampaign(req).then((req) => {
+    new Like(req.body)
+      .save()
+      .then((like) => res.status(201).location(`/acts/${req.act._id}/likes/${like._id}`).json(like))
+      .catch((err) => next(err));
+  });
+});
 
 /**
  * @api {delete} /acts/:act/likes/:like Remove act like
@@ -144,10 +129,7 @@ router.delete(
  *
  * @apiUse CommentsResponse
  */
-router.get(
-  '/:act/comments',
-  partialRight(routeUtils.getByTarget, Comment, 'act')
-);
+router.get('/:act/comments', partialRight(routeUtils.getByTarget, Comment, 'act'));
 
 /**
  * @api {post} /acts/:act/comments Create act comment
@@ -161,22 +143,20 @@ router.get(
  * @apiUse CommentRequestBody
  * @apiUse CreateCommentResponse
  */
-router.post(
-  '/:act/comments',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Comment);
-    req.body.user = req.authUser._id;
-    req.body.target = { act: req.act._id };
+router.post('/:act/comments', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Comment);
+  req.body.user = req.authUser._id;
+  req.body.target = { act: req.act._id };
 
-    routeUtils.getCurrentCampaign(req)
-      .then(req => {
-        new Comment(req.body).save()
-          .then(comment => res.status(201).location(`/acts/${req.act._id}/comments/${comment._id}`).json(comment))
-          .catch(err => next(err));
-      });
-  }
-);
+  routeUtils.getCurrentCampaign(req).then((req) => {
+    new Comment(req.body)
+      .save()
+      .then((comment) =>
+        res.status(201).location(`/acts/${req.act._id}/comments/${comment._id}`).json(comment)
+      )
+      .catch((err) => next(err));
+  });
+});
 
 /**
  * @api {put} /acts/:act/comments/:comment Update act comment

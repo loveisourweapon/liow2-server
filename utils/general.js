@@ -1,4 +1,4 @@
-const isString = require('lodash/isString');
+var isString = require('lodash/isString');
 
 /**
  * New Error class that adds a HTTP status code
@@ -12,7 +12,7 @@ function HttpError(message, status) {
   this.name = 'HttpError';
   this.message = message || 'Error';
   this.status = status || 400;
-  this.stack = (new Error()).stack;
+  this.stack = new Error().stack;
 }
 HttpError.prototype = Object.create(Error.prototype);
 HttpError.prototype.constructor = HttpError;

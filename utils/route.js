@@ -1,26 +1,27 @@
-var has = require('lodash/has'),
-    hasIn = require('lodash/hasIn'),
-    map = require('lodash/map'),
-    keys = require('lodash/keys'),
-    get = require('lodash/get'),
-    pick = require('lodash/pick'),
-    some = require('lodash/some'),
-    filter = require('lodash/filter'),
-    assign = require('lodash/assign'),
-    partialRight = require('lodash/partialRight'),
-    isString = require('lodash/isString'),
-    isFunction = require('lodash/isFunction'),
-    isUndefined = require('lodash/isUndefined'),
-    escapeRegExp = require('lodash/escapeRegExp'),
-    jwt = require('jsonwebtoken'),
-    config = require('../utils/config')(),
-    utils = require('../utils/general'),
-    HttpError = utils.HttpError,
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Types.ObjectId,
-    User = require('../models/User'),
-    Group = require('../models/Group'),
-    Campaign = require('../models/Campaign');
+var has = require('lodash/has');
+var hasIn = require('lodash/hasIn');
+var map = require('lodash/map');
+var keys = require('lodash/keys');
+var get = require('lodash/get');
+var pick = require('lodash/pick');
+var some = require('lodash/some');
+var filter = require('lodash/filter');
+var assign = require('lodash/assign');
+var partialRight = require('lodash/partialRight');
+var isString = require('lodash/isString');
+var isFunction = require('lodash/isFunction');
+var isUndefined = require('lodash/isUndefined');
+var escapeRegExp = require('lodash/escapeRegExp');
+var jwt = require('jsonwebtoken');
+var config = require('../utils/config')();
+var utils = require('../utils/general');
+var HttpError = utils.HttpError;
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
+
+var User = require('../models/User');
+var Group = require('../models/Group');
+var Campaign = require('../models/Campaign');
 
 /**
  * Find a document from a mongoose model and attach it to the request
@@ -40,12 +41,14 @@ function paramHandler(req, res, next, id, name, model) {
     return next(new Error(`Invalid ${name}`));
   }
 
-  model.findById(id).exec()
-    .then(document => {
+  model
+    .findById(id)
+    .exec()
+    .then((document) => {
       req[name] = document;
       next();
     })
-    .catch(err => next(err));
+    .catch((err) => next(err));
 }
 
 /**
@@ -63,25 +66,26 @@ function buildQueryConditions(query, model) {
   var op = has(query, 'operator') ? query.operator : '$and';
 
   // Match schema fields
-  var fields = filter(
-    keys(query),
-    field => has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
+  var fields = filter(keys(query), (field) =>
+    has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
   );
   if (fields.length) {
-    conditions[op] = map(fields, field => ({
-      [field]: (query[field] === 'null') ?
-      { $exists: false } :
-      { $in: map(
-        query[field].split(','),
-        value => utils.isValidObjectId(value) ? ObjectId(value) : value
-      ) }
+    conditions[op] = map(fields, (field) => ({
+      [field]:
+        query[field] === 'null'
+          ? { $exists: false }
+          : {
+              $in: map(query[field].split(','), (value) =>
+                utils.isValidObjectId(value) ? ObjectId(value) : value
+              ),
+            },
     }));
   }
 
   // Search if search query included
   if (query.query && isFunction(model.getSearchable)) {
     conditions.$or = (conditions.$or || []).concat(
-      map(model.getSearchable(), field => {
+      map(model.getSearchable(), (field) => {
         return { [field]: new RegExp(escapeRegExp(query.query), 'i') };
       })
     );
@@ -102,22 +106,23 @@ function buildQueryConditions(query, model) {
  */
 function findDocuments(model, conditions, query, populate) {
   let skip = query.skip,
-      limit = query.limit,
-      sort = query.sort,
-      sortDirection = 1;
+    limit = query.limit,
+    sort = query.sort,
+    sortDirection = 1;
 
   if (sort && sort[0] === '-') {
     sort = sort.substr(1);
     sortDirection = -1;
   }
 
-  let findQuery = model.find(conditions)
+  let findQuery = model
+    .find(conditions)
     .sort({ [sort || '_id']: sortDirection })
     .skip(skip && utils.isNumeric(skip) ? parseFloat(skip) : null)
     .limit(limit && utils.isNumeric(limit) ? parseFloat(limit) : null);
 
   if (populate) {
-    [].concat(populate).forEach(populate => findQuery.populate(populate));
+    [].concat(populate).forEach((populate) => findQuery.populate(populate));
   }
 
   return findQuery.exec();
@@ -144,10 +149,9 @@ function countDocuments(model, conditions) {
  * @returns {object[]}
  */
 function filterDocumentFields(documents, query) {
-  return isString(query.fields) ? map(
-    documents,
-    partialRight(pick, query.fields.split(','))
-  ) : documents;
+  return isString(query.fields)
+    ? map(documents, partialRight(pick, query.fields.split(',')))
+    : documents;
 }
 
 /**
@@ -168,12 +172,12 @@ function getAll(req, res, next, model, populate) {
 
   if (req.query.count === 'true') {
     countDocuments(model, conditions)
-      .then(count => res.status(200).send(String(count)))
-      .catch(err => next(err));
+      .then((count) => res.status(200).send(String(count)))
+      .catch((err) => next(err));
   } else {
     findDocuments(model, conditions, req.query, populate)
-      .then(documents => res.status(200).json(filterDocumentFields(documents, req.query)))
-      .catch(err => next(err));
+      .then((documents) => res.status(200).json(filterDocumentFields(documents, req.query)))
+      .catch((err) => next(err));
   }
 }
 
@@ -217,9 +221,11 @@ function getByTarget(req, res, next, model, target) {
     return next(new Error(`Invalid target ${target}`));
   }
 
-  model.find({ [`target.${target}`]: req[target]._id }).exec()
-    .then(documents => res.status(200).json(documents))
-    .catch(err => next(err));
+  model
+    .find({ [`target.${target}`]: req[target]._id })
+    .exec()
+    .then((documents) => res.status(200).json(documents))
+    .catch((err) => next(err));
 }
 
 /**
@@ -242,9 +248,10 @@ function putByParam(req, res, next, model, param) {
 
   req.body = filterProperties(req.body, model);
   req.body.modified = new Date();
-  assign(req[param], req.body).save()
-    .then(document => res.status(200).json(document))
-    .catch(err => next(err));
+  assign(req[param], req.body)
+    .save()
+    .then((document) => res.status(200).json(document))
+    .catch((err) => next(err));
 }
 
 /**
@@ -261,9 +268,10 @@ function deleteByParam(req, res, next, param) {
     return next(new Error(`Invalid param ${param}`));
   }
 
-  req[param].remove()
+  req[param]
+    .remove()
     .then(() => res.status(204).send())
-    .catch(err => next(err));
+    .catch((err) => next(err));
 }
 
 /**
@@ -280,14 +288,17 @@ function ensureAuthenticated(req, res, next) {
 
   var token = req.headers.authorization.split(' ')[1];
   jwt.verify(token, config.secret, (err, userId) => {
-    if (err) { return next(err); }
+    if (err) {
+      return next(err);
+    }
 
-    User.findById(userId).exec()
-      .then(user => {
+    User.findById(userId)
+      .exec()
+      .then((user) => {
         req.authUser = user;
         next();
       })
-      .catch(err => next(err));
+      .catch((err) => next(err));
   });
 }
 
@@ -315,6 +326,11 @@ function ensureSuperAdmin(req, res, next) {
  * @param {string}   userIdPath
  */
 function ensureSameUser(req, res, next, userIdPath) {
+  // Super admin can bypass ownership checks
+  if (req.authUser.superAdmin) {
+    return next();
+  }
+
   if (get(req, userIdPath).equals(req.authUser._id)) {
     return next();
   } else {
@@ -332,14 +348,18 @@ function ensureSameUser(req, res, next, userIdPath) {
  * @param {string}   groupIdPath
  */
 function ensureAdminOf(req, res, next, groupIdPath) {
-  // Super admin should be considered admin of all groups
+  // Super admin can bypass admin checks
   if (req.authUser.superAdmin) {
     return next();
   }
 
-  Group.findById(get(req, groupIdPath)).exec()
-    .then(group => {
-      if (hasIn(req, 'authUser._id') && some(group.admins, admin => admin.equals(req.authUser._id))) {
+  Group.findById(get(req, groupIdPath))
+    .exec()
+    .then((group) => {
+      if (
+        hasIn(req, 'authUser._id') &&
+        some(group.admins, (admin) => admin.equals(req.authUser._id))
+      ) {
         return next();
       } else {
         return next(new HttpError('Must be an admin of group', 403));
@@ -369,10 +389,11 @@ function filterProperties(body, model) {
  * @returns {array}
  */
 function filterJsonPatch(operations, model) {
-  return isFunction(model.getFilter) ? filter(
-    operations,
-    operation => some(model.getFilter(), property => ~operation.path.indexOf(`/${property}`))
-  ) : operations;
+  return isFunction(model.getFilter)
+    ? filter(operations, (operation) =>
+        some(model.getFilter(), (property) => ~operation.path.indexOf(`/${property}`))
+      )
+    : operations;
 }
 
 /**
@@ -387,8 +408,9 @@ function getCurrentCampaign(req) {
     return Promise.resolve(req);
   }
 
-  return Campaign.findOne({ group: req.body.group, active: true }, '_id').exec()
-    .then(campaign => (req.body.campaign = campaign._id))
+  return Campaign.findOne({ group: req.body.group, active: true }, '_id')
+    .exec()
+    .then((campaign) => (req.body.campaign = campaign._id))
     .catch(() => null)
     .then(() => req);
 }
@@ -407,7 +429,7 @@ module.exports = {
   ensureAdminOf,
   filterProperties,
   filterJsonPatch,
-  getCurrentCampaign
+  getCurrentCampaign,
 };
 
 /**

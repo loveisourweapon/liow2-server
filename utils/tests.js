@@ -1,16 +1,16 @@
-var merge = require('lodash/merge'),
-    jwt = require('jsonwebtoken'),
-    config = require('../utils/config')(),
-    mongoose = require('mongoose'),
-    User = require('../models/User');
+var merge = require('lodash/merge');
+var jwt = require('jsonwebtoken');
+var config = require('../utils/config')();
+var mongoose = require('mongoose');
 
-// Default login credentials
-var credentials = {
+var User = require('../models/User');
+
+var DEFAULT_CREDENTIALS = {
   email: 'test@example.com',
   firstName: 'Test',
   lastName: 'User',
   password: 'password',
-  facebook: { id: 0 }
+  facebook: { id: 0 },
 };
 
 /**
@@ -63,8 +63,8 @@ function removeUsers() {
  */
 function getApiToken(extraCredentials) {
   return dbConnect()
-    .then(() => saveUser(merge({}, extraCredentials || {}, credentials)))
-    .then(user => jwt.sign(user.id, config.secret));
+    .then(() => saveUser(merge({}, extraCredentials || {}, DEFAULT_CREDENTIALS)))
+    .then((user) => jwt.sign(user.id, config.secret));
 }
 
 /**
@@ -77,15 +77,17 @@ function catchify(test, done) {
   try {
     test();
     done();
-  } catch (e) { done(e); }
+  } catch (e) {
+    done(e);
+  }
 }
 
 module.exports = {
-  credentials,
+  credentials: DEFAULT_CREDENTIALS,
   dbConnect,
   dbDisconnect,
   saveUser,
   removeUsers,
   getApiToken,
-  catchify
+  catchify,
 };

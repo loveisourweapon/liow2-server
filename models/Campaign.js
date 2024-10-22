@@ -1,11 +1,11 @@
-var HttpError = require('../utils/general').HttpError,
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var HttpError = require('../utils/general').HttpError;
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var DeedPublishSchema = new mongoose.Schema({
   deed: { type: ObjectId, ref: 'Deed', required: true },
-  published: { type: Boolean, default: false, required: true }
+  published: { type: Boolean, default: false, required: true },
 });
 
 var CampaignSchema = new mongoose.Schema({
@@ -16,10 +16,10 @@ var CampaignSchema = new mongoose.Schema({
   deeds: {
     type: [DeedPublishSchema],
     required: true,
-    validate: [modelUtils.hasOne, 'At least one deed is required', 'hasdeed']
+    validate: [modelUtils.hasOne, 'At least one deed is required', 'hasdeed'],
   },
   created: { type: Date, default: Date.now, required: true },
-  modified: Date
+  modified: Date,
 });
 
 CampaignSchema.plugin(modelUtils.findOneOrThrow);
@@ -31,7 +31,7 @@ CampaignSchema.pre('validate', function (next) {
 
   mongoose.models['Campaign']
     .find({ group: this.group, active: true })
-    .then(campaigns => {
+    .then((campaigns) => {
       if (campaigns.length > 0) {
         return next(new HttpError('There is already an active campaign for your group'));
       }

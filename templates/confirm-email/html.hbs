@@ -1,86 +1,106 @@
-<body itemscope itemtype="http://schema.org/EmailMessage">
+<body itemscope itemtype='http://schema.org/EmailMessage'>
 
-<table class="body-wrap">
-  <tr>
-    <td></td>
-    <td class="container" width="600">
-      <div class="content">
-        <table class="main" width="100%" cellpadding="0" cellspacing="0" itemprop="action" itemscope itemtype="http://schema.org/ConfirmAction">
-          <tr>
-            <td class="content-wrap">
-              <meta itemprop="name" content="Confirm Email"/>
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td class="content-block">
-                    <img src="https://loveisourweapon.com/images/logo-navbar.png" class="logo" alt="Love is our Weapon logo">
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    Hi {{ firstName }},
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    Welcome to the Love is our Weapon campaign!
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    You are receiving this because you (or someone else)
-                    registered for an account at
-                    <a href="https://loveisourweapon.com">loveisourweapon.com</a>.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    Please click the button below, or copy and paste this link
-                    (<a href="{{ baseUrl }}/confirm/{{ token }}">{{ baseUrl }}/confirm/{{ token }}</a>)
-                    into your web browser to complete the process:
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block" itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler">
-                    <a href="{{ baseUrl }}/confirm/{{ token }}" class="btn-primary" itemprop="url">
-                      Confirm email address
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    If you received this in error, you can safely ignore it.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    This link will remain active for three days (until {{ date }})
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    You can reply to this message, or email
-                    <a href="mailto:support@loveisourweapon.com">support@loveisourweapon.com</a>
-                    if you have any questions.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    We look forward to changing the world with you!
-                  </td>
-                </tr>
-                <tr>
-                  <td class="content-block">
-                    &mdash; The Love is our Weapon team
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </td>
-    <td></td>
-  </tr>
-</table>
+  <table class='body-wrap'>
+    <tr>
+      <td></td>
+      <td class='container' width='600'>
+        <div class='content'>
+          <table
+            class='main'
+            width='100%'
+            cellpadding='0'
+            cellspacing='0'
+            itemprop='action'
+            itemscope
+            itemtype='http://schema.org/ConfirmAction'
+          >
+            <tr>
+              <td class='content-wrap'>
+                <meta itemprop='name' content='Confirm Email' />
+                <table width='100%' cellpadding='0' cellspacing='0'>
+                  <tr>
+                    <td class='content-block'>
+                      <img
+                        src='https://loveisourweapon.com/images/logo-navbar.png'
+                        class='logo'
+                        alt='Love is our Weapon logo'
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      Hi
+                      {{firstName}},
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      Welcome to the Love is our Weapon campaign!
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      You are receiving this because you (or someone else) registered for an account
+                      at
+                      <a href='https://loveisourweapon.com'>loveisourweapon.com</a>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      Please click the button below, or copy and paste this link (<a
+                        href='{{baseUrl}}/confirm/{{token}}'
+                      >{{baseUrl}}/confirm/{{token}}</a>) into your web browser to complete the
+                      process:
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      class='content-block'
+                      itemprop='handler'
+                      itemscope
+                      itemtype='http://schema.org/HttpActionHandler'
+                    >
+                      <a href='{{baseUrl}}/confirm/{{token}}' class='btn-primary' itemprop='url'>
+                        Confirm email address
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      If you received this in error, you can safely ignore it.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      This link will remain active for three days (until
+                      {{date}})
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      You can reply to this message, or email
+                      <a href='mailto:support@loveisourweapon.com'>support@loveisourweapon.com</a>
+                      if you have any questions.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      We look forward to changing the world with you!
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      &mdash; The Love is our Weapon team
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td></td>
+    </tr>
+  </table>
 
 </body>

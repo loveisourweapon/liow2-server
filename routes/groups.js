@@ -1,8 +1,9 @@
-var partialRight = require('lodash/partialRight'),
-    router = require('express').Router(),
-    routeUtils = require('../utils/route'),
-    mailUtils = require('../utils/mail'),
-    Group = require('../models/Group');
+var partialRight = require('lodash/partialRight');
+var router = require('express').Router();
+var routeUtils = require('../utils/route');
+var mailUtils = require('../utils/mail');
+
+var Group = require('../models/Group');
 
 router.param('group', partialRight(routeUtils.paramHandler, Group));
 
@@ -15,10 +16,7 @@ router.param('group', partialRight(routeUtils.paramHandler, Group));
  *
  * @apiUse GroupsResponse
  */
-router.get(
-  '/',
-  partialRight(routeUtils.getAll, Group)
-);
+router.get('/', partialRight(routeUtils.getAll, Group));
 
 /**
  * @api {post} /groups Create group
@@ -30,25 +28,23 @@ router.get(
  * @apiUse GroupRequestBody
  * @apiUse CreateGroupResponse
  */
-router.post(
-  '/',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Group);
-    req.body.owner = req.authUser._id;
-    req.body.admins = [req.authUser._id];
-    req.body.country = req.authUser.country;
+router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Group);
+  req.body.owner = req.authUser._id;
+  req.body.admins = [req.authUser._id];
+  req.body.country = req.authUser.country;
 
-    new Group(req.body).save()
-      .then(group => {
-        mailUtils.sendGroupSignup(group, req.authUser, req.headers.origin);
-        req.authUser.groups.push(group._id);
-        return req.authUser.save()
-          .then(() => res.status(201).location(`/groups/${group._id}`).json(group));
-      })
-      .catch(err => next(err));
-  }
-);
+  new Group(req.body)
+    .save()
+    .then((group) => {
+      mailUtils.sendGroupSignup(group, req.authUser, req.headers.origin);
+      req.authUser.groups.push(group._id);
+      return req.authUser
+        .save()
+        .then(() => res.status(201).location(`/groups/${group._id}`).json(group));
+    })
+    .catch((err) => next(err));
+});
 
 /**
  * @api {get} /groups/:group Get group
@@ -61,10 +57,7 @@ router.post(
  *
  * @apiUse GroupResponse
  */
-router.get(
-  '/:group',
-  partialRight(routeUtils.getByParam, 'group', 'country')
-);
+router.get('/:group', partialRight(routeUtils.getByParam, 'group', 'country'));
 
 /**
  * @api {put} /groups/:group Update group
