@@ -1,10 +1,10 @@
-var omit = require('lodash/omit'),
-    isNumber = require('lodash/isNumber'),
-    bcrypt = require('bcrypt'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
-    uniqueValidator = require('mongoose-unique-validator');
+var omit = require('lodash/omit');
+var isNumber = require('lodash/isNumber');
+var bcrypt = require('bcrypt');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
+var uniqueValidator = require('mongoose-unique-validator');
 
 const SALT_ROUNDS = 10;
 
@@ -24,7 +24,7 @@ var UserSchema = new mongoose.Schema({
   password: {
     type: String,
     default: '',
-    validate: [validatePasswordOrFacebook, 'Password is required', 'required']
+    validate: [validatePasswordOrFacebook, 'Password is required', 'required'],
   },
   firstName: { type: String, required: true },
   lastName: String,
@@ -33,18 +33,18 @@ var UserSchema = new mongoose.Schema({
   facebook: {
     id: Number,
     accessToken: String,
-    refreshToken: String
+    refreshToken: String,
   },
   country: { type: ObjectId, ref: 'Country' },
   groups: {
-    type: [{ type: ObjectId, ref: 'Group' }]
+    type: [{ type: ObjectId, ref: 'Group' }],
   },
   currentGroup: { type: ObjectId, ref: 'Group' },
   superAdmin: { type: Boolean, default: false, required: true },
   confirmed: { type: Boolean, default: false, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: Date,
-  lastSeen: Date
+  lastSeen: Date,
 });
 
 UserSchema.virtual('name').get(function () {
@@ -61,7 +61,7 @@ UserSchema.pre('validate', function (next) {
 
   // Handle change password request
   this.validatePassword(this.currentPassword)
-    .then(isMatch => {
+    .then((isMatch) => {
       if (!isMatch) {
         return next(new Error('Incorrect password'));
       }
@@ -73,19 +73,25 @@ UserSchema.pre('validate', function (next) {
 
       next();
     })
-    .catch(err => next(err));
+    .catch((err) => next(err));
 });
 
 UserSchema.pre('save', function (next) {
   // Explicitly clear empty password
-  if (this.password === '') { this.password = undefined; }
+  if (this.password === '') {
+    this.password = undefined;
+  }
 
   // Only hash the password if it has been modified (or is new)
-  if (!this.password || !this.isModified('password')) { return next(); }
+  if (!this.password || !this.isModified('password')) {
+    return next();
+  }
 
   // Hash the password with automatic salt
   bcrypt.hash(this.password, SALT_ROUNDS, (err, hash) => {
-    if (err) { return next(err); }
+    if (err) {
+      return next(err);
+    }
 
     // Override the clear text password with the hashed one
     this.password = hash;
@@ -96,11 +102,15 @@ UserSchema.pre('save', function (next) {
 UserSchema.methods.validatePassword = function (password) {
   return new Promise((resolve, reject) => {
     // Return false if no password set
-    if (!this.password) { return resolve(false); }
+    if (!this.password) {
+      return resolve(false);
+    }
 
     // Compare the input password with the hashed password
     bcrypt.compare(password, this.password, (err, result) => {
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       resolve(result);
     });
@@ -122,9 +132,12 @@ UserSchema.methods.toJSON = function (isUser) {
  * @returns {Promise}
  */
 UserSchema.statics.findOrCreate = function (newUser) {
-  return this.findOne({ email: newUser.email }).exec()
-    .catch(err => {
-      if (err.message !== 'Not Found') { return Promise.reject(err); }
+  return this.findOne({ email: newUser.email })
+    .exec()
+    .catch((err) => {
+      if (err.message !== 'Not Found') {
+        return Promise.reject(err);
+      }
 
       return new this(newUser).save();
     });
@@ -132,10 +145,17 @@ UserSchema.statics.findOrCreate = function (newUser) {
 
 UserSchema.statics.getFilter = function () {
   return [
-    'email', 'firstName', 'lastName',
-    'password', 'currentPassword', 'newPassword',
-    'picture', 'coverImage',
-    'country', 'groups', 'currentGroup',
+    'email',
+    'firstName',
+    'lastName',
+    'password',
+    'currentPassword',
+    'newPassword',
+    'picture',
+    'coverImage',
+    'country',
+    'groups',
+    'currentGroup',
   ];
 };
 

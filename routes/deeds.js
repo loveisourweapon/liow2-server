@@ -1,13 +1,13 @@
-var assign = require('lodash/assign'),
-    partialRight = require('lodash/partialRight'),
-    routeUtils = require('../utils/route'),
-    express = require('express'),
-    router = express.Router();
+var assign = require('lodash/assign');
+var partialRight = require('lodash/partialRight');
+var routeUtils = require('../utils/route');
+var express = require('express');
+var router = express.Router();
 
-var Deed = require('../models/Deed'),
-    Like = require('../models/Like'),
-    Comment = require('../models/Comment'),
-    Act = require('../models/Act');
+var Deed = require('../models/Deed');
+var Like = require('../models/Like');
+var Comment = require('../models/Comment');
+var Act = require('../models/Act');
 
 router.param('deed', partialRight(routeUtils.paramHandler, Deed));
 router.param('like', partialRight(routeUtils.paramHandler, Like));
@@ -22,14 +22,11 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
  *
  * @apiUse DeedsResponse
  */
-router.get(
-  '/',
-  (req, res, next) => {
-    req.query.enabled = 'true';
-    req.query.sort = req.query.sort || 'order';
-    return routeUtils.getAll(req, res, next, Deed);
-  }
-);
+router.get('/', (req, res, next) => {
+  req.query.enabled = 'true';
+  req.query.sort = req.query.sort || 'order';
+  return routeUtils.getAll(req, res, next, Deed);
+});
 
 /**
  * @api {post} /deeds Create deed
@@ -41,18 +38,14 @@ router.get(
  * @apiUse DeedRequestBody
  * @apiUse CreateDeedResponse
  */
-router.post(
-  '/',
-  routeUtils.ensureAuthenticated,
-  routeUtils.ensureSuperAdmin,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Deed);
+router.post('/', routeUtils.ensureAuthenticated, routeUtils.ensureSuperAdmin, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Deed);
 
-    new Deed(req.body).save()
-      .then(deed => res.status(201).location(`/deeds/${deed._id}`).json(deed))
-      .catch(err => next(err));
-  }
-);
+  new Deed(req.body)
+    .save()
+    .then((deed) => res.status(201).location(`/deeds/${deed._id}`).json(deed))
+    .catch((err) => next(err));
+});
 
 /**
  * @api {get} /counters Get deed counters
@@ -75,27 +68,33 @@ router.post(
  *     "count": 5678
  *   }]
  */
-router.get(
-  '/counters',
-  (req, res, next) => {
-    let actQuery = {};
-    if (req.query.campaign) {
-      actQuery.campaign = req.query.campaign;
-    } else if (req.query.group) {
-      actQuery.group = req.query.group;
-    }
-
-    return Deed.find()
-      .then(deeds =>
-        Promise.all(deeds.map(deed => Act.find(assign(actQuery, { deed: deed._id })).count().exec()))
-          .then(responses => res.send(responses.map((counter, i) => ({
-            deed: deeds[i]._id,
-            count: counter
-          }))))
-      )
-      .catch(err => next(err));
+router.get('/counters', (req, res, next) => {
+  let actQuery = {};
+  if (req.query.campaign) {
+    actQuery.campaign = req.query.campaign;
+  } else if (req.query.group) {
+    actQuery.group = req.query.group;
   }
-);
+
+  return Deed.find()
+    .then((deeds) =>
+      Promise.all(
+        deeds.map((deed) =>
+          Act.find(assign(actQuery, { deed: deed._id }))
+            .count()
+            .exec()
+        )
+      ).then((responses) =>
+        res.send(
+          responses.map((counter, i) => ({
+            deed: deeds[i]._id,
+            count: counter,
+          }))
+        )
+      )
+    )
+    .catch((err) => next(err));
+});
 
 /**
  * @api {get} /deeds/:deed Get deed
@@ -108,10 +107,7 @@ router.get(
  *
  * @apiUse DeedResponse
  */
-router.get(
-  '/:deed',
-  partialRight(routeUtils.getByParam, 'deed')
-);
+router.get('/:deed', partialRight(routeUtils.getByParam, 'deed'));
 
 /**
  * @api {put} /deeds/:deed Update deed
@@ -157,10 +153,7 @@ router.delete(
  *
  * @apiUse CommentsResponse
  */
-router.get(
-  '/:deed/comments',
-  partialRight(routeUtils.getByTarget, Comment, 'deed')
-);
+router.get('/:deed/comments', partialRight(routeUtils.getByTarget, Comment, 'deed'));
 
 /**
  * @api {post} /deeds/:deed/comments Create deed comment
@@ -174,22 +167,20 @@ router.get(
  * @apiUse CommentRequestBody
  * @apiUse CreateCommentResponse
  */
-router.post(
-  '/:deed/comments',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, Comment);
-    req.body.user = req.authUser._id;
-    req.body.target = { deed: req.deed._id };
+router.post('/:deed/comments', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, Comment);
+  req.body.user = req.authUser._id;
+  req.body.target = { deed: req.deed._id };
 
-    routeUtils.getCurrentCampaign(req)
-      .then(req => {
-        new Comment(req.body).save()
-          .then(comment => res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment))
-          .catch(err => next(err));
-      });
-  }
-);
+  routeUtils.getCurrentCampaign(req).then((req) => {
+    new Comment(req.body)
+      .save()
+      .then((comment) =>
+        res.status(201).location(`/deeds/${req.deed._id}/comments/${comment._id}`).json(comment)
+      )
+      .catch((err) => next(err));
+  });
+});
 
 /**
  * @api {put} /deeds/:deed/comments/:comment Update deed comment

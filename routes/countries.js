@@ -1,10 +1,10 @@
-var partialRight = require('lodash/partialRight'),
-    routeUtils = require('../utils/route'),
-    express = require('express'),
-    router = express.Router();
+var partialRight = require('lodash/partialRight');
+var routeUtils = require('../utils/route');
+var express = require('express');
+var router = express.Router();
 
-var Country = require('../models/Country'),
-    Group = require('../models/Group');
+var Country = require('../models/Country');
+var Group = require('../models/Group');
 
 router.param('country', partialRight(routeUtils.paramHandler, Country));
 
@@ -17,10 +17,7 @@ router.param('country', partialRight(routeUtils.paramHandler, Country));
  *
  * @apiUse CountriesResponse
  */
-router.get(
-  '/',
-  partialRight(routeUtils.getAll, Country)
-);
+router.get('/', partialRight(routeUtils.getAll, Country));
 
 /**
  * @api {get} /countries/:country Get country
@@ -33,10 +30,7 @@ router.get(
  *
  * @apiUse CountryResponse
  */
-router.get(
-  '/:country',
-  partialRight(routeUtils.getByParam, 'country')
-);
+router.get('/:country', partialRight(routeUtils.getByParam, 'country'));
 
 /**
  * @api {get} /countries/:country/groups Get country groups
@@ -49,14 +43,11 @@ router.get(
  *
  * @apiUse GroupsResponse
  */
-router.get(
-  '/:country/groups',
-  (req, res, next) => {
-    Group.find({ country: req.country._id })
-      .exec()
-      .then(groups => res.status(200).json(groups))
-      .catch(err => next(err));
-  }
-);
+router.get('/:country/groups', (req, res, next) => {
+  Group.find({ country: req.country._id })
+    .exec()
+    .then((groups) => res.status(200).json(groups))
+    .catch((err) => next(err));
+});
 
 module.exports = router;

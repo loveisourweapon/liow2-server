@@ -1,12 +1,13 @@
-var has = require('lodash/has'),
-    mapValues = require('lodash/mapValues'),
-    snakeCase = require('lodash/snakeCase'),
-    isObject = require('lodash/isObject'),
-    isArray = require('lodash/isArray'),
-    config = require('../config'),
-    configPrefix = 'liow';
+var has = require('lodash/has');
+var mapValues = require('lodash/mapValues');
+var snakeCase = require('lodash/snakeCase');
+var isObject = require('lodash/isObject');
+var isArray = require('lodash/isArray');
+var config = require('../config');
 
-module.exports = () => buildConfig(config, [configPrefix]);
+var CONFIG_PREFIX = 'liow';
+
+module.exports = () => buildConfig(config, [CONFIG_PREFIX]);
 
 /**
  * Recursively build a config object overriding with environment variables

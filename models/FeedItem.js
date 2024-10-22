@@ -1,6 +1,6 @@
-var pick = require('lodash/pick'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var pick = require('lodash/pick');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var FeedItemSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
@@ -9,14 +9,14 @@ var FeedItemSchema = new mongoose.Schema({
   target: {
     type: {
       group: { type: ObjectId, ref: 'Group' },
-      deed: { type: ObjectId, ref: 'Deed' }
-    }
+      deed: { type: ObjectId, ref: 'Deed' },
+    },
   },
   act: { type: ObjectId, ref: 'Act' },
   comment: { type: ObjectId, ref: 'Comment' },
   count: { type: String, default: 1, required: true },
   created: { type: Date, default: Date.now, required: true },
-  modified: { type: Date, default: Date.now, required: true }
+  modified: { type: Date, default: Date.now, required: true },
 });
 
 /**
@@ -27,8 +27,9 @@ var FeedItemSchema = new mongoose.Schema({
  * @returns {Promise}
  */
 FeedItemSchema.statics.findOrCreate = function (newFeedItem) {
-  return this.findOne(pick(newFeedItem, ['act', 'comment'])).exec()
-    .then(feedItem => (feedItem || new this(newFeedItem).save()));
+  return this.findOne(pick(newFeedItem, ['act', 'comment']))
+    .exec()
+    .then((feedItem) => feedItem || new this(newFeedItem).save());
 };
 
 module.exports = mongoose.model('FeedItem', FeedItemSchema);

@@ -1,17 +1,18 @@
-var config = require('../utils/config')(),
-    defaults = require('lodash/defaults'),
-    moment = require('moment'),
-    path = require('path'),
-    EmailTemplate = require('email-templates').EmailTemplate,
-    mailgun = require('mailgun-js')(config.auth.mailgun),
-    Token = require('../models/Token');
+var config = require('../utils/config')();
+var defaults = require('lodash/defaults');
+var moment = require('moment');
+var path = require('path');
+var EmailTemplate = require('email-templates').EmailTemplate;
+var mailgun = require('mailgun-js')(config.auth.mailgun);
 
-var mailDefaults = {
-  from: `Love is our Weapon <${config.emails.mailer}>`
+var Token = require('../models/Token');
+
+var MAIL_DEFAULTS = {
+  from: `Love is our Weapon <${config.emails.mailer}>`,
 };
 
-var templateDefaults = {
-  baseUrl: config.client_urls[0]
+var TEMPLATE_DEFAULTS = {
+  baseUrl: config.client_urls[0],
 };
 
 /**
@@ -22,14 +23,15 @@ var templateDefaults = {
  * @returns {Promise}
  */
 function sendEmail(data) {
-  // TODO: should mailgun be mocked in tests?
   if (process.env.NODE_ENV === 'testing') {
     return Promise.resolve(data);
   }
 
   return new Promise((resolve, reject) => {
     mailgun.messages().send(data, (err, body) => {
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       resolve(body);
     });
@@ -50,7 +52,9 @@ function renderHtmlTemplate(template, tags) {
 
   return new Promise((resolve, reject) => {
     emailTemplate.render(tags, (err, result) => {
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       resolve(result);
     });
@@ -79,18 +83,33 @@ function getToken(user, type) {
  */
 function sendConfirmEmail(user, baseUrl) {
   return getToken(user, 'confirm')
-    .then(token => renderHtmlTemplate('confirm-email', defaults({
-      baseUrl: baseUrl,
-      firstName: user.firstName,
-      token: token.token,
-      date: moment(token.expires).format('lll')
-    }, templateDefaults)))
-    .then(template => sendEmail(defaults({
-      to: `${user.name} <${user.email}>`,
-      subject: 'Confirm your Love is our Weapon registration',
-      text: template.text,
-      html: template.html
-    }, mailDefaults)));
+    .then((token) =>
+      renderHtmlTemplate(
+        'confirm-email',
+        defaults(
+          {
+            baseUrl,
+            firstName: user.firstName,
+            token: token.token,
+            date: moment(token.expires).format('lll'),
+          },
+          TEMPLATE_DEFAULTS
+        )
+      )
+    )
+    .then((template) =>
+      sendEmail(
+        defaults(
+          {
+            to: `${user.name} <${user.email}>`,
+            subject: 'Confirm your Love is our Weapon registration',
+            text: template.text,
+            html: template.html,
+          },
+          MAIL_DEFAULTS
+        )
+      )
+    );
 }
 
 /**
@@ -103,18 +122,33 @@ function sendConfirmEmail(user, baseUrl) {
  */
 function sendPasswordReset(user, baseUrl) {
   return getToken(user, 'reset')
-    .then(token => renderHtmlTemplate('password-reset', defaults({
-      baseUrl: baseUrl,
-      firstName: user.firstName,
-      token: token.token,
-      date: moment(token.expires).format('LTS')
-    }, templateDefaults)))
-    .then(template => sendEmail(defaults({
-      to: `${user.name} <${user.email}>`,
-      subject: 'Reset your Love is our Weapon password',
-      text: template.text,
-      html: template.html
-    }, mailDefaults)));
+    .then((token) =>
+      renderHtmlTemplate(
+        'password-reset',
+        defaults(
+          {
+            baseUrl,
+            firstName: user.firstName,
+            token: token.token,
+            date: moment(token.expires).format('LTS'),
+          },
+          TEMPLATE_DEFAULTS
+        )
+      )
+    )
+    .then((template) =>
+      sendEmail(
+        defaults(
+          {
+            to: `${user.name} <${user.email}>`,
+            subject: 'Reset your Love is our Weapon password',
+            text: template.text,
+            html: template.html,
+          },
+          MAIL_DEFAULTS
+        )
+      )
+    );
 }
 
 /**
@@ -127,17 +161,29 @@ function sendPasswordReset(user, baseUrl) {
  * @returns {Promise}
  */
 function sendGroupSignup(group, user, baseUrl) {
-  return renderHtmlTemplate('group-signup', defaults({
-      group: group,
-      owner: user,
-      baseUrl: baseUrl,
-    }, templateDefaults))
-    .then(template => sendEmail(defaults({
-      to: `Love is our Weapon <${config.emails.admin}>`,
-      subject: `${group.name} joined Love is our Weapon`,
-      text: template.text,
-      html: template.html,
-    }, mailDefaults)));
+  return renderHtmlTemplate(
+    'group-signup',
+    defaults(
+      {
+        group,
+        owner,
+        baseUrl,
+      },
+      TEMPLATE_DEFAULTS
+    )
+  ).then((template) =>
+    sendEmail(
+      defaults(
+        {
+          to: `Love is our Weapon <${config.emails.admin}>`,
+          subject: `${group.name} joined Love is our Weapon`,
+          text: template.text,
+          html: template.html,
+        },
+        MAIL_DEFAULTS
+      )
+    )
+  );
 }
 /**
  * Send email to site admin when the contact form is filled out
@@ -147,15 +193,20 @@ function sendGroupSignup(group, user, baseUrl) {
  * @returns {Promise}
  */
 function sendContactEmail(contactForm) {
-  return renderHtmlTemplate('contact-form', defaults({
-      contactForm: contactForm,
-    }, templateDefaults))
-    .then(template => sendEmail(defaults({
-      to: `Love is our Weapon <${config.emails.admin}>`,
-      subject: `Received a Love is our Weapon message from ${contactForm.name}`,
-      text: template.text,
-      html: template.html,
-    }, mailDefaults)));
+  return renderHtmlTemplate('contact-form', defaults({ contactForm }, TEMPLATE_DEFAULTS)).then(
+    (template) =>
+      sendEmail(
+        defaults(
+          {
+            to: `Love is our Weapon <${config.emails.admin}>`,
+            subject: `Received a Love is our Weapon message from ${contactForm.name}`,
+            text: template.text,
+            html: template.html,
+          },
+          MAIL_DEFAULTS
+        )
+      )
+  );
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
-var partialRight = require('lodash/partialRight'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var partialRight = require('lodash/partialRight');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var LikeSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
@@ -10,16 +10,16 @@ var LikeSchema = new mongoose.Schema({
   target: {
     type: {
       act: { type: ObjectId, ref: 'Act' },
-      comment: { type: ObjectId, ref: 'Comment' }
+      comment: { type: ObjectId, ref: 'Comment' },
     },
     required: true,
     validate: [
       partialRight(modelUtils.oneOf, ['act', 'comment']),
       'One target should be set',
-      'onetarget'
-    ]
+      'onetarget',
+    ],
   },
-  created: { type: Date, default: Date.now, required: true }
+  created: { type: Date, default: Date.now, required: true },
 });
 
 LikeSchema.plugin(modelUtils.findOneOrThrow);

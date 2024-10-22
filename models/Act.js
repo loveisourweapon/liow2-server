@@ -1,6 +1,6 @@
-var modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId;
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var ActSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: 'User', required: true },
@@ -9,7 +9,7 @@ var ActSchema = new mongoose.Schema({
   campaign: { type: ObjectId, ref: 'Campaign' },
   likes: { type: [{ type: ObjectId, ref: 'Like' }] },
   comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
-  created: { type: Date, default: Date.now, required: true }
+  created: { type: Date, default: Date.now, required: true },
 });
 
 ActSchema.plugin(modelUtils.findOneOrThrow);

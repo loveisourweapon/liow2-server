@@ -1,21 +1,21 @@
-var has = require('lodash/has'),
-    hasIn = require('lodash/hasIn'),
-    get = require('lodash/get'),
-    pick = require('lodash/pick'),
-    omit = require('lodash/omit'),
-    some = require('lodash/some'),
-    isArray = require('lodash/isArray'),
-    isEmpty = require('lodash/isEmpty'),
-    isObject = require('lodash/isObject'),
-    isString = require('lodash/isString'),
-    Filter = require('bad-words'),
-    badWordsFilter = new Filter({ exclude: ['god', 'jesus', 'hell'] }),
-    moment = require('moment'),
-    HttpError = require('./general').HttpError,
-    FeedItem = require('../models/FeedItem');
+var has = require('lodash/has');
+var hasIn = require('lodash/hasIn');
+var get = require('lodash/get');
+var pick = require('lodash/pick');
+var omit = require('lodash/omit');
+var some = require('lodash/some');
+var isArray = require('lodash/isArray');
+var isEmpty = require('lodash/isEmpty');
+var isObject = require('lodash/isObject');
+var isString = require('lodash/isString');
+var Filter = require('bad-words');
+var badWordsFilter = new Filter({ exclude: ['god', 'jesus', 'hell'] });
+var moment = require('moment');
+var HttpError = require('./general').HttpError;
+
+var FeedItem = require('../models/FeedItem');
 
 module.exports = {
-
   /**
    * Check that exactly one of a set of properties is set on an object
    *
@@ -25,14 +25,15 @@ module.exports = {
    * @returns {boolean|Error}
    */
   oneOf(object, properties) {
-    if (!isObject(object)) { return new Error('Object should be type Object'); }
-    if (!isArray(properties)) { return new Error('Properties should be an Array of Strings'); }
+    if (!isObject(object)) {
+      return new Error('Object should be type Object');
+    }
+    if (!isArray(properties)) {
+      return new Error('Properties should be an Array of Strings');
+    }
 
-    return some(properties, property => {
-      return (
-        has(object, property) &&
-        isEmpty(omit(object, property))
-      );
+    return some(properties, (property) => {
+      return has(object, property) && isEmpty(omit(object, property));
     });
   },
 
@@ -44,7 +45,9 @@ module.exports = {
    * @returns {boolean|Error}
    */
   hasOne(property) {
-    if (!isArray(property)) { return new Error('Property should be an Array'); }
+    if (!isArray(property)) {
+      return new Error('Property should be an Array');
+    }
 
     return property.length > 0;
   },
@@ -84,19 +87,18 @@ module.exports = {
           FeedItem.findOne({
             user: feedItem.user,
             'target.deed': feedItem.target.deed,
-            modified: { $gt: moment().subtract(5, 'minutes').toDate() }
-          })
-            .then(foundFeedItem => {
-              if (foundFeedItem) {
-                // Found recent FeedItem, update it
-                foundFeedItem.count++;
-                foundFeedItem.modified = new Date();
-                return foundFeedItem.save();
-              } else {
-                // No recent FeedItem, create it
-                return FeedItem.findOrCreate(feedItem);
-              }
-            });
+            modified: { $gt: moment().subtract(5, 'minutes').toDate() },
+          }).then((foundFeedItem) => {
+            if (foundFeedItem) {
+              // Found recent FeedItem, update it
+              foundFeedItem.count++;
+              foundFeedItem.modified = new Date();
+              return foundFeedItem.save();
+            } else {
+              // No recent FeedItem, create it
+              return FeedItem.findOrCreate(feedItem);
+            }
+          });
         } else {
           // Always find or create for testimonies
           FeedItem.findOrCreate(feedItem);
@@ -106,8 +108,9 @@ module.exports = {
 
     // Find and remove the FeedItem when removing the document
     schema.post('remove', function (doc) {
-      FeedItem.findOne({ $or: [{ act: doc._id }, { comment: doc._id }] }).exec()
-        .then(feedItem => feedItem.remove());
+      FeedItem.findOne({ $or: [{ act: doc._id }, { comment: doc._id }] })
+        .exec()
+        .then((feedItem) => feedItem.remove());
     });
   },
 
@@ -121,6 +124,5 @@ module.exports = {
   validateIsClean(property, path) {
     var value = isString(path) ? get(property, path) : property;
     return isEmpty(value) || !badWordsFilter.isProfane(value);
-  }
-
+  },
 };

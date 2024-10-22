@@ -1,7 +1,7 @@
-var kebabCase = require('lodash/kebabCase'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    uniqueValidator = require('mongoose-unique-validator');
+var kebabCase = require('lodash/kebabCase');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator');
 
 var DeedSchema = new mongoose.Schema({
   title: { type: String, required: true },

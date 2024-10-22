@@ -1,9 +1,9 @@
-var some = require('lodash/some'),
-    kebabCase = require('lodash/kebabCase'),
-    modelUtils = require('../utils/models'),
-    mongoose = require('mongoose'),
-    ObjectId = mongoose.Schema.Types.ObjectId,
-    uniqueValidator = require('mongoose-unique-validator');
+var some = require('lodash/some');
+var kebabCase = require('lodash/kebabCase');
+var modelUtils = require('../utils/models');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
+var uniqueValidator = require('mongoose-unique-validator');
 
 /**
  * One of the admins is the owner
@@ -13,14 +13,14 @@ var some = require('lodash/some'),
  * @returns {boolean}
  */
 function validateOwnerIsAdmin(admins) {
-  return some(admins, admin => admin.equals(this.owner));
+  return some(admins, (admin) => admin.equals(this.owner));
 }
 
 var GroupSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean' ]
+    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean'],
   },
   urlName: { type: String, required: true, unique: true },
   owner: { type: ObjectId, ref: 'User', required: true },
@@ -29,18 +29,22 @@ var GroupSchema = new mongoose.Schema({
     required: true,
     validate: [
       { validator: modelUtils.hasOne, msg: 'An admin user is required', type: 'hasadmin' },
-      { validator: validateOwnerIsAdmin, msg: 'The owner needs to be an admin', type: 'ownerisadmin' }
-    ]
+      {
+        validator: validateOwnerIsAdmin,
+        msg: 'The owner needs to be an admin',
+        type: 'ownerisadmin',
+      },
+    ],
   },
   country: { type: ObjectId, ref: 'Country' },
   logo: String,
   coverImage: String,
   welcomeMessage: {
     type: String,
-    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean' ]
+    validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean'],
   },
   created: { type: Date, default: Date.now, required: true },
-  modified: Date
+  modified: Date,
 });
 
 GroupSchema.plugin(modelUtils.findOneOrThrow);

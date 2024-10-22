@@ -4,7 +4,7 @@
 ------------------------------------- */
 * {
   margin: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   box-sizing: border-box;
   font-size: 14px;
 }
@@ -83,7 +83,9 @@ body {
   color: #999;
   padding: 20px;
 }
-.footer p, .footer a, .footer td {
+.footer p,
+.footer a,
+.footer td {
   color: #999;
   font-size: 12px;
 }
@@ -91,8 +93,10 @@ body {
 /* -------------------------------------
     TYPOGRAPHY
 ------------------------------------- */
-h1, h2, h3 {
-  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+h1,
+h2,
+h3 {
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
   color: #000;
   margin: 40px 0 0;
   line-height: 1.2em;
@@ -123,11 +127,15 @@ h4 {
   font-weight: 600;
 }
 
-p, ul, ol {
+p,
+ul,
+ol {
   margin-bottom: 10px;
   font-weight: normal;
 }
-p li, ul li, ol li {
+p li,
+ul li,
+ol li {
   margin-left: 5px;
   list-style-position: inside;
 }
@@ -142,7 +150,7 @@ a {
 
 .btn-primary {
   text-decoration: none;
-  color: #FFF;
+  color: #fff;
   background-color: #da190b;
   border: solid #da190b;
   border-width: 10px 20px;
@@ -203,13 +211,13 @@ a {
   font-size: 16px;
 }
 .alert.alert-warning {
-  background-color: #FF9F00;
+  background-color: #ff9f00;
 }
 .alert.alert-bad {
-  background-color: #D0021B;
+  background-color: #d0021b;
 }
 .alert.alert-good {
-  background-color: #68B90F;
+  background-color: #68b90f;
 }
 
 /* -------------------------------------
@@ -244,7 +252,10 @@ a {
     padding: 0 !important;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-weight: 800 !important;
     margin: 20px 0 5px !important;
   }

@@ -1,8 +1,9 @@
-var partialRight = require('lodash/partialRight'),
-    routeUtils = require('../utils/route'),
-    express = require('express'),
-    router = express.Router(),
-    Comment = require('../models/Comment');
+var partialRight = require('lodash/partialRight');
+var routeUtils = require('../utils/route');
+var express = require('express');
+var router = express.Router();
+
+var Comment = require('../models/Comment');
 
 router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
@@ -17,14 +18,17 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
  */
 router.get(
   '/',
-  partialRight(routeUtils.getAll, Comment, [{
-    path: 'user',
-    select: 'firstName lastName name picture'
-  }, {
-    path: 'target.deed',
-    model: 'Deed',
-    select: 'title urlTitle logo'
-  }])
+  partialRight(routeUtils.getAll, Comment, [
+    {
+      path: 'user',
+      select: 'firstName lastName name picture',
+    },
+    {
+      path: 'target.deed',
+      model: 'Deed',
+      select: 'title urlTitle logo',
+    },
+  ])
 );
 
 /**

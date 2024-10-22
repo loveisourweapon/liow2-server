@@ -1,9 +1,10 @@
-var partialRight = require('lodash/partialRight'),
-    jsonpatch = require('fast-json-patch'),
-    mailUtils = require('../utils/mail'),
-    routeUtils = require('../utils/route'),
-    router = require('express').Router(),
-    User = require('../models/User');
+var partialRight = require('lodash/partialRight');
+var jsonpatch = require('fast-json-patch');
+var mailUtils = require('../utils/mail');
+var routeUtils = require('../utils/route');
+var router = require('express').Router();
+
+var User = require('../models/User');
 
 router.param('user', partialRight(routeUtils.paramHandler, User));
 
@@ -18,10 +19,7 @@ router.param('user', partialRight(routeUtils.paramHandler, User));
  *   HTTP/1.1 200 OK
  *   "2796"
  */
-router.get(
-  '/',
-  partialRight(routeUtils.getAll, User)
-);
+router.get('/', partialRight(routeUtils.getAll, User));
 
 /**
  * @api {post} /users Create user
@@ -33,25 +31,23 @@ router.get(
  * @apiUse UserRequestBody
  * @apiUse CreateUserResponse
  */
-router.post(
-  '/',
-  (req, res, next) => {
-    req.body = routeUtils.filterProperties(req.body, User);
+router.post('/', (req, res, next) => {
+  req.body = routeUtils.filterProperties(req.body, User);
 
-    // Copy currentGroup from groups property
-    if (req.body.groups && req.body.groups.length) {
-      req.body.currentGroup = req.body.groups[0];
-    }
-
-    new User(req.body).save()
-      .then(user => {
-        mailUtils.sendConfirmEmail(user);
-
-        res.status(201).location(`/users/${user._id}`).json(user);
-      })
-      .catch(err => next(err));
+  // Copy currentGroup from groups property
+  if (req.body.groups && req.body.groups.length) {
+    req.body.currentGroup = req.body.groups[0];
   }
-);
+
+  new User(req.body)
+    .save()
+    .then((user) => {
+      mailUtils.sendConfirmEmail(user);
+
+      res.status(201).location(`/users/${user._id}`).json(user);
+    })
+    .catch((err) => next(err));
+});
 
 /**
  * @api {get} /users/me Get current user
@@ -62,17 +58,13 @@ router.post(
  *
  * @apiUse UserResponse
  */
-router.get(
-  '/me',
-  routeUtils.ensureAuthenticated,
-  (req, res, next) => {
-    req.authUser
-      .populate('groups', 'name urlName admins')
-      .execPopulate()
-      .then(user => res.status(200).send(user.toJSON(true)))
-      .catch(err => next(err));
-  }
-);
+router.get('/me', routeUtils.ensureAuthenticated, (req, res, next) => {
+  req.authUser
+    .populate('groups', 'name urlName admins')
+    .execPopulate()
+    .then((user) => res.status(200).send(user.toJSON(true)))
+    .catch((err) => next(err));
+});
 
 /**
  * @api {get} /users/:user Get user
@@ -85,10 +77,7 @@ router.get(
  *
  * @apiUse UserResponse
  */
-router.get(
-  '/:user',
-  partialRight(routeUtils.getByParam, 'user')
-);
+router.get('/:user', partialRight(routeUtils.getByParam, 'user'));
 
 /**
  * @api {put} /users/:user Update user
@@ -139,9 +128,10 @@ router.patch(
   (req, res, next) => {
     jsonpatch.apply(req.user, routeUtils.filterJsonPatch(req.body, User));
 
-    req.user.save()
-      .then(user => res.status(200).json(user))
-      .catch(err => next(err));
+    req.user
+      .save()
+      .then((user) => res.status(200).json(user))
+      .catch((err) => next(err));
   }
 );
 

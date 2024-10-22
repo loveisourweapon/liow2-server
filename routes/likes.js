@@ -1,8 +1,9 @@
-var partialRight = require('lodash/partialRight'),
-    routeUtils = require('../utils/route'),
-    express = require('express'),
-    router = express.Router(),
-    Like = require('../models/Like');
+var partialRight = require('lodash/partialRight');
+var routeUtils = require('../utils/route');
+var express = require('express');
+var router = express.Router();
+
+var Like = require('../models/Like');
 
 router.param('like', partialRight(routeUtils.paramHandler, Like));
 
@@ -15,10 +16,7 @@ router.param('like', partialRight(routeUtils.paramHandler, Like));
  *
  * @apiUse LikesResponse
  */
-router.get(
-  '/',
-  partialRight(routeUtils.getAll, Like)
-);
+router.get('/', partialRight(routeUtils.getAll, Like));
 
 /**
  * @api {delete} /likes/:like Remove like
