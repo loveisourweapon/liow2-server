@@ -59,6 +59,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  *     "logo": "https://example.com/images/deed-logo.png",
  *     "videoUrl": "https://youtube.com/example",
  *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "order": 1,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
  *   }]
@@ -89,6 +90,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  *     "logo": "https://example.com/images/deed-logo.png",
  *     "videoUrl": "https://youtube.com/example",
  *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "order": 1,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
  *   }
@@ -102,6 +104,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  * @apiParam (Body) {string} [logo]       Deed logo URL
  * @apiParam (Body) {string} [videoUrl]   Deed video URL
  * @apiParam (Body) {string} [coverImage] Deed cover image URL
+ * @apiParam (Body) {string} [order]      Deed listing order
  *
  * @apiParamExample {json} Request
  *   {
@@ -109,7 +112,8 @@ module.exports = mongoose.model('Deed', DeedSchema);
  *     "content": "Example deed content",
  *     "logo": "https://example.com/images/deed-logo.png",
  *     "videoUrl": "https://youtube.com/example",
- *     "coverImage": "https://example.com/images/cover-image.png"
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "order": 1
  *   }
  */
 
@@ -137,6 +141,7 @@ module.exports = mongoose.model('Deed', DeedSchema);
  *     "logo": "https://example.com/images/deed-logo.png",
  *     "videoUrl": "https://youtube.com/example",
  *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "order": 1,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */
