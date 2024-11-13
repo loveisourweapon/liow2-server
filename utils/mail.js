@@ -155,12 +155,12 @@ function sendPasswordReset(user, baseUrl) {
  * Send email to site admin when a new group registers
  *
  * @param {object} group
- * @param {object} user
+ * @param {object} owner
  * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendGroupSignup(group, user, baseUrl) {
+function sendGroupSignup(group, owner, baseUrl) {
   return renderHtmlTemplate(
     'group-signup',
     defaults(
