@@ -24,7 +24,8 @@ var UserSchema = new mongoose.Schema({
   password: {
     type: String,
     default: '',
-    validate: [validatePasswordOrFacebook, 'Password is required', 'required'],
+    // TODO: Is this still required?
+    // validate: [validatePasswordOrFacebook, 'Password is required', 'required'],
   },
   firstName: { type: String, required: true },
   lastName: String,
