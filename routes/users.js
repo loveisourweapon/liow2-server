@@ -1,9 +1,13 @@
+var get = require('lodash/get');
 var partialRight = require('lodash/partialRight');
 var jsonpatch = require('fast-json-patch');
+var utils = require('../utils');
+var HttpError = utils.HttpError;
 var mailUtils = require('../utils/mail');
 var routeUtils = require('../utils/route');
 var router = require('express').Router();
 
+var Group = require('../models/Group');
 var User = require('../models/User');
 
 router.param('user', partialRight(routeUtils.paramHandler, User));
@@ -124,7 +128,30 @@ router.put(
 router.patch(
   '/:user',
   routeUtils.ensureAuthenticated,
-  partialRight(routeUtils.ensureSameUser, 'user._id'),
+  (req, res, next) => {
+    // Can't use ensureSameUser because group admins can remove a user from their group
+    // Grant permission to super admins and self
+    if (req.authUser.superAdmin || get(req, 'user._id').equals(req.authUser._id)) {
+      return next();
+    }
+    if (req.body.some((patch) => patch.op === 'remove' && ~patch.path.indexOf('/groups'))) {
+      // Lookup group and grant permission if the auth user is a group admin
+      var patch = req.body.find((patch) => patch.op === 'remove' && ~patch.path.indexOf('/groups'));
+      var groupIndex = Number(patch.path.replace('/groups/', ''));
+      var groupId = req.user.groups[groupIndex];
+      Group.findById(groupId)
+        .exec()
+        .then((group) => {
+          if (group.admins.some((admin) => admin.equals(req.authUser._id))) {
+            return next();
+          } else {
+            return next(new HttpError('Must be logged in as this user or an admin', 403));
+          }
+        });
+    } else {
+      return next(new HttpError('Must be logged in as this user or an admin', 403));
+    }
+  },
   (req, res, next) => {
     jsonpatch.apply(req.user, routeUtils.filterJsonPatch(req.body, User));
 
