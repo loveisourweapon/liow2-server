@@ -175,7 +175,16 @@ router.delete(
       .exec()
       // TODO: can this be done with a post remove hook?
       .then(() => Act.remove({ user: userId }).exec())
-      // TODO: check if user is group admin?
+      // TODO: can this be done more nicely?
+      .then(() => Group.find({ admins: userId }).exec())
+      .then((adminOfGroups) =>
+        Promise.all(
+          adminOfGroups.map((group) => {
+            group.admins = group.admins.filter((groupAdminId) => !groupAdminId.equals(userId));
+            return group.save();
+          })
+        )
+      )
       .then(() => req.user.remove())
       .then(() => res.status(204).send())
       .catch((err) => next(err));
