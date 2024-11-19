@@ -3,7 +3,10 @@ var router = require('express').Router();
 var routeUtils = require('../utils/route');
 var mailUtils = require('../utils/mail');
 
+var Act = require('../models/Act');
+var Comment = require('../models/Comment');
 var Group = require('../models/Group');
+var User = require('../models/User');
 
 router.param('group', partialRight(routeUtils.paramHandler, Group));
 
@@ -93,7 +96,28 @@ router.delete(
   '/:group',
   routeUtils.ensureAuthenticated,
   partialRight(routeUtils.ensureSameUser, 'group.owner'),
-  partialRight(routeUtils.deleteByParam, 'group')
+  (req, res, next) => {
+    const groupId = req.group._id;
+
+    // TODO: can this be done with a post remove hook?
+    Comment.remove({ group: groupId })
+      .exec()
+      // TODO: can this be done with a post remove hook?
+      .then(() => Act.remove({ group: groupId }).exec())
+      // TODO: can this be done more nicely?
+      .then(() => User.find({ groups: groupId }).exec())
+      .then((usersInGroup) =>
+        Promise.all(
+          usersInGroup.map((user) => {
+            user.groups = user.groups.filter((userGroupId) => !userGroupId.equals(groupId));
+            return user.save();
+          })
+        )
+      )
+      .then(() => req.group.remove())
+      .then(() => res.status(204).send())
+      .catch((err) => next(err));
+  }
 );
 
 module.exports = router;
