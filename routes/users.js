@@ -7,6 +7,8 @@ var mailUtils = require('../utils/mail');
 var routeUtils = require('../utils/route');
 var router = require('express').Router();
 
+var Act = require('../models/Act');
+var Comment = require('../models/Comment');
 var Group = require('../models/Group');
 var User = require('../models/User');
 
@@ -158,6 +160,33 @@ router.patch(
     req.user
       .save()
       .then((user) => res.status(200).json(user))
+      .catch((err) => next(err));
+  }
+);
+
+router.delete(
+  '/:user',
+  routeUtils.ensureAuthenticated,
+  partialRight(routeUtils.ensureSameUser, 'user._id'),
+  (req, res, next) => {
+    const userId = req.user._id;
+    // TODO: can this be done with a post remove hook?
+    Comment.remove({ user: userId })
+      .exec()
+      // TODO: can this be done with a post remove hook?
+      .then(() => Act.remove({ user: userId }).exec())
+      // TODO: can this be done more nicely?
+      .then(() => Group.find({ admins: userId }).exec())
+      .then((adminOfGroups) =>
+        Promise.all(
+          adminOfGroups.map((group) => {
+            group.admins = group.admins.filter((groupAdminId) => !groupAdminId.equals(userId));
+            return group.save();
+          })
+        )
+      )
+      .then(() => req.user.remove())
+      .then(() => res.status(204).send())
       .catch((err) => next(err));
   }
 );
