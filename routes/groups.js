@@ -122,9 +122,30 @@ router.delete(
 );
 
 /**
- * @api {post} /groups/approve Handle approve group
+ * @api {post} /groups/:group/approve Handle approve group
  * @apiVersion 1.22.0
  * @apiName ApproveGroup
+ * @apiGroup Auth
+ * @apiPermission superAdmin
+ *
+ * @apiUse NoContentResponse
+ */
+router.post(
+  '/:group/approve',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  (req, res, next) => {
+    Group.findByIdAndUpdate(req.group, { approved: true })
+      .exec()
+      .then(() => res.status(204).send())
+      .catch((err) => next(err));
+  }
+);
+
+/**
+ * @api {post} /groups/approve Handle approve group with token
+ * @apiVersion 1.22.0
+ * @apiName ApproveGroupWithToken
  * @apiGroup Auth
  * @apiPermission superAdmin
  *
