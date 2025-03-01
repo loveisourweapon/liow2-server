@@ -62,15 +62,23 @@ function renderHtmlTemplate(template, tags) {
 }
 
 /**
- * Get a token for confirmation and reset password emails
+ * Get a token for confirmation, reset password and approve group emails
  *
- * @param {object} user
  * @param {string} type
+ * @param {object} user
+ * @param {object} group
  *
  * @returns {Promise}
  */
-function getToken(user, type) {
-  return new Token({ user: user._id, type }).save();
+function getToken(type, user, group) {
+  var tokenDetails = { type };
+  if (type === 'confirm' || type === 'reset') {
+    tokenDetails.user = user._id;
+  }
+  if (type === 'approve') {
+    tokenDetails.group = group._id;
+  }
+  return new Token(tokenDetails).save();
 }
 
 /**
@@ -82,7 +90,7 @@ function getToken(user, type) {
  * @returns {Promise}
  */
 function sendConfirmEmail(user, baseUrl) {
-  return getToken(user, 'confirm')
+  return getToken('confirm', user)
     .then((token) =>
       renderHtmlTemplate(
         'confirm-email',
@@ -121,7 +129,7 @@ function sendConfirmEmail(user, baseUrl) {
  * @returns {Promise}
  */
 function sendPasswordReset(user, baseUrl) {
-  return getToken(user, 'reset')
+  return getToken('reset', user)
     .then((token) =>
       renderHtmlTemplate(
         'password-reset',
@@ -161,26 +169,29 @@ function sendPasswordReset(user, baseUrl) {
  * @returns {Promise}
  */
 function sendGroupSignup(group, owner, baseUrl) {
-  return renderHtmlTemplate(
-    'group-signup',
-    defaults(
-      {
-        group,
-        owner,
-        baseUrl,
-      },
-      TEMPLATE_DEFAULTS
-    )
-  ).then((template) =>
-    sendEmail(
+  return getToken('approve', null, group).then((token) =>
+    renderHtmlTemplate(
+      'group-signup',
       defaults(
         {
-          to: `Love is our Weapon <${config.emails.admin}>`,
-          subject: `${group.name} joined Love is our Weapon`,
-          text: template.text,
-          html: template.html,
+          group,
+          owner,
+          baseUrl,
+          token: token.token,
         },
-        MAIL_DEFAULTS
+        TEMPLATE_DEFAULTS
+      )
+    ).then((template) =>
+      sendEmail(
+        defaults(
+          {
+            to: `Love is our Weapon <${config.emails.admin}>`,
+            subject: `${group.name} joined Love is our Weapon`,
+            text: template.text,
+            html: template.html,
+          },
+          MAIL_DEFAULTS
+        )
       )
     )
   );

@@ -66,7 +66,7 @@ router.post('/', (req, res, next) => {
  */
 router.get('/me', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.authUser
-    .populate('groups', 'name urlName admins')
+    .populate('groups', 'name urlName admins approved')
     .execPopulate()
     .then((user) => res.status(200).send(user.toJSON(true)))
     .catch((err) => next(err));
