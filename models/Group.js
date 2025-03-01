@@ -24,6 +24,7 @@ var GroupSchema = new mongoose.Schema({
   },
   urlName: { type: String, required: true, unique: true },
   owner: { type: ObjectId, ref: 'User', required: true },
+  contactNumber: { type: String, required: true },
   admins: {
     type: [{ type: ObjectId, ref: 'User' }],
     required: true,
@@ -57,7 +58,7 @@ GroupSchema.pre('validate', function (next) {
 });
 
 GroupSchema.statics.getFilter = function () {
-  return ['name', 'logo', 'coverImage', 'admins', 'welcomeMessage'];
+  return ['name', 'contactNumber', 'logo', 'coverImage', 'admins', 'welcomeMessage'];
 };
 
 GroupSchema.statics.getSearchable = function () {
@@ -75,6 +76,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess {string}  groups.name           Group name
  * @apiSuccess {string}  groups.urlName        Group URL name
  * @apiSuccess {string}  groups.owner          User ObjectId
+ * @apiSuccess {string}  groups.contactNumber  Group owner contact number
  * @apiSuccess {string}  groups.admins         List of user ObjectId's
  * @apiSuccess {string}  groups.country        Country ObjectId
  * @apiSuccess {string}  groups.logo           Group logo URL
@@ -91,6 +93,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "name": "Group Name",
  *     "urlName": "group-name",
  *     "owner": "55f6c56186b959ac12490e1a",
+ *     "contactNumber": "0400123456",
  *     "admins": ["55f6c56186b959ac12490e1a"],
  *     "country": "55f6c56186b959ac12490e1b",
  *     "logo": "https://example.com/images/group-logo.png",
@@ -111,6 +114,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess {string}  group.name           Group name
  * @apiSuccess {string}  group.urlName        Group URL name
  * @apiSuccess {string}  group.owner          User ObjectId
+ * @apiSuccess {string}  group.contactNumber  Group owner contact number
  * @apiSuccess {string}  group.admins         List of user ObjectId's
  * @apiSuccess {string}  group.country        Country ObjectId
  * @apiSuccess {string}  group.logo           Group logo URL
@@ -127,6 +131,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "name": "Group Name",
  *     "urlName": "group-name",
  *     "owner": "55f6c56186b959ac12490e1a",
+ *     "contactNumber": "0400123456",
  *     "admins": ["55f6c56186b959ac12490e1a"],
  *     "country": "55f6c56186b959ac12490e1b",
  *     "logo": "https://example.com/images/group-logo.png",
@@ -140,9 +145,10 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupRequestBody
- * @apiVersion 1.7.2
+ * @apiVersion 1.22.0
  *
  * @apiParam (Body) {string}   name             Group name
+ * @apiParam (Body) {string}   [contactNumber]  Group owner contact number
  * @apiParam (Body) {string}   [logo]           Group logo URL
  * @apiParam (Body) {string}   [coverImage]     Group cover image URL
  * @apiParam (Body) {string[]} [admins]         List of user ObjectId's
@@ -151,6 +157,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiParamExample {json} Request
  *   {
  *     "name": "Group Name",
+ *     "contactNumber": "0400123456",
  *     "logo": "https://example.com/images/group-logo.png",
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "admins": ["55f6c56186b959ac12490e1a", "55f6c56186b959ac12490e1d"],
@@ -167,6 +174,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess (201) {string}  group.name           Group name
  * @apiSuccess (201) {string}  group.urlName        Group URL name
  * @apiSuccess (201) {string}  group.owner          User ObjectId
+ * @apiSuccess (201) {string}  group.contactNumber  Group owner contact number
  * @apiSuccess (201) {string}  group.admins         List of user ObjectId's
  * @apiSuccess (201) {string}  group.country        Country ObjectId
  * @apiSuccess (201) {string}  group.logo           Group logo URL
@@ -182,6 +190,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "name": "Group Name",
  *     "urlName": "group-name",
  *     "owner": "55f6c56186b959ac12490e1a",
+ *     "contactNumber": "0400123456",
  *     "admins": ["55f6c56186b959ac12490e1a"],
  *     "country": "55f6c56186b959ac12490e1b",
  *     "logo": "https://example.com/images/group-logo.png",
