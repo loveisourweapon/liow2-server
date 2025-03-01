@@ -38,6 +38,10 @@ router.get('/', partialRight(routeUtils.getAll, User));
  * @apiUse CreateUserResponse
  */
 router.post('/', (req, res, next) => {
+  if (!req.body.acceptTerms) {
+    return next(new HttpError('You must accept the terms and conditions', 403));
+  }
+
   req.body = routeUtils.filterProperties(req.body, User);
 
   // Copy currentGroup from groups property

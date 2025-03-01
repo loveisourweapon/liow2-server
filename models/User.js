@@ -204,16 +204,17 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine UserRequestBody
- * @apiVersion 1.7.0
+ * @apiVersion 1.22.0
  *
- * @apiParam (Body) {string}   email        User's email address
- * @apiParam (Body) {string}   password     User's password
- * @apiParam (Body) {string}   firstName    User's first name
- * @apiParam (Body) {string}   [lastName]   User's last name
- * @apiParam (Body) {string}   [picture]    User's profile picture URL
- * @apiParam (Body) {string}   [coverImage] User's cover image URL
- * @apiParam (Body) {string}   [country]    Country ObjectId
- * @apiParam (Body) {string[]} [groups]     List of group ObjectId's
+ * @apiParam (Body) {string}   email         User's email address
+ * @apiParam (Body) {string}   password      User's password
+ * @apiParam (Body) {string}   firstName     User's first name
+ * @apiParam (Body) {string}   [lastName]    User's last name
+ * @apiParam (Body) {boolean}  [acceptTerms] Flag to indicate if user has accepted terms
+ * @apiParam (Body) {string}   [picture]     User's profile picture URL
+ * @apiParam (Body) {string}   [coverImage]  User's cover image URL
+ * @apiParam (Body) {string}   [country]     Country ObjectId
+ * @apiParam (Body) {string[]} [groups]      List of group ObjectId's
  *
  * @apiParamExample {json} Request
  *   {
@@ -221,6 +222,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "password": "password123",
  *     "firstName": "Fred",
  *     "lastName": "Bloggs",
+ *     "acceptTerms": false,
  *     "picture": "https://example.com/images/picture.png",
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "country": "55f6c56186b959ac12490e1a",
