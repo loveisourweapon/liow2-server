@@ -42,6 +42,7 @@ router.post('/', (req, res, next) => {
     return next(new HttpError('You must accept the terms and conditions', 403));
   }
 
+  var marketingOptIn = req.body.marketingOptIn;
   req.body = routeUtils.filterProperties(req.body, User);
 
   // Copy currentGroup from groups property
@@ -52,7 +53,12 @@ router.post('/', (req, res, next) => {
   new User(req.body)
     .save()
     .then((user) => {
-      mailUtils.sendConfirmEmail(user);
+      mailUtils
+        .sendConfirmEmail(user)
+        .catch((err) => console.error('Error sending confirm email.', err));
+      mailUtils
+        .sendMarketingContact(user, marketingOptIn)
+        .catch((err) => console.error('Error sending marketing contact.', err));
 
       res.status(201).location(`/users/${user._id}`).json(user);
     })

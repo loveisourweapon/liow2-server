@@ -2,6 +2,7 @@ var config = require('../utils/config')();
 var defaults = require('lodash/defaults');
 var moment = require('moment');
 var path = require('path');
+var request = require('request');
 var EmailTemplate = require('email-templates').EmailTemplate;
 var mailgun = require('mailgun-js')(config.auth.mailgun);
 
@@ -196,6 +197,7 @@ function sendGroupSignup(group, owner, baseUrl) {
     )
   );
 }
+
 /**
  * Send email to site admin when the contact form is filled out
  *
@@ -220,9 +222,45 @@ function sendContactEmail(contactForm) {
   );
 }
 
+var BREVO_BASE_URL = 'https://api.brevo.com';
+
+/**
+ * Send new signup email to Brevo (email marketing platform)
+ *
+ * @param {object} user
+ * @param {boolean} marketingOptIn
+ *
+ * @returns {Promise}
+ */
+function sendMarketingContact(user, marketingOptIn) {
+  const url = `${BREVO_BASE_URL}/v3/contacts`;
+  const payload = {
+    email: user.email,
+    attributes: {
+      FIRSTNAME: user.firstName,
+      LASTNAME: user.lastName,
+    },
+    listIds: [config.auth.brevo.signupListId],
+    emailBlacklisted: !marketingOptIn,
+  };
+  return new Promise((resolve, reject) => {
+    request.post(
+      { url, body: payload, json: true, headers: { 'api-key': config.auth.brevo.apiKey } },
+      (err, response, body) => {
+        if (err || response.statusCode < 200 || response.statusCode >= 300) {
+          return reject(err);
+        }
+        resolve(body);
+      }
+    );
+  });
+}
+
 module.exports = {
   sendConfirmEmail,
   sendPasswordReset,
   sendGroupSignup,
   sendContactEmail,
+
+  sendMarketingContact,
 };
