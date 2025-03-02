@@ -32,5 +32,10 @@ module.exports = {
       domain: 'YOUR_MAILGUN_DOMAIN', // LIOW_AUTH_MAILGUN_DOMAIN
       apiKey: 'YOUR_MAILGUN_API_KEY', // LIOW_AUTH_MAILGUN_API_KEY
     },
+
+    brevo: {
+      apiKey: 'YOUR_BREVO_API_KEY', // LIOW_AUTH_BREVO_API_KEY
+      signupListId: 0, // LIOW_AUTH_BREVO_SIGNUP_LIST_ID
+    },
   },
 };

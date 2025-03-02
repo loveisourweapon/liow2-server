@@ -6,6 +6,7 @@ var mailUtils = require('../utils/mail');
 var Act = require('../models/Act');
 var Comment = require('../models/Comment');
 var Group = require('../models/Group');
+var Token = require('../models/Token');
 var User = require('../models/User');
 
 router.param('group', partialRight(routeUtils.paramHandler, Group));
@@ -116,6 +117,55 @@ router.delete(
       )
       .then(() => req.group.remove())
       .then(() => res.status(204).send())
+      .catch((err) => next(err));
+  }
+);
+
+/**
+ * @api {post} /groups/:group/approve Handle approve group
+ * @apiVersion 1.22.0
+ * @apiName ApproveGroup
+ * @apiGroup Auth
+ * @apiPermission superAdmin
+ *
+ * @apiUse NoContentResponse
+ */
+router.post(
+  '/:group/approve',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  (req, res, next) => {
+    Group.findByIdAndUpdate(req.group, { approved: true })
+      .exec()
+      .then(() => res.status(204).send())
+      .catch((err) => next(err));
+  }
+);
+
+/**
+ * @api {post} /groups/approve Handle approve group with token
+ * @apiVersion 1.22.0
+ * @apiName ApproveGroupWithToken
+ * @apiGroup Auth
+ * @apiPermission superAdmin
+ *
+ * @apiParam (Body) {string} token Group approval token
+ *
+ * @apiUse NoContentResponse
+ */
+router.post(
+  '/approve',
+  routeUtils.ensureAuthenticated,
+  routeUtils.ensureSuperAdmin,
+  (req, res, next) => {
+    Token.findOne({ token: req.body.token, type: 'approve' })
+      .exec()
+      .then((token) => {
+        return Group.findByIdAndUpdate(token.group, { approved: true })
+          .exec()
+          .then(() => token.remove())
+          .then(() => res.status(204).send());
+      })
       .catch((err) => next(err));
   }
 );

@@ -2,6 +2,7 @@ var config = require('../utils/config')();
 var defaults = require('lodash/defaults');
 var moment = require('moment');
 var path = require('path');
+var request = require('request');
 var EmailTemplate = require('email-templates').EmailTemplate;
 var mailgun = require('mailgun-js')(config.auth.mailgun);
 
@@ -62,15 +63,23 @@ function renderHtmlTemplate(template, tags) {
 }
 
 /**
- * Get a token for confirmation and reset password emails
+ * Get a token for confirmation, reset password and approve group emails
  *
- * @param {object} user
  * @param {string} type
+ * @param {object} user
+ * @param {object} group
  *
  * @returns {Promise}
  */
-function getToken(user, type) {
-  return new Token({ user: user._id, type }).save();
+function getToken(type, user, group) {
+  var tokenDetails = { type };
+  if (type === 'confirm' || type === 'reset') {
+    tokenDetails.user = user._id;
+  }
+  if (type === 'approve') {
+    tokenDetails.group = group._id;
+  }
+  return new Token(tokenDetails).save();
 }
 
 /**
@@ -82,7 +91,7 @@ function getToken(user, type) {
  * @returns {Promise}
  */
 function sendConfirmEmail(user, baseUrl) {
-  return getToken(user, 'confirm')
+  return getToken('confirm', user)
     .then((token) =>
       renderHtmlTemplate(
         'confirm-email',
@@ -121,7 +130,7 @@ function sendConfirmEmail(user, baseUrl) {
  * @returns {Promise}
  */
 function sendPasswordReset(user, baseUrl) {
-  return getToken(user, 'reset')
+  return getToken('reset', user)
     .then((token) =>
       renderHtmlTemplate(
         'password-reset',
@@ -161,30 +170,34 @@ function sendPasswordReset(user, baseUrl) {
  * @returns {Promise}
  */
 function sendGroupSignup(group, owner, baseUrl) {
-  return renderHtmlTemplate(
-    'group-signup',
-    defaults(
-      {
-        group,
-        owner,
-        baseUrl,
-      },
-      TEMPLATE_DEFAULTS
-    )
-  ).then((template) =>
-    sendEmail(
+  return getToken('approve', null, group).then((token) =>
+    renderHtmlTemplate(
+      'group-signup',
       defaults(
         {
-          to: `Love is our Weapon <${config.emails.admin}>`,
-          subject: `${group.name} joined Love is our Weapon`,
-          text: template.text,
-          html: template.html,
+          group,
+          owner,
+          baseUrl,
+          token: token.token,
         },
-        MAIL_DEFAULTS
+        TEMPLATE_DEFAULTS
+      )
+    ).then((template) =>
+      sendEmail(
+        defaults(
+          {
+            to: `Love is our Weapon <${config.emails.admin}>`,
+            subject: `${group.name} joined Love is our Weapon`,
+            text: template.text,
+            html: template.html,
+          },
+          MAIL_DEFAULTS
+        )
       )
     )
   );
 }
+
 /**
  * Send email to site admin when the contact form is filled out
  *
@@ -209,9 +222,45 @@ function sendContactEmail(contactForm) {
   );
 }
 
+var BREVO_BASE_URL = 'https://api.brevo.com';
+
+/**
+ * Send new signup email to Brevo (email marketing platform)
+ *
+ * @param {object} user
+ * @param {boolean} marketingOptIn
+ *
+ * @returns {Promise}
+ */
+function sendMarketingContact(user, marketingOptIn) {
+  const url = `${BREVO_BASE_URL}/v3/contacts`;
+  const payload = {
+    email: user.email,
+    attributes: {
+      FIRSTNAME: user.firstName,
+      LASTNAME: user.lastName,
+    },
+    listIds: [config.auth.brevo.signupListId],
+    emailBlacklisted: !marketingOptIn,
+  };
+  return new Promise((resolve, reject) => {
+    request.post(
+      { url, body: payload, json: true, headers: { 'api-key': config.auth.brevo.apiKey } },
+      (err, response, body) => {
+        if (err || response.statusCode < 200 || response.statusCode >= 300) {
+          return reject(err);
+        }
+        resolve(body);
+      }
+    );
+  });
+}
+
 module.exports = {
   sendConfirmEmail,
   sendPasswordReset,
   sendGroupSignup,
   sendContactEmail,
+
+  sendMarketingContact,
 };

@@ -4,5 +4,11 @@ Name: {{ group.name }}
 URL: {{ baseUrl }}/g/{{ group.urlName }}
 Owner: {{ owner.name }}
 Email: {{ owner.email }}
+Phone: {{ group.contactNumber }}
+
+Click the following link, or copy and paste it into your web browser to
+approve this group to run a campaign:
+
+  {{ baseUrl }}/approve/{{ token }}
 
   -- The Love is our Weapon team

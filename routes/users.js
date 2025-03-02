@@ -38,6 +38,11 @@ router.get('/', partialRight(routeUtils.getAll, User));
  * @apiUse CreateUserResponse
  */
 router.post('/', (req, res, next) => {
+  if (!req.body.acceptTerms) {
+    return next(new HttpError('You must accept the terms and conditions', 403));
+  }
+
+  var marketingOptIn = req.body.marketingOptIn;
   req.body = routeUtils.filterProperties(req.body, User);
 
   // Copy currentGroup from groups property
@@ -48,7 +53,12 @@ router.post('/', (req, res, next) => {
   new User(req.body)
     .save()
     .then((user) => {
-      mailUtils.sendConfirmEmail(user);
+      mailUtils
+        .sendConfirmEmail(user)
+        .catch((err) => console.error('Error sending confirm email.', err));
+      mailUtils
+        .sendMarketingContact(user, marketingOptIn)
+        .catch((err) => console.error('Error sending marketing contact.', err));
 
       res.status(201).location(`/users/${user._id}`).json(user);
     })
@@ -66,7 +76,7 @@ router.post('/', (req, res, next) => {
  */
 router.get('/me', routeUtils.ensureAuthenticated, (req, res, next) => {
   req.authUser
-    .populate('groups', 'name urlName admins')
+    .populate('groups', 'name urlName admins approved')
     .execPopulate()
     .then((user) => res.status(200).send(user.toJSON(true)))
     .catch((err) => next(err));
