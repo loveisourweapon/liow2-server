@@ -34,7 +34,7 @@ router.get('/:country', partialRight(routeUtils.getByParam, 'country'));
 
 /**
  * @api {get} /countries/:country/groups Get country groups
- * @apiVersion 1.0.0
+ * @apiVersion 1.22.0
  * @apiName GetCountryGroups
  * @apiGroup Countries
  * @apiPermission none

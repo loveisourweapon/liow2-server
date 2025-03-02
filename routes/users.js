@@ -29,7 +29,7 @@ router.get('/', partialRight(routeUtils.getAll, User));
 
 /**
  * @api {post} /users Create user
- * @apiVersion 1.7.0
+ * @apiVersion 1.22.0
  * @apiName PostUsers
  * @apiGroup Users
  * @apiPermission none
@@ -97,7 +97,7 @@ router.get('/:user', partialRight(routeUtils.getByParam, 'user'));
 
 /**
  * @api {put} /users/:user Update user
- * @apiVersion 1.7.0
+ * @apiVersion 1.22.0
  * @apiName PutUser
  * @apiGroup Users
  * @apiPermission owner
