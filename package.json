@@ -39,7 +39,7 @@
     "handlebars": "4.1.2",
     "jsonwebtoken": "7.1.9",
     "lodash": "4.17.13",
-    "mailgun-js": "0.7.13",
+    "mailgun-js": "0.22.0",
     "moment": "2.19.3",
     "mongoose": "4.6.8",
     "mongoose-unique-validator": "1.0.2",
@@ -48,7 +48,7 @@
     "request": "2.78.0"
   },
   "devDependencies": {
-    "apidoc": "0.16.1",
+    "apidoc": "1.2.0",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
     "istanbul": "0.4.5",
