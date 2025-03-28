@@ -19,6 +19,7 @@ var campaigns = require('./routes/campaigns');
 var likes = require('./routes/likes');
 var comments = require('./routes/comments');
 var feeds = require('./routes/feeds');
+var salvationTestimonies = require('./routes/salvationTestimonies');
 
 // Connect to database
 var db = mongoose.connection;
@@ -60,6 +61,7 @@ app.use('/campaigns', campaigns);
 app.use('/likes', likes);
 app.use('/comments', comments);
 app.use('/feeds', feeds);
+app.use('/salvations', salvationTestimonies);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
