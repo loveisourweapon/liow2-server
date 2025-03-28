@@ -70,3 +70,33 @@ module.exports = mongoose.model('SalvationTestimony', SalvationTestimonySchema);
  *     "group": "55f6c58086b959ac12490e1c"
  *   }
  */
+
+/**
+ * @apiDefine CreateSalvationTestimonyResponse
+ * @apiVersion 1.23.0
+ *
+ * @apiSuccess (201) {SalvationTestimony} testimony          Created testimony
+ * @apiSuccess (201) {string}           testimony._id      Testimony ObjectId
+ * @apiSuccess (201) {string}           testimony.user     User ObjectId
+ * @apiSuccess (201) {string}           testimony.group    Group ObjectId
+ * @apiSuccess (201) {string}           testimony.campaign Campaign ObjectId
+ * @apiSuccess (201) {string}           testimony.isFor    Who the testimony is for
+ * @apiSuccess (201) {string}           testimony.commitmentType Type of commitment
+ * @apiSuccess (201) {string}           testimony.ageRange Age range of the person
+ * @apiSuccess (201) {string}           testimony.churchConnection Church connection status
+ * @apiSuccess (201) {Date}             testimony.created  Created timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 201 Created
+ *   {
+ *     "_id": "55f6c56186b959ac12490e1e",
+ *     "user": "55f6c57486b959ac12490e1a",
+ *     "group": "55f6c58086b959ac12490e1c",
+ *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "isFor": "self",
+ *     "commitmentType": "new",
+ *     "ageRange": "18-25",
+ *     "churchConnection": "member",
+ *     "created": "2024-03-14T13:56:27.250Z"
+ *   }
+ */
