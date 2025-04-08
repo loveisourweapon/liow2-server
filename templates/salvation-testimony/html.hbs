@@ -1,0 +1,66 @@
+<body itemscope itemtype='http://schema.org/EmailMessage'>
+
+  <table class='body-wrap'>
+    <tr>
+      <td></td>
+      <td class='container' width='600'>
+        <div class='content'>
+          <table class='main' width='100%' cellpadding='0' cellspacing='0'>
+            <tr>
+              <td class='content-wrap'>
+                <table width='100%' cellpadding='0' cellspacing='0'>
+                  <tr>
+                    <td class='content-block'>
+                      <img
+                        src='https://loveisourweapon.com/images/logo-navbar.png'
+                        class='logo'
+                        alt='Love is our Weapon logo'
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      A new salvation testimony has been recorded!
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      <b>User:</b>
+                      {{user.name}}<br />
+                      <b>Group:</b>
+                      {{#if group}}{{group.name}}{{else}}No group{{/if}}<br />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      I'm sharing this for
+                      <b>{{salvationTestimony.isFor}}</b>.<br />
+
+                      This decision is a
+                      <b>{{salvationTestimony.commitmentType}}</b>.<br />
+
+                      This person is approximately
+                      <b>{{salvationTestimony.ageRange}}</b>
+                      years old.<br />
+
+                      This person
+                      <b>{{salvationTestimony.churchConnection}}</b>
+                      connected to a church.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class='content-block'>
+                      &mdash; The Love is our Weapon team
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td></td>
+    </tr>
+  </table>
+
+</body>

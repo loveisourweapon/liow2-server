@@ -199,6 +199,41 @@ function sendGroupSignup(group, owner, baseUrl) {
 }
 
 /**
+ * Send email to site admin when a new salvation testimony is recorded
+ *
+ * @param {object} salvationTestimony
+ * @param {object} user
+ * @param {object} group
+ *
+ * @returns {Promise}
+ */
+function sendSalvationTestimony(salvationTestimony, user, group) {
+  return renderHtmlTemplate(
+    'salvation-testimony',
+    defaults(
+      {
+        salvationTestimony,
+        user,
+        group,
+      },
+      TEMPLATE_DEFAULTS
+    )
+  ).then((template) =>
+    sendEmail(
+      defaults(
+        {
+          to: `Love is our Weapon <${config.emails.admin}>`,
+          subject: `New Salvation Testimony from ${user.name}`,
+          text: template.text,
+          html: template.html,
+        },
+        MAIL_DEFAULTS
+      )
+    )
+  );
+}
+
+/**
  * Send email to site admin when the contact form is filled out
  *
  * @param {object} contactForm
@@ -260,6 +295,7 @@ module.exports = {
   sendConfirmEmail,
   sendPasswordReset,
   sendGroupSignup,
+  sendSalvationTestimony,
   sendContactEmail,
 
   sendMarketingContact,
