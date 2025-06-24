@@ -62,6 +62,40 @@
  */
 
 /**
+ * @apiDefine UsersResponse
+ * @apiVersion 1.24.0
+ *
+ * @apiSuccess {User[]}   users           List of users
+ * @apiSuccess {string}   users._id        User ObjectId
+ * @apiSuccess {string}   users.firstName  User's first name
+ * @apiSuccess {string}   users.lastName   User's last name
+ * @apiSuccess {string}   users.name       User's full name
+ * @apiSuccess {string}   users.picture    User's profile picture URL
+ * @apiSuccess {string}   users.coverImage User cover image URL
+ * @apiSuccess {string}   users.country    Country ObjectId
+ * @apiSuccess {string[]} users.groups     List of group ObjectId's
+ * @apiSuccess {boolean}  users.confirmed  Has user confirmed email address
+ * @apiSuccess {Date}     users.created    Created timestamp
+ * @apiSuccess {Date}     users.modified   Modified timestamp
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 200 OK
+ *   [{
+ *     "_id": "55f6c56186b959ac12490e1c",
+ *     "firstName": "Fred",
+ *     "lastName": "Bloggs",
+ *     "name": "Fred Bloggs",
+ *     "picture": "https://example.com/images/picture.png",
+ *     "coverImage": "https://example.com/images/cover-image.png",
+ *     "country": "55f6c56186b959ac12490e1a",
+ *     "groups": ["55f6c56186b959ac12490e1b"],
+ *     "confirmed": true,
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T14:32:27.250Z"
+ *   }]
+ */
+
+/**
  * @apiDefine UserResponse
  * @apiVersion 1.6.0
  *
