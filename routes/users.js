@@ -15,8 +15,8 @@ var User = require('../models/User');
 router.param('user', partialRight(routeUtils.paramHandler, User));
 
 /**
- * @api {get} /users Get users with access control
- * @apiVersion 1.24.0
+ * @api {get} /users List users
+ * @apiVersion 1.24.1
  * @apiName GetUsers
  * @apiGroup Users
  * @apiPermission varies
