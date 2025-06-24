@@ -15,17 +15,66 @@ var User = require('../models/User');
 router.param('user', partialRight(routeUtils.paramHandler, User));
 
 /**
- * @api {get} /users Count users
- * @apiVersion 1.1.0
- * @apiName CountUsers
+ * @api {get} /users Get users with access control
+ * @apiVersion 1.24.0
+ * @apiName GetUsers
  * @apiGroup Users
- * @apiPermission none
+ * @apiPermission varies
  *
- * @apiSuccessExample {text} Response
- *   HTTP/1.1 200 OK
- *   "2796"
+ * @apiDescription Access control:
+ * - Super admins can fetch and query all users
+ * - Group admins can query users within groups they admin (using ?groups=)
+ * - Regular/unauthenticated users can only get count with ?count=true
+ *
+ * @apiParam {boolean} [count=true] Return count only (required for unauthenticated users)
+ * @apiParam {string} [groups] Comma-separated list of group IDs to filter by (group admins only)
+ *
+ * @apiUse UserResponse
  */
-router.get('/', partialRight(routeUtils.getAll, User));
+router.get('/', (req, res, next) => {
+  // Allow count requests for unauthenticated users (marketing landing page)
+  if (req.query.count === 'true') {
+    return routeUtils.getAll(req, res, next, User);
+  }
+
+  // For all other requests, require authentication
+  routeUtils.ensureAuthenticated(req, res, (err) => {
+    if (err) return next(err);
+
+    // Super admins can access all users
+    if (req.authUser.superAdmin) {
+      return routeUtils.getAll(req, res, next, User);
+    }
+
+    // Group admins can access users in groups they admin
+    if (req.query.groups) {
+      const groupIds = req.query.groups.split(',').map((id) => id.trim());
+
+      // Verify the user is an admin of at least one of the requested groups
+      return Group.find({
+        _id: { $in: groupIds },
+        admins: req.authUser._id,
+      })
+        .exec()
+        .then((adminGroups) => {
+          if (adminGroups.length === 0) {
+            return next(
+              new HttpError('Must be an admin of at least one of the requested groups', 403)
+            );
+          }
+
+          // Filter to only include groups where user is admin
+          const authorizedGroupIds = adminGroups.map((group) => group._id.toString());
+          req.query.groups = authorizedGroupIds.join(',');
+
+          return routeUtils.getAll(req, res, next, User);
+        });
+    }
+
+    // Regular users can only get count
+    return next(new HttpError('Must be an admin to access user data', 403));
+  });
+});
 
 /**
  * @api {post} /users Create user
