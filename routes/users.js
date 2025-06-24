@@ -16,7 +16,7 @@ router.param('user', partialRight(routeUtils.paramHandler, User));
 
 /**
  * @api {get} /users List users
- * @apiVersion 1.24.1
+ * @apiVersion 1.24.0
  * @apiName GetUsers
  * @apiGroup Users
  * @apiPermission varies
@@ -29,7 +29,7 @@ router.param('user', partialRight(routeUtils.paramHandler, User));
  * @apiParam {boolean} [count=true] Return count only (required for unauthenticated users)
  * @apiParam {string} [groups] Comma-separated list of group IDs to filter by (group admins only)
  *
- * @apiUse UserResponse
+ * @apiUse UsersResponse
  */
 router.get('/', (req, res, next) => {
   // Allow count requests for unauthenticated users (marketing landing page)
