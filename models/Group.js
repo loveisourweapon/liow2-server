@@ -70,7 +70,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupsResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess {Group[]} groups                List of groups
  * @apiSuccess {string}  groups._id            Group ObjectId
@@ -110,7 +110,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess {Group}   group                Group
  * @apiSuccess {string}  group._id            Group ObjectId
@@ -172,7 +172,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine CreateGroupResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess (201) {Group}   group                Group
  * @apiSuccess (201) {string}  group._id            Group ObjectId
