@@ -13,7 +13,7 @@ router.param('group', partialRight(routeUtils.paramHandler, Group));
 
 /**
  * @api {get} /groups List groups
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName GetGroups
  * @apiGroup Groups
  * @apiPermission none
@@ -24,7 +24,7 @@ router.get('/', partialRight(routeUtils.getAll, Group));
 
 /**
  * @api {post} /groups Create group
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName PostGroups
  * @apiGroup Groups
  * @apiPermission user
@@ -52,7 +52,7 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
 
 /**
  * @api {get} /groups/:group Get group
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName GetGroup
  * @apiGroup Groups
  * @apiPermission none
@@ -65,7 +65,7 @@ router.get('/:group', partialRight(routeUtils.getByParam, 'group', 'country'));
 
 /**
  * @api {put} /groups/:group Update group
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName PutGroup
  * @apiGroup Groups
  * @apiPermission admin

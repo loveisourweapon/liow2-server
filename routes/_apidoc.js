@@ -401,7 +401,7 @@
 
 /**
  * @api {post} /groups Create group
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName PostGroups
  * @apiGroup Groups
  * @apiPermission none
@@ -412,7 +412,7 @@
 
 /**
  * @api {put} /groups/:group Update group
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  * @apiName PutGroup
  * @apiGroup Groups
  * @apiPermission none
