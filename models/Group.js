@@ -45,6 +45,7 @@ var GroupSchema = new mongoose.Schema({
     validate: [modelUtils.validateIsClean, 'Please use clean language', 'isclean'],
   },
   approved: { type: Boolean, default: false, required: true },
+  archived: { type: Boolean, default: false, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: Date,
 });
@@ -58,7 +59,7 @@ GroupSchema.pre('validate', function (next) {
 });
 
 GroupSchema.statics.getFilter = function () {
-  return ['name', 'contactNumber', 'logo', 'coverImage', 'admins', 'welcomeMessage'];
+  return ['name', 'contactNumber', 'logo', 'coverImage', 'admins', 'welcomeMessage', 'archived'];
 };
 
 GroupSchema.statics.getSearchable = function () {
@@ -69,7 +70,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupsResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess {Group[]} groups                List of groups
  * @apiSuccess {string}  groups._id            Group ObjectId
@@ -83,6 +84,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess {string}  groups.coverImage     Group cover image URL
  * @apiSuccess {string}  groups.welcomeMessage Group welcome message
  * @apiSuccess {boolean} groups.approved       Has group been approved
+ * @apiSuccess {boolean} groups.archived       Has group been archived
  * @apiSuccess {Date}    groups.created        Created timestamp
  * @apiSuccess {Date}    groups.modified       Modified timestamp
  *
@@ -100,6 +102,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "welcomeMessage": "Example welcome message",
  *     "approved": true,
+ *     "archived": false,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
  *   }]
@@ -107,7 +110,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine GroupResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess {Group}   group                Group
  * @apiSuccess {string}  group._id            Group ObjectId
@@ -121,6 +124,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess {string}  group.coverImage     Group cover image URL
  * @apiSuccess {string}  group.welcomeMessage Group welcome message
  * @apiSuccess {boolean} group.approved       Has group been approved
+ * @apiSuccess {boolean} group.archived       Has group been archived
  * @apiSuccess {Date}    group.created        Created timestamp
  * @apiSuccess {Date}    group.modified       Modified timestamp
  *
@@ -138,6 +142,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "welcomeMessage": "Example welcome message",
  *     "approved": true,
+ *     "archived": false,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
  *   }
@@ -167,7 +172,7 @@ module.exports = mongoose.model('Group', GroupSchema);
 
 /**
  * @apiDefine CreateGroupResponse
- * @apiVersion 1.22.0
+ * @apiVersion 1.25.0
  *
  * @apiSuccess (201) {Group}   group                Group
  * @apiSuccess (201) {string}  group._id            Group ObjectId
@@ -181,6 +186,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  * @apiSuccess (201) {string}  group.coverImage     Group cover image URL
  * @apiSuccess (201) {string}  group.welcomeMessage Group welcome message
  * @apiSuccess (201) {boolean} group.approved       Has group been approved
+ * @apiSuccess (201) {boolean} group.archived       Has group been archived
  * @apiSuccess (201) {Date}    group.created        Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -197,6 +203,7 @@ module.exports = mongoose.model('Group', GroupSchema);
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "welcomeMessage": "Example welcome message",
  *     "approved": false,
+ *     "archived": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */

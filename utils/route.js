@@ -65,6 +65,13 @@ function buildQueryConditions(query, model) {
   // Set join operator
   var op = has(query, 'operator') ? query.operator : '$and';
 
+  // Handle archived items - exclude by default unless includeArchived=true
+  // Check if model schema has an 'archived' field to determine if it supports archiving
+  if (has(model.schema.paths, 'archived') && query.includeArchived !== 'true') {
+    // Exclude archived items: archived !== true (handles both false and undefined)
+    conditions.archived = { $ne: true };
+  }
+
   // Match schema fields
   var fields = filter(keys(query), (field) =>
     has(model.schema.paths, ~field.indexOf('.') ? field.substr(0, field.indexOf('.')) : field)
