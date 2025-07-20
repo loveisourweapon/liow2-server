@@ -1,4 +1,5 @@
 var partialRight = require('lodash/partialRight');
+var jsonpatch = require('fast-json-patch');
 var router = require('express').Router();
 var routeUtils = require('../utils/route');
 var mailUtils = require('../utils/mail');
@@ -80,6 +81,47 @@ router.put(
   routeUtils.ensureAuthenticated,
   partialRight(routeUtils.ensureAdminOf, 'group._id'),
   partialRight(routeUtils.putByParam, Group, 'group')
+);
+
+/**
+ * PATCH /groups/:group
+ */
+/**
+ * @api {patch} /groups/:group Partial update group
+ * @apiVersion 1.26.0
+ * @apiName PatchGroup
+ * @apiGroup Groups
+ * @apiPermission admin
+ *
+ * @apiParam {string} group Group ObjectId
+ *
+ * @apiParam (Body) {object[]} patches         JSON Patch patches
+ * @apiParam (Body) {string}   patches.op      Operation
+ * @apiParam (Body) {string}   patches.path    JSON Pointer path
+ * @apiParam (Body) {mixed}    [patches.value] New path value
+ *
+ * @apiParamExample {json} Request
+ *   [{
+ *     "op": "replace",
+ *     "path": "/archived",
+ *     "value": true
+ *   }]
+ *
+ * @apiUse NoContentResponse
+ */
+router.patch(
+  '/:group',
+  routeUtils.ensureAuthenticated,
+  partialRight(routeUtils.ensureAdminOf, 'group'),
+  (req, res, next) => {
+    jsonpatch.apply(req.group, routeUtils.filterJsonPatch(req.body, Group));
+    req.group.modified = new Date();
+
+    req.group
+      .save({ validateBeforeSave: false }) // TODO: ideally remove this, currently needed to allow patching archived status
+      .then(() => res.status(204).send())
+      .catch((err) => next(err));
+  }
 );
 
 /**
