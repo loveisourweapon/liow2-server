@@ -1,6 +1,8 @@
 services:
   server:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     depends_on:
       - mongo
     links:
@@ -15,7 +17,9 @@ services:
       - DEBUG=liow2:*
 
   test:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     command: nodemon --exec "npm test"
     depends_on:
       - mongo
