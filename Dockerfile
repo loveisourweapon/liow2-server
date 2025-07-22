@@ -11,6 +11,7 @@ WORKDIR ${APP_DIR}
 
 # Copy all application files
 COPY . ${APP_DIR}
+COPY config.example.js ${APP_DIR}/config.js
 
 # Install nodemon and node dependencies
 RUN npm install --quiet -g nodemon && \
