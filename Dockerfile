@@ -1,6 +1,9 @@
 FROM mhart/alpine-node:8
 MAINTAINER Ben Booth <hey@benbooth.dev>
 
+# Set Timezone
+ENV TZ Australia/Sydney
+
 # Add build dependencies for bcrypt and envsubst (gettext)
 RUN apk add --no-cache make gcc g++ python gettext
 
@@ -13,17 +16,13 @@ WORKDIR ${APP_DIR}
 COPY . ${APP_DIR}
 COPY config.example.js ${APP_DIR}/config.js
 
-# Install nodemon and node dependencies
-RUN npm install --quiet -g nodemon && \
-    npm install --quiet && \
+# Install node dependencies
+RUN npm install --quiet && \
     npm cache clear --force
 
 # Generate apidocs from environment variables
 RUN npm run config-env && \
     npm run docs
-
-# Set Timezone
-ENV TZ Australia/Sydney
 
 # Open app port
 EXPOSE 3000
