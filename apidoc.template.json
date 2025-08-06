@@ -1,6 +1,6 @@
 {
   "name": "${LIOW_SERVER_NAME} API Server",
-  "title": "${LIOW_SERVER_NAME} API Server",
+  "title": "${LIOW_SERVER_NAME} | API Server",
   "description": "The ${LIOW_SERVER_NAME} website API server",
   "url": "https://${LIOW_SERVER_HOST}",
   "order": [
