@@ -23,7 +23,6 @@ RUN npm install --quiet && \
 # Generate apidocs from environment variables
 ARG LIOW_SERVER_NAME
 ARG LIOW_SERVER_HOST
-ARG LIOW_SERVER_PORT
 RUN npm run config-env && \
     npm run docs
 
