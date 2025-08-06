@@ -6,6 +6,13 @@ module.exports = {
   // Sign all access tokens, change to something secret
   secret: 'notsosecret', // LIOW_SECRET
 
+  // Server configuration
+  server: {
+    name: 'Love is our Weapon', // LIOW_SERVER_NAME
+    host: 'localhost', // LIOW_SERVER_HOST
+    port: 3000, // LIOW_SERVER_PORT
+  },
+
   // Client application URLs
   client_urls: ['http://localhost:3000'], // LIOW_CLIENT_URLS
 

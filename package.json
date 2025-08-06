@@ -55,22 +55,5 @@
   },
   "engines": {
     "node": ">=8 <=10"
-  },
-  "apidoc": {
-    "name": "LIOW API Server",
-    "title": "LIOW API Server",
-    "url": "https://api.loveisourweapon.com",
-    "order": [
-      "Auth",
-      "Users",
-      "Deeds",
-      "Groups",
-      "Campaigns",
-      "Acts",
-      "Comments",
-      "Likes",
-      "Feeds",
-      "Countries"
-    ]
   }
 }

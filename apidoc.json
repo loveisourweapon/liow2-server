@@ -1,0 +1,17 @@
+{
+  "name": "Love is our Weapon API Server",
+  "title": "Love is our Weapon API Server",
+  "url": "https://api.loveisourweapon.com",
+  "order": [
+    "Auth",
+    "Users",
+    "Deeds",
+    "Groups",
+    "Campaigns",
+    "Acts",
+    "Comments",
+    "Likes",
+    "Feeds",
+    "Countries"
+  ]
+}
