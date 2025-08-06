@@ -50,6 +50,16 @@ if (app.get('env') !== 'testing') {
 app.use(cors({ origin: config.client_urls }));
 app.options('*', cors()); // CORS OPTIONS pre-flight request
 
+// Redirect to API documentation
+app.get('/', (req, res) => {
+  res.redirect(301, '/docs');
+});
+
+// Health check endpoint
+app.get('/healthz', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Add routes
 app.use('/auth', auth);
 app.use('/users', users);
