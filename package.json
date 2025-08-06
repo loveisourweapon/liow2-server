@@ -11,10 +11,7 @@
     "docs": "./node_modules/.bin/apidoc -i ./routes -i ./models -i ./utils -o ./public/docs",
     "version": "npm run docs && git add --all public/docs"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bkbooth/liow2-server.git"
-  },
+  "repository": "github:loveisourweapon/liow2-server",
   "keywords": [
     "Love",
     "Weapon",
@@ -25,7 +22,7 @@
     "express"
   ],
   "author": "Ben Booth <hey@benbooth.dev>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "bad-words": "1.6.5",
     "bcrypt": "3.0.8",
