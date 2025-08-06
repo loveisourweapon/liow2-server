@@ -9,6 +9,7 @@
     "test": "mocha",
     "test-cov": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R min",
     "docs": "./node_modules/.bin/apidoc -i ./routes -i ./models -i ./utils -o ./public/docs",
+    "config-env": "envsubst < apidoc.template.json > apidoc.json",
     "version": "npm run docs && git add --all public/docs"
   },
   "repository": "github:loveisourweapon/liow2-server",

@@ -1,8 +1,8 @@
 FROM mhart/alpine-node:8
 MAINTAINER Ben Booth <hey@benbooth.dev>
 
-# Add build dependencies for bcrypt
-RUN apk add --no-cache make gcc g++ python
+# Add build dependencies for bcrypt and envsubst (gettext)
+RUN apk add --no-cache make gcc g++ python gettext
 
 # Setup application directory
 ENV APP_DIR /usr/src/app/
@@ -17,6 +17,10 @@ COPY config.example.js ${APP_DIR}/config.js
 RUN npm install --quiet -g nodemon && \
     npm install --quiet && \
     npm cache clear --force
+
+# Generate apidocs from environment variables
+RUN npm run config-env && \
+    npm run docs
 
 # Set Timezone
 ENV TZ Australia/Sydney
