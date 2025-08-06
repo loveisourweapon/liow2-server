@@ -26,6 +26,14 @@ function buildConfig(config, path) {
     }
 
     var envVar = newPath.join('_').toUpperCase();
-    return has(process.env, envVar) ? process.env[envVar] : value;
+    if (has(process.env, envVar)) {
+      var envValue = process.env[envVar];
+      // If the environment variable contains commas, split it into an array
+      if (typeof envValue === 'string' && envValue.includes(',')) {
+        return envValue.split(',').map((item) => item.trim());
+      }
+      return envValue;
+    }
+    return value;
   });
 }
