@@ -1,5 +1,6 @@
 var config = require('../utils/config')();
 var defaults = require('lodash/defaults');
+var isArray = require('lodash/isArray');
 var moment = require('moment');
 var path = require('path');
 var request = require('request');
@@ -13,7 +14,7 @@ var MAIL_DEFAULTS = {
 };
 
 var TEMPLATE_DEFAULTS = {
-  baseUrl: config.client_urls[0],
+  baseUrl: isArray(config.client_urls) ? config.client_urls[0] : config.client_urls,
 };
 
 /**
