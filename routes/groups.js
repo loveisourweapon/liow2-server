@@ -153,6 +153,10 @@ router.delete(
         Promise.all(
           usersInGroup.map((user) => {
             user.groups = user.groups.filter((userGroupId) => !userGroupId.equals(groupId));
+            // Also clear currentGroup if it's the deleted group
+            if (user.currentGroup && user.currentGroup.equals(groupId)) {
+              user.currentGroup = undefined;
+            }
             return user.save();
           })
         )
