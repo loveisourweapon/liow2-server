@@ -1,7 +1,7 @@
-{{ group.name }} just signed up to run a campaign on Love is our Weapon!
+{{ group.name }} just signed up to run a campaign on {{ serverName }}!
 
 Name: {{ group.name }}
-URL: {{ baseUrl }}/g/{{ group.urlName }}
+URL: {{ baseHost }}/g/{{ group.urlName }}
 Owner: {{ owner.name }}
 Email: {{ owner.email }}
 Phone: {{ group.contactNumber }}
@@ -11,4 +11,4 @@ approve this group to run a campaign:
 
   {{ baseUrl }}/approve/{{ token }}
 
-  -- The Love is our Weapon team
+  -- The {{ serverName }} team

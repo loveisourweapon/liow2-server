@@ -10,11 +10,24 @@ var mailgun = require('mailgun-js')(config.auth.mailgun);
 var Token = require('../models/Token');
 
 var MAIL_DEFAULTS = {
-  from: `Love is our Weapon <${config.emails.mailer}>`,
+  from: `${config.server.name} <${config.emails.mailer}>`,
 };
 
+var clientUrl = isArray(config.client_urls) ? config.client_urls[0] : config.client_urls;
+var clientHost = clientUrl.split('://')[1];
+try {
+  var parsedUrl = new URL(clientUrl);
+  clientHost = parsedUrl.host;
+} catch (e) {
+  // Do nothing
+}
+
 var TEMPLATE_DEFAULTS = {
-  baseUrl: isArray(config.client_urls) ? config.client_urls[0] : config.client_urls,
+  baseUrl: clientUrl,
+  baseHost: clientHost,
+  serverEnv: config.server.env,
+  serverName: config.server.name,
+  supportEmail: config.emails.mailer,
 };
 
 /**
@@ -87,18 +100,16 @@ function getToken(type, user, group) {
  * Send email for user to confirm email address
  *
  * @param {object} user
- * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendConfirmEmail(user, baseUrl) {
+function sendConfirmEmail(user) {
   return getToken('confirm', user)
     .then((token) =>
       renderHtmlTemplate(
         'confirm-email',
         defaults(
           {
-            baseUrl,
             firstName: user.firstName,
             token: token.token,
             date: moment(token.expires).format('lll'),
@@ -112,7 +123,7 @@ function sendConfirmEmail(user, baseUrl) {
         defaults(
           {
             to: `${user.name} <${user.email}>`,
-            subject: 'Confirm your Love is our Weapon registration',
+            subject: `Confirm your ${config.server.name} registration`,
             text: template.text,
             html: template.html,
           },
@@ -126,18 +137,16 @@ function sendConfirmEmail(user, baseUrl) {
  * Send email for user to reset their password
  *
  * @param {object} user
- * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendPasswordReset(user, baseUrl) {
+function sendPasswordReset(user) {
   return getToken('reset', user)
     .then((token) =>
       renderHtmlTemplate(
         'password-reset',
         defaults(
           {
-            baseUrl,
             firstName: user.firstName,
             token: token.token,
             date: moment(token.expires).format('LTS'),
@@ -151,7 +160,7 @@ function sendPasswordReset(user, baseUrl) {
         defaults(
           {
             to: `${user.name} <${user.email}>`,
-            subject: 'Reset your Love is our Weapon password',
+            subject: `Reset your ${config.server.name} password`,
             text: template.text,
             html: template.html,
           },
@@ -166,11 +175,10 @@ function sendPasswordReset(user, baseUrl) {
  *
  * @param {object} group
  * @param {object} owner
- * @param {string} [baseUrl]
  *
  * @returns {Promise}
  */
-function sendGroupSignup(group, owner, baseUrl) {
+function sendGroupSignup(group, owner) {
   return getToken('approve', null, group).then((token) =>
     renderHtmlTemplate(
       'group-signup',
@@ -178,7 +186,6 @@ function sendGroupSignup(group, owner, baseUrl) {
         {
           group,
           owner,
-          baseUrl,
           token: token.token,
         },
         TEMPLATE_DEFAULTS
@@ -187,8 +194,8 @@ function sendGroupSignup(group, owner, baseUrl) {
       sendEmail(
         defaults(
           {
-            to: `Love is our Weapon <${config.emails.admin}>`,
-            subject: `${group.name} joined Love is our Weapon`,
+            to: `${config.server.name} <${config.emails.admin}>`,
+            subject: `${group.name} joined ${config.server.name}`,
             text: template.text,
             html: template.html,
           },
@@ -223,7 +230,7 @@ function sendSalvationTestimony(salvationTestimony, user, group) {
     sendEmail(
       defaults(
         {
-          to: `Love is our Weapon <${config.emails.admin}>`,
+          to: `${config.server.name} <${config.emails.admin}>`,
           subject: `New Salvation Testimony from ${user.name}`,
           text: template.text,
           html: template.html,
@@ -247,8 +254,8 @@ function sendContactEmail(contactForm) {
       sendEmail(
         defaults(
           {
-            to: `Love is our Weapon <${config.emails.admin}>`,
-            subject: `Received a Love is our Weapon message from ${contactForm.name}`,
+            to: `${config.server.name} <${config.emails.admin}>`,
+            subject: `Received a ${config.server.name} message from ${contactForm.name}`,
             text: template.text,
             html: template.html,
           },

@@ -23,7 +23,7 @@
                       <img
                         src='{{baseUrl}}/images/logo-navbar.png'
                         class='logo'
-                        alt='Love is our Weapon logo'
+                        alt='{{serverName}} logo'
                       />
                     </td>
                   </tr>
@@ -35,14 +35,15 @@
                   </tr>
                   <tr>
                     <td class='content-block'>
-                      Welcome to the Love is our Weapon campaign!
+                      Welcome to
+                      {{serverName}}!
                     </td>
                   </tr>
                   <tr>
                     <td class='content-block'>
                       You are receiving this because you (or someone else) registered for an account
                       at
-                      <a href='{{baseUrl}}'>{{baseUrl}}</a>.
+                      <a href='{{baseUrl}}'>{{baseHost}}</a>.
                     </td>
                   </tr>
                   <tr>
@@ -79,7 +80,7 @@
                   <tr>
                     <td class='content-block'>
                       You can reply to this message, or email
-                      <a href='mailto:support@loveisourweapon.com'>support@loveisourweapon.com</a>
+                      <a href='mailto:{{supportEmail}}'>{{supportEmail}}</a>
                       if you have any questions.
                     </td>
                   </tr>
@@ -90,7 +91,9 @@
                   </tr>
                   <tr>
                     <td class='content-block'>
-                      &mdash; The Love is our Weapon team
+                      &mdash; The
+                      {{serverName}}
+                      team
                     </td>
                   </tr>
                 </table>

@@ -14,14 +14,15 @@
                       <img
                         src='{{baseUrl}}/images/logo-navbar.png'
                         class='logo'
-                        alt='Love is our Weapon logo'
+                        alt='{{serverName}} logo'
                       />
                     </td>
                   </tr>
                   <tr>
                     <td class='content-block'>
                       {{group.name}}
-                      just signed up to run a campaign on Love is our Weapon!
+                      just signed up to run a campaign on
+                      {{serverName}}!
                     </td>
                   </tr>
                   <tr>
@@ -31,7 +32,7 @@
                       <b>URL:</b>
                       <a
                         href='{{baseUrl}}/g/{{group.urlName}}'
-                      >{{baseUrl}}/g/{{group.urlName}}</a><br />
+                      >{{baseHost}}/g/{{group.urlName}}</a><br />
                       <b>Owner:</b>
                       {{owner.name}}<br />
                       <b>Email:</b>
@@ -62,7 +63,9 @@
                   </tr>
                   <tr>
                     <td class='content-block'>
-                      &mdash; The Love is our Weapon team
+                      &mdash; The
+                      {{serverName}}
+                      team
                     </td>
                   </tr>
                 </table>
