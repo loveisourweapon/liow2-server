@@ -42,7 +42,7 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
   new Group(req.body)
     .save()
     .then((group) => {
-      mailUtils.sendGroupSignup(group, req.authUser, req.headers.origin);
+      mailUtils.sendGroupSignup(group, req.authUser);
       req.authUser.groups.push(group._id);
       return req.authUser
         .save()
@@ -153,6 +153,10 @@ router.delete(
         Promise.all(
           usersInGroup.map((user) => {
             user.groups = user.groups.filter((userGroupId) => !userGroupId.equals(groupId));
+            // Also clear currentGroup if it's the deleted group
+            if (user.currentGroup && user.currentGroup.equals(groupId)) {
+              user.currentGroup = undefined;
+            }
             return user.save();
           })
         )

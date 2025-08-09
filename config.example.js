@@ -8,6 +8,7 @@ module.exports = {
 
   // Server configuration
   server: {
+    env: 'liow-development', // LIOW_SERVER_ENV
     name: 'Love is our Weapon', // LIOW_SERVER_NAME
     host: 'localhost:3001', // LIOW_SERVER_HOST
   },

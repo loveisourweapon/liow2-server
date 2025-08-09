@@ -23,7 +23,7 @@
                       <img
                         src='{{baseUrl}}/images/logo-navbar.png'
                         class='logo'
-                        alt='Love is our Weapon logo'
+                        alt='{{serverName}} logo'
                       />
                     </td>
                   </tr>
@@ -36,8 +36,9 @@
                   <tr>
                     <td class='content-block'>
                       You are receiving this because you (or someone else) requested to reset the
-                      password for this Love is our Weapon (<a href='{{baseUrl}}'>{{baseUrl}}</a>)
-                      account.
+                      password for this
+                      {{serverName}}
+                      (<a href='{{baseUrl}}'>{{baseHost}}</a>) account.
                     </td>
                   </tr>
                   <tr>
@@ -74,13 +75,15 @@
                   <tr>
                     <td class='content-block'>
                       You can reply to this message, or email
-                      <a href='mailto:support@loveisourweapon.com'>support@loveisourweapon.com</a>
+                      <a href='mailto:{{supportEmail}}'>{{supportEmail}}</a>
                       if you have any questions.
                     </td>
                   </tr>
                   <tr>
                     <td class='content-block'>
-                      &mdash; The Love is our Weapon team
+                      &mdash; The
+                      {{serverName}}
+                      team
                     </td>
                   </tr>
                 </table>

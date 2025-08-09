@@ -103,7 +103,7 @@ router.post('/', (req, res, next) => {
     .save()
     .then((user) => {
       mailUtils
-        .sendConfirmEmail(user, req.headers.origin)
+        .sendConfirmEmail(user)
         .catch((err) => console.error('Error sending confirm email.', err));
       mailUtils
         .sendMarketingContact(user, marketingOptIn)
