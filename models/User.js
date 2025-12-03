@@ -43,6 +43,7 @@ var UserSchema = new mongoose.Schema({
   currentGroup: { type: ObjectId, ref: 'Group' },
   superAdmin: { type: Boolean, default: false, required: true },
   confirmed: { type: Boolean, default: false, required: true },
+  anonymous: { type: Boolean, default: false, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: Date,
   lastSeen: Date,
@@ -157,6 +158,7 @@ UserSchema.statics.getFilter = function () {
     'country',
     'groups',
     'currentGroup',
+    'anonymous',
   ];
 };
 
