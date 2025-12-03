@@ -8,7 +8,7 @@ var FeedItem = require('../models/FeedItem');
 
 /**
  * @api {get} /feeds List feed items
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetFeeds
  * @apiGroup Feeds
  * @apiPermission none

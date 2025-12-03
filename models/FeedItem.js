@@ -37,7 +37,7 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
 
 /**
  * @apiDefine FeedsResponse
- * @apiVersion 1.18.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {FeedItem[]} feedItems              List of feed items
  * @apiSuccess {string}     feedItems._id          Feed item ObjectId
@@ -49,6 +49,7 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
  * @apiSuccess {string}     feedItems.target.deed  Group ObjectId
  * @apiSuccess {string}     feedItems.act          Act ObjectId
  * @apiSuccess {string}     feedItems.comment      Comment ObjectId
+ * @apiSuccess {boolean}    feedItems.bulk         Whether this is a bulk feed item
  * @apiSuccess {number}     feedItems.count        Count for repeated feed items
  * @apiSuccess {Date}       feedItems.created      Created timestamp
  * @apiSuccess {Date}       feedItems.modified     Modified timestamp
@@ -64,8 +65,21 @@ module.exports = mongoose.model('FeedItem', FeedItemSchema);
  *       "deed": "55f6c56186b959ac12490e1d"
  *     },
  *     "act": "55f6c56186b959ac12490e1d",
+ *     "bulk": false,
  *     "count": 1,
  *     "created": "2015-09-14T13:56:27.250Z",
- *     "created": "2015-09-14T13:56:27.250Z"
+ *     "modified": "2015-09-14T13:56:27.250Z"
+ *   }, {
+ *     "_id": "55f6c56186b959ac12490e1f",
+ *     "user": "55f6c56186b959ac12490e1a",
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
+ *     "target": {
+ *       "deed": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "bulk": true,
+ *     "count": 20,
+ *     "created": "2015-09-14T14:00:00.000Z",
+ *     "modified": "2015-09-14T14:00:00.000Z"
  *   }]
  */

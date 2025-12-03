@@ -32,7 +32,7 @@ module.exports = mongoose.model('Act', ActSchema);
 
 /**
  * @apiDefine ActsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Act[]}    acts          List of acts
  * @apiSuccess {string}   acts._id      Act ObjectId
@@ -40,6 +40,7 @@ module.exports = mongoose.model('Act', ActSchema);
  * @apiSuccess {string}   acts.deed     Deed ObjectId
  * @apiSuccess {string}   acts.group    Group ObjectId
  * @apiSuccess {string}   acts.campaign Campaign ObjectId
+ * @apiSuccess {boolean}  acts.bulk     Whether this is a bulk act
  * @apiSuccess {string[]} acts.likes    List of Like ObjectIds
  * @apiSuccess {string[]} acts.comments List of Comment ObjectIds
  * @apiSuccess {Date}     acts.created  Created timestamp
@@ -52,6 +53,7 @@ module.exports = mongoose.model('Act', ActSchema);
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "likes": ["55f6c58086b959ac12490e1f"],
  *     "comments": ["55f6c58086b959ac12490e1g"],
  *     "created": "2015-09-14T13:56:27.250Z"
@@ -75,7 +77,7 @@ module.exports = mongoose.model('Act', ActSchema);
 
 /**
  * @apiDefine CreateActResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Act}      act          Act
  * @apiSuccess (201) {string}   act._id      Act ObjectId
@@ -83,6 +85,7 @@ module.exports = mongoose.model('Act', ActSchema);
  * @apiSuccess (201) {string}   act.deed     Deed ObjectId
  * @apiSuccess (201) {string}   act.group    Group ObjectId
  * @apiSuccess (201) {string}   act.campaign Campaign ObjectId
+ * @apiSuccess (201) {boolean}  act.bulk     Whether this is a bulk act
  * @apiSuccess (201) {string[]} act.likes    List of Like ObjectIds
  * @apiSuccess (201) {string[]} act.comments List of Comment ObjectIds
  * @apiSuccess (201) {Date}     act.created  Created timestamp
@@ -95,6 +98,7 @@ module.exports = mongoose.model('Act', ActSchema);
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "likes": [],
  *     "comments": [],
  *     "created": "2015-09-14T13:56:27.250Z"

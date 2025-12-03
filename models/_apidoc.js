@@ -1,6 +1,6 @@
 /**
  * @apiDefine FeedsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {FeedItem[]} feedItems              List of feed items
  * @apiSuccess {string}     feedItems._id          Feed item ObjectId
@@ -12,7 +12,10 @@
  * @apiSuccess {string}     feedItems.target.deed  Group ObjectId
  * @apiSuccess {string}     feedItems.act          Act ObjectId
  * @apiSuccess {string}     feedItems.comment      Comment ObjectId
+ * @apiSuccess {boolean}    feedItems.bulk         Whether this is a bulk feed item
+ * @apiSuccess {number}     feedItems.count        Count for repeated feed items
  * @apiSuccess {Date}       feedItems.created      Created timestamp
+ * @apiSuccess {Date}       feedItems.modified     Modified timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
@@ -25,7 +28,22 @@
  *       "deed": "55f6c56186b959ac12490e1d"
  *     },
  *     "act": "55f6c56186b959ac12490e1d",
- *     "created": "2015-09-14T13:56:27.250Z"
+ *     "bulk": false,
+ *     "count": 1,
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T13:56:27.250Z"
+ *   }, {
+ *     "_id": "55f6c56186b959ac12490e1f",
+ *     "user": "55f6c56186b959ac12490e1a",
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
+ *     "target": {
+ *       "deed": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "bulk": true,
+ *     "count": 20,
+ *     "created": "2015-09-14T14:00:00.000Z",
+ *     "modified": "2015-09-14T14:00:00.000Z"
  *   }]
  */
 
@@ -183,7 +201,7 @@
 
 /**
  * @apiDefine ActsResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Act[]}    acts          List of acts
  * @apiSuccess {string}   acts._id      Act ObjectId
@@ -191,6 +209,7 @@
  * @apiSuccess {string}   acts.deed     Deed ObjectId
  * @apiSuccess {string}   acts.group    Group ObjectId
  * @apiSuccess {string}   acts.campaign Campaign ObjectId
+ * @apiSuccess {boolean}  acts.bulk     Whether this is a bulk act
  * @apiSuccess {Date}     acts.created  Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -201,13 +220,14 @@
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }]
  */
 
 /**
  * @apiDefine CreateActResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Act}      act          Act
  * @apiSuccess (201) {string}   act._id      Act ObjectId
@@ -215,6 +235,7 @@
  * @apiSuccess (201) {string}   act.deed     Deed ObjectId
  * @apiSuccess (201) {string}   act.group    Group ObjectId
  * @apiSuccess (201) {string}   act.campaign Campaign ObjectId
+ * @apiSuccess (201) {boolean}  act.bulk     Whether this is a bulk act
  * @apiSuccess (201) {Date}     act.created  Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -225,6 +246,7 @@
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */

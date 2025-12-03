@@ -16,7 +16,7 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /acts List acts
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetActs
  * @apiGroup Acts
  * @apiPermission none
@@ -27,7 +27,7 @@ router.get('/', partialRight(routeUtils.getAll, Act));
 
 /**
  * @api {post} /acts Create act
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PostActs
  * @apiGroup Acts
  * @apiPermission user
