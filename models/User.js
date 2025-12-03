@@ -170,7 +170,7 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine UserResponse
- * @apiVersion 1.16.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {User}     user              User
  * @apiSuccess {string}   user._id          User ObjectId
@@ -183,6 +183,7 @@ module.exports = mongoose.model('User', UserSchema);
  * @apiSuccess {string[]} user.groups       List of group ObjectId's
  * @apiSuccess {string}   user.currentGroup Group ObjectId
  * @apiSuccess {boolean}  user.confirmed    Has user confirmed email address
+ * @apiSuccess {boolean}  user.anonymous    Is user anonymous
  * @apiSuccess {Date}     user.created      Created timestamp
  * @apiSuccess {Date}     user.modified     Modified timestamp
  *
@@ -199,6 +200,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "groups": ["55f6c56186b959ac12490e1b"],
  *     "currentGroup": "55f6c56186b959ac12490e1b",
  *     "confirmed": true,
+ *     "anonymous": false,
  *     "created": "2015-09-14T13:56:27.250Z",
  *     "modified": "2015-09-14T14:32:27.250Z"
  *   }
@@ -206,13 +208,14 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine UserRequestBody
- * @apiVersion 1.22.0
+ * @apiVersion 1.27.0
  *
  * @apiParam (Body) {string}   email         User's email address
  * @apiParam (Body) {string}   password      User's password
  * @apiParam (Body) {string}   firstName     User's first name
  * @apiParam (Body) {string}   [lastName]    User's last name
  * @apiParam (Body) {boolean}  [acceptTerms] Flag to indicate if user has accepted terms
+ * @apiParam (Body) {boolean}  [anonymous]   Is user anonymous
  * @apiParam (Body) {string}   [picture]     User's profile picture URL
  * @apiParam (Body) {string}   [coverImage]  User's cover image URL
  * @apiParam (Body) {string}   [country]     Country ObjectId
@@ -225,6 +228,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "firstName": "Fred",
  *     "lastName": "Bloggs",
  *     "acceptTerms": false,
+ *     "anonymous": false,
  *     "picture": "https://example.com/images/picture.png",
  *     "coverImage": "https://example.com/images/cover-image.png",
  *     "country": "55f6c56186b959ac12490e1a",
@@ -234,7 +238,7 @@ module.exports = mongoose.model('User', UserSchema);
 
 /**
  * @apiDefine CreateUserResponse
- * @apiVersion 1.16.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {User}     user              User
  * @apiSuccess (201) {string}   user._id          User ObjectId
@@ -247,6 +251,7 @@ module.exports = mongoose.model('User', UserSchema);
  * @apiSuccess (201) {string[]} user.groups       List of group ObjectId's
  * @apiSuccess (201) {string}   user.currentGroup Group ObjectId
  * @apiSuccess (201) {boolean}  user.confirmed    Has user confirmed email address
+ * @apiSuccess (201) {boolean}  user.anonymous    Is user anonymous
  * @apiSuccess (201) {Date}     user.created      Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -262,6 +267,7 @@ module.exports = mongoose.model('User', UserSchema);
  *     "groups": ["55f6c56186b959ac12490e1b"],
  *     "currentGroup": "55f6c56186b959ac12490e1b",
  *     "confirmed": false,
+ *     "anonymous": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */
