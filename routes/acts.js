@@ -1,10 +1,14 @@
 var partialRight = require('lodash/partialRight');
 var router = require('express').Router();
 var routeUtils = require('../utils/route');
+var utils = require('../utils/general');
+var HttpError = utils.HttpError;
 
 var Act = require('../models/Act');
 var Like = require('../models/Like');
 var Comment = require('../models/Comment');
+var FeedItem = require('../models/FeedItem');
+var Group = require('../models/Group');
 
 router.param('act', partialRight(routeUtils.paramHandler, Act));
 router.param('like', partialRight(routeUtils.paramHandler, Like));
@@ -41,6 +45,114 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
       .then((act) => res.status(201).location(`/acts/${act._id}`).json(act))
       .catch((err) => next(err));
   });
+});
+
+/**
+ * @api {post} /acts/bulk Create bulk acts
+ * @apiVersion 1.27.0
+ * @apiName PostActsBulk
+ * @apiGroup Acts
+ * @apiPermission groupAdmin
+ *
+ * @apiDescription Create multiple acts for a deed as a group admin. All acts will be grouped into a single FeedItem.
+ *
+ * @apiParam (Body) {string} deed  Deed ObjectId (required)
+ * @apiParam (Body) {string} group  Group ObjectId (required)
+ * @apiParam (Body) {number} count  Number of acts to create (required, must be > 0)
+ *
+ * @apiParamExample {json} Request
+ *   {
+ *     "deed": "55f6c58b86b959ac12490e1b",
+ *     "group": "55f6c58086b959ac12490e1c",
+ *     "count": 20
+ *   }
+ *
+ * @apiSuccess (201) {object}   result              Result object
+ * @apiSuccess (201) {number}   result.count       Number of acts created
+ * @apiSuccess (201) {string[]} result.actIds      Array of created Act ObjectIds
+ * @apiSuccess (201) {string}   result.feedItemId   Created FeedItem ObjectId
+ *
+ * @apiSuccessExample {json} Response
+ *   HTTP/1.1 201 Created
+ *   {
+ *     "count": 20,
+ *     "actIds": ["55f6c56186b959ac12490e1e", "..."],
+ *     "feedItemId": "55f6c56186b959ac12490e1f"
+ *   }
+ */
+router.post('/bulk', routeUtils.ensureAuthenticated, (req, res, next) => {
+  var deedId = req.body.deed;
+  var groupId = req.body.group;
+  var count = parseInt(req.body.count, 10);
+
+  // Validate required fields
+  if (!deedId || !groupId || !count) {
+    return next(new HttpError('deed, group, and count are required', 400));
+  }
+  if (!utils.isValidObjectId(deedId) || !utils.isValidObjectId(groupId)) {
+    return next(new HttpError('Invalid deed or group ObjectId', 400));
+  }
+  if (!Number.isInteger(count) || count <= 0) {
+    return next(new HttpError('count must be a positive integer', 400));
+  }
+
+  // Validate group admin permissions
+  Group.findById(groupId)
+    .exec()
+    .then((group) => {
+      if (!group) {
+        return next(new HttpError('Group not found', 404));
+      }
+
+      // Check if user is admin (superAdmin can bypass)
+      if (
+        !req.authUser.superAdmin &&
+        !group.admins.some((admin) => admin.equals(req.authUser._id))
+      ) {
+        return next(new HttpError('Must be an admin of the group', 403));
+      }
+
+      // Get current campaign for the group
+      return routeUtils.getCurrentCampaign(req).then((req) => {
+        var campaignId = req.body.campaign;
+
+        // Create all acts
+        var acts = [];
+        for (var i = 0; i < count; i++) {
+          acts.push({
+            deed: deedId,
+            group: groupId,
+            campaign: campaignId,
+            bulk: true,
+          });
+        }
+
+        return Act.insertMany(acts)
+          .then((createdActs) => {
+            var actIds = createdActs.map((act) => act._id);
+
+            // Create a single FeedItem for all bulk acts
+            var feedItem = new FeedItem({
+              user: req.authUser._id, // Use admin's ID for display purposes
+              group: groupId,
+              campaign: campaignId,
+              target: { deed: deedId },
+              bulk: true,
+              count: count,
+            });
+
+            return feedItem.save().then((savedFeedItem) => {
+              res.status(201).json({
+                count: count,
+                actIds: actIds,
+                feedItemId: savedFeedItem._id,
+              });
+            });
+          })
+          .catch((err) => next(err));
+      });
+    })
+    .catch((err) => next(err));
 });
 
 /**

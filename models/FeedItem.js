@@ -14,7 +14,8 @@ var FeedItemSchema = new mongoose.Schema({
   },
   act: { type: ObjectId, ref: 'Act' },
   comment: { type: ObjectId, ref: 'Comment' },
-  count: { type: String, default: 1, required: true },
+  bulk: { type: Boolean, default: false },
+  count: { type: Number, default: 1, required: true },
   created: { type: Date, default: Date.now, required: true },
   modified: { type: Date, default: Date.now, required: true },
 });

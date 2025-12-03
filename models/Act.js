@@ -3,13 +3,22 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var ActSchema = new mongoose.Schema({
-  user: { type: ObjectId, ref: 'User', required: true },
+  user: { type: ObjectId, ref: 'User' },
   deed: { type: ObjectId, ref: 'Deed', required: true },
   group: { type: ObjectId, ref: 'Group' },
   campaign: { type: ObjectId, ref: 'Campaign' },
+  bulk: { type: Boolean, default: false },
   likes: { type: [{ type: ObjectId, ref: 'Like' }] },
   comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
   created: { type: Date, default: Date.now, required: true },
+});
+
+// Validate that user is required unless bulk is true
+ActSchema.pre('validate', function (next) {
+  if (!this.bulk && !this.user) {
+    this.invalidate('user', 'User is required', this.user);
+  }
+  next();
 });
 
 ActSchema.plugin(modelUtils.findOneOrThrow);
