@@ -1,3 +1,4 @@
+var isNaN = require('lodash/isNaN');
 var partialRight = require('lodash/partialRight');
 var router = require('express').Router();
 var routeUtils = require('../utils/route');
@@ -83,10 +84,11 @@ router.post('/', routeUtils.ensureAuthenticated, (req, res, next) => {
 router.post('/bulk', routeUtils.ensureAuthenticated, (req, res, next) => {
   var deedId = req.body.deed;
   var groupId = req.body.group;
-  var count = parseInt(req.body.count, 10);
+  var count =
+    req.body.count !== undefined && req.body.count !== null ? Number.parseInt(req.body.count) : NaN;
 
   // Validate required fields
-  if (!deedId || !groupId || !count) {
+  if (!deedId || !groupId || isNaN(count)) {
     return next(new HttpError('deed, group, and count are required', 400));
   }
   if (!utils.isValidObjectId(deedId) || !utils.isValidObjectId(groupId)) {
