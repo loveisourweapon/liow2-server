@@ -234,7 +234,7 @@ router.delete(
 
 /**
  * @api {get} /acts/:act/comments List act comments
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetActComments
  * @apiGroup Acts
  * @apiPermission none
@@ -247,7 +247,7 @@ router.get('/:act/comments', partialRight(routeUtils.getByTarget, Comment, 'act'
 
 /**
  * @api {post} /acts/:act/comments Create act comment
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PostActComments
  * @apiGroup Acts
  * @apiPermission user
@@ -274,7 +274,7 @@ router.post('/:act/comments', routeUtils.ensureAuthenticated, (req, res, next) =
 
 /**
  * @api {put} /acts/:act/comments/:comment Update act comment
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PutActComment
  * @apiGroup Acts
  * @apiPermission owner

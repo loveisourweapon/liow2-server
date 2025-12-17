@@ -144,7 +144,7 @@ router.delete(
 
 /**
  * @api {get} /deeds/:deed/comments List deed comments
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetDeedComments
  * @apiGroup Deeds
  * @apiPermission none
@@ -157,7 +157,7 @@ router.get('/:deed/comments', partialRight(routeUtils.getByTarget, Comment, 'dee
 
 /**
  * @api {post} /deeds/:deed/comments Create deed comment
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PostDeedComment
  * @apiGroup Deeds
  * @apiPermission user
@@ -184,7 +184,7 @@ router.post('/:deed/comments', routeUtils.ensureAuthenticated, (req, res, next) 
 
 /**
  * @api {put} /deeds/:deed/comments/:comment Update deed comment
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PutDeedComment
  * @apiGroup Deeds
  * @apiPermission owner

@@ -59,7 +59,7 @@
 
 /**
  * @api {get} /acts List acts
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName GetActs
  * @apiGroup Acts
  * @apiPermission none
@@ -69,7 +69,7 @@
 
 /**
  * @api {post} /acts Create act
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PostActs
  * @apiGroup Acts
  * @apiPermission user
@@ -104,7 +104,7 @@
 
 /**
  * @api {get} /acts/:act/comments List act comments
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName GetActComments
  * @apiGroup Acts
  * @apiPermission none
@@ -116,7 +116,7 @@
 
 /**
  * @api {post} /acts/:act/comments Create act comment
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PostActComments
  * @apiGroup Acts
  * @apiPermission user
@@ -129,7 +129,7 @@
 
 /**
  * @api {put} /acts/:act/comments/:comment Update act comment
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PutActComment
  * @apiGroup Acts
  * @apiPermission owner
@@ -143,7 +143,7 @@
 
 /**
  * @api {get} /comments List comments
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName GetComments
  * @apiGroup Comments
  * @apiPermission none
@@ -153,7 +153,7 @@
 
 /**
  * @api {put} /comments/:comment Update comment
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PutComment
  * @apiGroup Comments
  * @apiPermission owner
@@ -166,7 +166,7 @@
 
 /**
  * @api {get} /deeds/:deed/comments List deed comments
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName GetDeedComments
  * @apiGroup Deeds
  * @apiPermission none
@@ -178,7 +178,7 @@
 
 /**
  * @api {post} /deeds/:deed/comments Create deed comment
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PostDeedComment
  * @apiGroup Deeds
  * @apiPermission user
@@ -191,7 +191,7 @@
 
 /**
  * @api {put} /deeds/:deed/comments/:comment Update deed comment
- * @apiVersion 1.3.0
+ * @apiVersion 1.27.0
  * @apiName PutDeedComment
  * @apiGroup Deeds
  * @apiPermission owner
@@ -215,7 +215,7 @@
 
 /**
  * @api {post} /acts Create act
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PostActs
  * @apiGroup Acts
  * @apiPermission none
@@ -226,7 +226,7 @@
 
 /**
  * @api {post} /acts/:act/comments Create act comment
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PostActComments
  * @apiGroup Acts
  * @apiPermission none
@@ -239,7 +239,7 @@
 
 /**
  * @api {put} /acts/:act/comments/:comment Update act comment
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PutActComment
  * @apiGroup Acts
  * @apiPermission none
@@ -253,7 +253,7 @@
 
 /**
  * @api {put} /comments/:comment Update comment
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PutComment
  * @apiGroup Comments
  * @apiPermission none
@@ -266,7 +266,7 @@
 
 /**
  * @api {post} /deeds/:deed/comments Create deed comment
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PostDeedComment
  * @apiGroup Deeds
  * @apiPermission none
@@ -279,7 +279,7 @@
 
 /**
  * @api {put} /deeds/:deed/comments/:comment Update deed comment
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  * @apiName PutDeedComment
  * @apiGroup Deeds
  * @apiPermission none

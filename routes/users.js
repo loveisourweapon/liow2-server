@@ -78,7 +78,7 @@ router.get('/', (req, res, next) => {
 
 /**
  * @api {post} /users Create user
- * @apiVersion 1.22.0
+ * @apiVersion 1.27.0
  * @apiName PostUsers
  * @apiGroup Users
  * @apiPermission none
