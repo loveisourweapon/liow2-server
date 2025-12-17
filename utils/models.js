@@ -77,6 +77,11 @@ module.exports = {
   addFeedItem(schema, opts) {
     // Save a FeedItem after saving the document
     schema.post('save', function (doc) {
+      // Skip FeedItem creation for bulk acts, they should be created manually
+      if (doc.bulk) {
+        return;
+      }
+
       if (hasIn(doc, 'deed') || hasIn(doc, 'target.deed') || hasIn(doc, 'target.group')) {
         var feedItem = pick(doc.toObject(), ['user', 'group', 'campaign']);
         feedItem.target = doc.deed ? { deed: doc.deed } : doc.target;

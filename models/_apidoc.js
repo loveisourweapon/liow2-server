@@ -1,6 +1,6 @@
 /**
  * @apiDefine FeedsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {FeedItem[]} feedItems              List of feed items
  * @apiSuccess {string}     feedItems._id          Feed item ObjectId
@@ -12,7 +12,10 @@
  * @apiSuccess {string}     feedItems.target.deed  Group ObjectId
  * @apiSuccess {string}     feedItems.act          Act ObjectId
  * @apiSuccess {string}     feedItems.comment      Comment ObjectId
+ * @apiSuccess {boolean}    feedItems.bulk         Whether this is a bulk feed item
+ * @apiSuccess {number}     feedItems.count        Count for repeated feed items
  * @apiSuccess {Date}       feedItems.created      Created timestamp
+ * @apiSuccess {Date}       feedItems.modified     Modified timestamp
  *
  * @apiSuccessExample {json} Response
  *   HTTP/1.1 200 OK
@@ -25,7 +28,22 @@
  *       "deed": "55f6c56186b959ac12490e1d"
  *     },
  *     "act": "55f6c56186b959ac12490e1d",
- *     "created": "2015-09-14T13:56:27.250Z"
+ *     "bulk": false,
+ *     "count": 1,
+ *     "created": "2015-09-14T13:56:27.250Z",
+ *     "modified": "2015-09-14T13:56:27.250Z"
+ *   }, {
+ *     "_id": "55f6c56186b959ac12490e1f",
+ *     "user": "55f6c56186b959ac12490e1a",
+ *     "group": "55f6c56186b959ac12490e1b",
+ *     "campaign": "55f6c56186b959ac12490e1c",
+ *     "target": {
+ *       "deed": "55f6c56186b959ac12490e1d"
+ *     },
+ *     "bulk": true,
+ *     "count": 20,
+ *     "created": "2015-09-14T14:00:00.000Z",
+ *     "modified": "2015-09-14T14:00:00.000Z"
  *   }]
  */
 
@@ -183,7 +201,7 @@
 
 /**
  * @apiDefine ActsResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Act[]}    acts          List of acts
  * @apiSuccess {string}   acts._id      Act ObjectId
@@ -191,6 +209,7 @@
  * @apiSuccess {string}   acts.deed     Deed ObjectId
  * @apiSuccess {string}   acts.group    Group ObjectId
  * @apiSuccess {string}   acts.campaign Campaign ObjectId
+ * @apiSuccess {boolean}  acts.bulk     Whether this is a bulk act
  * @apiSuccess {Date}     acts.created  Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -201,13 +220,14 @@
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }]
  */
 
 /**
  * @apiDefine CreateActResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Act}      act          Act
  * @apiSuccess (201) {string}   act._id      Act ObjectId
@@ -215,6 +235,7 @@
  * @apiSuccess (201) {string}   act.deed     Deed ObjectId
  * @apiSuccess (201) {string}   act.group    Group ObjectId
  * @apiSuccess (201) {string}   act.campaign Campaign ObjectId
+ * @apiSuccess (201) {boolean}  act.bulk     Whether this is a bulk act
  * @apiSuccess (201) {Date}     act.created  Created timestamp
  *
  * @apiSuccessExample {json} Response
@@ -225,17 +246,24 @@
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "created": "2015-09-14T13:56:27.250Z"
  *   }
  */
 
 /**
  * @apiDefine CommentsResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Comment[]} comments               List of comments
  * @apiSuccess {string}    comments._id           Comment ObjectId
- * @apiSuccess {string}    comments.user          User ObjectId
+ * @apiSuccess {object}    comments.user          User object (populated)
+ * @apiSuccess {string}    comments.user._id      User ObjectId
+ * @apiSuccess {string}    comments.user.firstName User's first name
+ * @apiSuccess {string}    comments.user.lastName  User's last name
+ * @apiSuccess {string}    comments.user.name      User's full name
+ * @apiSuccess {string}    comments.user.picture   User's profile picture URL
+ * @apiSuccess {boolean}   comments.user.anonymous Whether user is anonymous
  * @apiSuccess {object}    comments.target        Target object. Only one property will be set
  * @apiSuccess {string}    comments.target.user   User ObjectId
  * @apiSuccess {string}    comments.target.group  Group ObjectId
@@ -251,7 +279,14 @@
  *   HTTP/1.1 200 OK
  *   [{
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "target": {
  *       "act": "55f6c56186b959ac12490e1d"
  *     },
@@ -265,11 +300,17 @@
 
 /**
  * @apiDefine CommentResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Comment}  comment               Comment
  * @apiSuccess {string}   comment._id           Comment ObjectId
- * @apiSuccess {string}   comment.user          User ObjectId
+ * @apiSuccess {object}   comment.user          User object (populated)
+ * @apiSuccess {string}   comment.user._id      User ObjectId
+ * @apiSuccess {string}   comment.user.firstName User's first name
+ * @apiSuccess {string}   comment.user.lastName  User's last name
+ * @apiSuccess {string}   comment.user.name      User's full name
+ * @apiSuccess {string}   comment.user.picture   User's profile picture URL
+ * @apiSuccess {boolean}  comment.user.anonymous Whether user is anonymous
  * @apiSuccess {object}   comment.target        Target object. Only one property will be set
  * @apiSuccess {string}   comment.target.user   User ObjectId
  * @apiSuccess {string}   comment.target.group  Group ObjectId
@@ -285,7 +326,14 @@
  *   HTTP/1.1 200 OK
  *   {
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "target": {
  *       "act": "55f6c56186b959ac12490e1d"
  *     },
@@ -315,11 +363,17 @@
 
 /**
  * @apiDefine CreateCommentResponse
- * @apiVersion 1.0.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Comment}  comment               Comment
  * @apiSuccess (201) {string}   comment._id           Comment ObjectId
- * @apiSuccess (201) {string}   comment.user          User ObjectId
+ * @apiSuccess (201) {object}   comment.user          User object (populated)
+ * @apiSuccess (201) {string}   comment.user._id      User ObjectId
+ * @apiSuccess (201) {string}   comment.user.firstName User's first name
+ * @apiSuccess (201) {string}   comment.user.lastName  User's last name
+ * @apiSuccess (201) {string}   comment.user.name      User's full name
+ * @apiSuccess (201) {string}   comment.user.picture   User's profile picture URL
+ * @apiSuccess (201) {boolean}  comment.user.anonymous  Whether user is anonymous
  * @apiSuccess (201) {object}   comment.target        Target object. Only one property will be set
  * @apiSuccess (201) {string}   comment.target.user   User ObjectId
  * @apiSuccess (201) {string}   comment.target.group  Group ObjectId
@@ -334,7 +388,14 @@
  *   HTTP/1.1 201 Created
  *   {
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "target": {
  *       "act": "55f6c56186b959ac12490e1d"
  *     },

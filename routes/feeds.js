@@ -1,4 +1,5 @@
 var has = require('lodash/has');
+var utils = require('../utils/general');
 var routeUtils = require('../utils/route');
 var router = require('express').Router();
 var ObjectId = require('mongoose').Types.ObjectId;
@@ -7,7 +8,7 @@ var FeedItem = require('../models/FeedItem');
 
 /**
  * @api {get} /feeds List feed items
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetFeeds
  * @apiGroup Feeds
  * @apiPermission none
@@ -27,7 +28,7 @@ router.get('/', (req, res, next) => {
   }
 
   FeedItem.find(conditions)
-    .populate({ path: 'user', select: 'firstName picture' })
+    .populate({ path: 'user', select: 'firstName picture anonymous' })
     .populate({ path: 'group', select: 'name urlName' })
     .populate({ path: 'target.deed', model: 'Deed', select: 'title urlTitle' })
     .populate({ path: 'target.group', model: 'Group', select: 'name urlName' })

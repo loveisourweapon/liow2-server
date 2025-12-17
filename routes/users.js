@@ -146,7 +146,7 @@ router.get('/:user', partialRight(routeUtils.getByParam, 'user'));
 
 /**
  * @api {put} /users/:user Update user
- * @apiVersion 1.22.0
+ * @apiVersion 1.27.0
  * @apiName PutUser
  * @apiGroup Users
  * @apiPermission owner
@@ -165,7 +165,7 @@ router.put(
 
 /**
  * @api {patch} /users/:user Partial update user
- * @apiVersion 1.6.0
+ * @apiVersion 1.27.0
  * @apiName PatchUser
  * @apiGroup Users
  * @apiPermission owner

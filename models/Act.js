@@ -3,13 +3,22 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var ActSchema = new mongoose.Schema({
-  user: { type: ObjectId, ref: 'User', required: true },
+  user: { type: ObjectId, ref: 'User' },
   deed: { type: ObjectId, ref: 'Deed', required: true },
   group: { type: ObjectId, ref: 'Group' },
   campaign: { type: ObjectId, ref: 'Campaign' },
+  bulk: { type: Boolean, default: false },
   likes: { type: [{ type: ObjectId, ref: 'Like' }] },
   comments: { type: [{ type: ObjectId, ref: 'Comment' }] },
   created: { type: Date, default: Date.now, required: true },
+});
+
+// Validate that user is required unless bulk is true
+ActSchema.pre('validate', function (next) {
+  if (!this.bulk && !this.user) {
+    this.invalidate('user', 'User is required', this.user);
+  }
+  next();
 });
 
 ActSchema.plugin(modelUtils.findOneOrThrow);
@@ -23,7 +32,7 @@ module.exports = mongoose.model('Act', ActSchema);
 
 /**
  * @apiDefine ActsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Act[]}    acts          List of acts
  * @apiSuccess {string}   acts._id      Act ObjectId
@@ -31,6 +40,7 @@ module.exports = mongoose.model('Act', ActSchema);
  * @apiSuccess {string}   acts.deed     Deed ObjectId
  * @apiSuccess {string}   acts.group    Group ObjectId
  * @apiSuccess {string}   acts.campaign Campaign ObjectId
+ * @apiSuccess {boolean}  acts.bulk     Whether this is a bulk act
  * @apiSuccess {string[]} acts.likes    List of Like ObjectIds
  * @apiSuccess {string[]} acts.comments List of Comment ObjectIds
  * @apiSuccess {Date}     acts.created  Created timestamp
@@ -43,6 +53,7 @@ module.exports = mongoose.model('Act', ActSchema);
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "likes": ["55f6c58086b959ac12490e1f"],
  *     "comments": ["55f6c58086b959ac12490e1g"],
  *     "created": "2015-09-14T13:56:27.250Z"
@@ -66,7 +77,7 @@ module.exports = mongoose.model('Act', ActSchema);
 
 /**
  * @apiDefine CreateActResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Act}      act          Act
  * @apiSuccess (201) {string}   act._id      Act ObjectId
@@ -74,6 +85,7 @@ module.exports = mongoose.model('Act', ActSchema);
  * @apiSuccess (201) {string}   act.deed     Deed ObjectId
  * @apiSuccess (201) {string}   act.group    Group ObjectId
  * @apiSuccess (201) {string}   act.campaign Campaign ObjectId
+ * @apiSuccess (201) {boolean}  act.bulk     Whether this is a bulk act
  * @apiSuccess (201) {string[]} act.likes    List of Like ObjectIds
  * @apiSuccess (201) {string[]} act.comments List of Comment ObjectIds
  * @apiSuccess (201) {Date}     act.created  Created timestamp
@@ -86,6 +98,7 @@ module.exports = mongoose.model('Act', ActSchema);
  *     "deed": "55f6c58b86b959ac12490e1b",
  *     "group": "55f6c58086b959ac12490e1c",
  *     "campaign": "55f6c58086b959ac12490e1d",
+ *     "bulk": false,
  *     "likes": [],
  *     "comments": [],
  *     "created": "2015-09-14T13:56:27.250Z"
