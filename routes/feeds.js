@@ -28,7 +28,7 @@ router.get('/', (req, res, next) => {
   }
 
   FeedItem.find(conditions)
-    .populate({ path: 'user', select: 'firstName picture' })
+    .populate({ path: 'user', select: 'firstName picture anonymous' })
     .populate({ path: 'group', select: 'name urlName' })
     .populate({ path: 'target.deed', model: 'Deed', select: 'title urlTitle' })
     .populate({ path: 'target.group', model: 'Group', select: 'name urlName' })

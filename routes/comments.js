@@ -9,7 +9,7 @@ router.param('comment', partialRight(routeUtils.paramHandler, Comment));
 
 /**
  * @api {get} /comments List comments
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName GetComments
  * @apiGroup Comments
  * @apiPermission none
@@ -21,7 +21,7 @@ router.get(
   partialRight(routeUtils.getAll, Comment, [
     {
       path: 'user',
-      select: 'firstName lastName name picture',
+      select: 'firstName lastName name picture anonymous',
     },
     {
       path: 'target.deed',
@@ -33,7 +33,7 @@ router.get(
 
 /**
  * @api {put} /comments/:comment Update comment
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  * @apiName PutComment
  * @apiGroup Comments
  * @apiPermission owner

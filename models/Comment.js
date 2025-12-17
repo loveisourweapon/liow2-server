@@ -69,11 +69,17 @@ module.exports = mongoose.model('Comment', CommentSchema);
 
 /**
  * @apiDefine CommentsResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Comment[]} comments                List of comments
  * @apiSuccess {string}    comments._id            Comment ObjectId
- * @apiSuccess {string}    comments.user           User ObjectId
+ * @apiSuccess {object}    comments.user            User object (populated)
+ * @apiSuccess {string}    comments.user._id        User ObjectId
+ * @apiSuccess {string}    comments.user.firstName  User's first name
+ * @apiSuccess {string}    comments.user.lastName  User's last name
+ * @apiSuccess {string}    comments.user.name      User's full name
+ * @apiSuccess {string}    comments.user.picture    User's profile picture URL
+ * @apiSuccess {boolean}   comments.user.anonymous  Whether user is anonymous
  * @apiSuccess {string}    comments.group          Group ObjectId
  * @apiSuccess {string}    comments.campaign       Campaign ObjectId
  * @apiSuccess {object}    comments.target         Target object. Only one property will be set
@@ -93,7 +99,14 @@ module.exports = mongoose.model('Comment', CommentSchema);
  *   HTTP/1.1 200 OK
  *   [{
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "group": "55f6c56186b959ac12490e1b",
  *     "campaign": "55f6c56186b959ac12490e1c",
  *     "target": {
@@ -111,11 +124,17 @@ module.exports = mongoose.model('Comment', CommentSchema);
 
 /**
  * @apiDefine CommentResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess {Comment}  comment                Comment
  * @apiSuccess {string}   comment._id            Comment ObjectId
- * @apiSuccess {string}   comment.user           User ObjectId
+ * @apiSuccess {object}   comment.user            User object (populated)
+ * @apiSuccess {string}   comment.user._id        User ObjectId
+ * @apiSuccess {string}   comment.user.firstName  User's first name
+ * @apiSuccess {string}   comment.user.lastName  User's last name
+ * @apiSuccess {string}   comment.user.name      User's full name
+ * @apiSuccess {string}   comment.user.picture    User's profile picture URL
+ * @apiSuccess {boolean}  comment.user.anonymous  Whether user is anonymous
  * @apiSuccess {string}   comment.group          Group ObjectId
  * @apiSuccess {string}   comment.campaign       Campaign ObjectId
  * @apiSuccess {object}   comment.target         Target object. Only one property will be set
@@ -135,7 +154,14 @@ module.exports = mongoose.model('Comment', CommentSchema);
  *   HTTP/1.1 200 OK
  *   {
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "group": "55f6c56186b959ac12490e1b",
  *     "campaign": "55f6c56186b959ac12490e1c",
  *     "target": {
@@ -172,11 +198,17 @@ module.exports = mongoose.model('Comment', CommentSchema);
 
 /**
  * @apiDefine CreateCommentResponse
- * @apiVersion 1.5.0
+ * @apiVersion 1.27.0
  *
  * @apiSuccess (201) {Comment}  comment                Comment
  * @apiSuccess (201) {string}   comment._id            Comment ObjectId
- * @apiSuccess (201) {string}   comment.user           User ObjectId
+ * @apiSuccess (201) {object}   comment.user            User object (populated)
+ * @apiSuccess (201) {string}   comment.user._id        User ObjectId
+ * @apiSuccess (201) {string}   comment.user.firstName  User's first name
+ * @apiSuccess (201) {string}   comment.user.lastName  User's last name
+ * @apiSuccess (201) {string}   comment.user.name      User's full name
+ * @apiSuccess (201) {string}   comment.user.picture    User's profile picture URL
+ * @apiSuccess (201) {boolean}  comment.user.anonymous  Whether user is anonymous
  * @apiSuccess (201) {string}   comment.group          Group ObjectId
  * @apiSuccess (201) {string}   comment.campaign       Campaign ObjectId
  * @apiSuccess (201) {object}   comment.target         Target object. Only one property will be set
@@ -195,7 +227,14 @@ module.exports = mongoose.model('Comment', CommentSchema);
  *   HTTP/1.1 201 Created
  *   {
  *     "_id": "55f6c56186b959ac12490e1e",
- *     "user": "55f6c56186b959ac12490e1a",
+ *     "user": {
+ *       "_id": "55f6c56186b959ac12490e1a",
+ *       "firstName": "Fred",
+ *       "lastName": "Bloggs",
+ *       "name": "Fred Bloggs",
+ *       "picture": "https://example.com/images/picture.png",
+ *       "anonymous": false
+ *     },
  *     "group": "55f6c56186b959ac12490e1b",
  *     "campaign": "55f6c56186b959ac12490e1c",
  *     "target": {
