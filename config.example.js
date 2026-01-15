@@ -10,6 +10,7 @@ module.exports = {
   server: {
     env: 'liow-development', // LIOW_SERVER_ENV
     name: 'Love is our Weapon', // LIOW_SERVER_NAME
+    logo_url: 'https://loveisourweapon.com/images/logo-navbar.png', // LIOW_SERVER_LOGO_URL
     host: 'localhost:3001', // LIOW_SERVER_HOST
   },
 

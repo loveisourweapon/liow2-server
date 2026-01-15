@@ -27,6 +27,7 @@ var TEMPLATE_DEFAULTS = {
   baseHost: clientHost,
   serverEnv: config.server.env,
   serverName: config.server.name,
+  serverLogoUrl: config.server.logo_url || clientUrl + '/images/logo-navbar.png',
   supportEmail: config.emails.mailer,
 };
 
