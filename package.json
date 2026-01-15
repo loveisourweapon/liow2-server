@@ -1,6 +1,6 @@
 {
   "name": "liow2-server",
-  "version": "1.27.0",
+  "version": "1.28.0",
   "description": "The Love is our Weapon Campaign website API server",
   "private": true,
   "main": "app.js",
